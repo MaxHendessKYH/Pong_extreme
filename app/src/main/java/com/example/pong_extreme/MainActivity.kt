@@ -1,11 +1,10 @@
 package com.example.pong_extreme
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import com.example.pong_extreme.databinding.ActivityMainBinding
 import android.widget.ListView
+import androidx.appcompat.app.AppCompatActivity
+import com.example.pong_extreme.databinding.ActivityMainBinding
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,26 +28,21 @@ class MainActivity : AppCompatActivity() {
 
         setAdapter()
     }
-
+    override fun onResume() {
+        super.onResume()
+        setAdapter()
+    }
     private fun setAdapter()
     {
-        var dummies = mutableListOf<Highscore>(
-            Highscore("Max" , 500),
-            Highscore("Dennis" , 500),
-            Highscore("Juhee", 500),
-            Highscore("Mehdi", 500),
-            Highscore("Nnoham", 500),
-            Highscore("Nnoham", 500),
-            Highscore("Nnoham", 500),
-            Highscore("Nnoham", 500),
-            Highscore("Nnoham", 500)
-        )
+
+        var classicHighScores = HighscoreManager.getHighScores("classic")
         val lvClassic = findViewById<ListView>(R.id.lv_highscore_classic)
-        val classicAdapter = HighscoreAdapter(this, dummies)
+        val classicAdapter = HighscoreAdapter(this, classicHighScores)
         lvClassic.adapter = classicAdapter
 
+       var timedHighScores = HighscoreManager.getHighScores("timed")
         val lvTimed = findViewById<ListView>(R.id.lv_highscore_timed)
-        val timedAdapter = HighscoreAdapter(this, dummies)
-        lvTimed.adapter = timedAdapter
+        val timedAdapter = HighscoreAdapter(this, timedHighScores)
+      lvTimed.adapter = timedAdapter
     }
 }
