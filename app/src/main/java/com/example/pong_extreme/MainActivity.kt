@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import com.example.pong_extreme.databinding.ActivityMainBinding
 import android.widget.ListView
+import androidx.core.view.WindowCompat
 
 
 class MainActivity : AppCompatActivity() {
@@ -14,6 +15,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // It makes transparent status bar and navigation bar
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        // It will hide the title bar
+        supportActionBar?.hide()
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
