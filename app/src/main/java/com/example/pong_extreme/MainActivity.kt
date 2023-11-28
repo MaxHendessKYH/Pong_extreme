@@ -21,12 +21,12 @@ class MainActivity : AppCompatActivity() {
             Highscore("Mehdi", 500),
             Highscore("Nnoham", 500)
         )
-        val lv_classic = findViewById<ListView>(R.id.lv_highscore_classic)
-        val classic_adapter = HighscoreAdapter(this, dummies)
-        lv_classic.setAdapter(classic_adapter)
+        val lvClassic = findViewById<ListView>(R.id.lv_highscore_classic)
+        val classicAdapter = HighscoreAdapter(this, dummies)
+        lvClassic.adapter = classicAdapter
 
-        val lv_timed = findViewById<ListView>(R.id.lv_highscore_timed)
-        val timed_adapter = HighscoreAdapter(this, dummies)
-        lv_timed.setAdapter(timed_adapter)
+        val lvTimed = findViewById<ListView>(R.id.lv_highscore_timed)
+        val timedAdapter = HighscoreAdapter(this, dummies)
+        lvTimed.adapter = timedAdapter
     }
 }
