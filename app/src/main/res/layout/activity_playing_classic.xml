@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PlayingClassicActivity">
+    tools:context=".PlayingClassicActivity"
+    android:background="@color/black">
 
 
-    <TextView
+    <ImageView
         android:id="@+id/tv_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -37,24 +38,26 @@
 
     <Button
         android:id="@+id/btn_classic"
-        android:text="@string/btn_classic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="56dp"
         android:layout_marginBottom="28dp"
+        android:background="@drawable/custom_button"
+        android:text="@string/btn_classic"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btn_timed"
-        android:text="@string/btn_timed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="66dp"
-        android:layout_marginEnd="67dp"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="256dp"
         android:layout_marginBottom="28dp"
+        android:background="@drawable/custom_button"
+        android:text="@string/btn_timed"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/lv_highscore_classic" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
