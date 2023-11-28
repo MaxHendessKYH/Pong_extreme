@@ -3,11 +3,10 @@ package com.example.pong_extreme
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.example.pong_extreme.databinding.ActivityMainBinding
-
-import android.os.Bundle
 import android.widget.ListView
-import androidx.appcompat.app.AppCompatActivity
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,14 +18,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnClassic.setOnClickListener {
-            val intent = Intent(this, PlayingClassicActivity::class.java)
-        }
 
+            val intent = Intent(this, PlayingClassicActivity::class.java)
+            startActivity(intent)
+        }
         binding.btnTimed.setOnClickListener {
             val intent = Intent(this, PlayingTimedActivity::class.java)
+            startActivity(intent)
         }
 
-        setContentView(R.layout.activity_main)
         setAdapter()
     }
 
@@ -37,6 +37,10 @@ class MainActivity : AppCompatActivity() {
             Highscore("Dennis" , 500),
             Highscore("Juhee", 500),
             Highscore("Mehdi", 500),
+            Highscore("Nnoham", 500),
+            Highscore("Nnoham", 500),
+            Highscore("Nnoham", 500),
+            Highscore("Nnoham", 500),
             Highscore("Nnoham", 500)
         )
         val lvClassic = findViewById<ListView>(R.id.lv_highscore_classic)
