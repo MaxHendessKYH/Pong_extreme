@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">pong_extreme</string>
+    <string name="btn_timed">Timed\n</string>
+    <string name="btn_classic">Classic</string>
 </resources>
