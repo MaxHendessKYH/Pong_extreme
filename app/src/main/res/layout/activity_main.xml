@@ -5,25 +5,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".PlayingClassicActivity"
-    android:background="@color/black">
+    android:background="@color/spaceblue">
 
 
     <ImageView
         android:id="@+id/tv_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="19dp"
+        android:layout_width="639dp"
+        android:layout_height="440dp"
+        android:layout_marginBottom="508dp"
+        android:src="@drawable/fauget_gaming__2_"
         android:text="Breakout"
         android:textSize="40sp"
-        app:layout_constraintBottom_toTopOf="@+id/lv_highscore_classic"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.574"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ListView
         android:id="@+id/lv_highscore_classic"
         android:layout_width="190dp"
         android:layout_height="479dp"
-        android:layout_marginTop="112dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="144dp"
+        android:layout_marginEnd="18dp"
+        app:layout_constraintEnd_toStartOf="@+id/lv_highscore_timed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,8 +36,8 @@
         android:id="@+id/lv_highscore_timed"
         android:layout_width="195dp"
         android:layout_height="480dp"
-        android:layout_marginStart="216dp"
-        android:layout_marginTop="112dp"
+        android:layout_marginStart="212dp"
+        android:layout_marginTop="144dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
