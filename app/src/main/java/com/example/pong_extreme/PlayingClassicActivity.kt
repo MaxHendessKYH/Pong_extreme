@@ -6,6 +6,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.pong_extreme.databinding.ActivityPlayingClassicBinding
+import androidx.core.view.WindowCompat
 
 class PlayingClassicActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayingClassicBinding
@@ -35,5 +36,10 @@ class PlayingClassicActivity : AppCompatActivity() {
             alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(this, R.color.black))
         }
         alert.show()
+        // It makes transparent status bar and navigation bar
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        // It will hide the title bar
+        supportActionBar?.hide()
+        setContentView(R.layout.activity_playing_classic)
     }
 }
