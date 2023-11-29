@@ -2,7 +2,12 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Pong_extreme" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-         <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimary">@color/white</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <!-- Optional: set to transparent if your app is drawing behind the status bar. -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <!-- Optional: set for a light status bar with dark content. -->
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.Pong_extreme" parent="Base.Theme.Pong_extreme" />
