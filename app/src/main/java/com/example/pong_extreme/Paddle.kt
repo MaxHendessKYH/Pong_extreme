@@ -6,6 +6,12 @@ import android.graphics.Paint
 import android.graphics.Rect
 
 class Paddle (context: Context, var color: Int, var left: Int, var right: Int, var top: Int , var bottom: Int){
+    /*
+    Left: The x-coordinate (position).
+    Top: The y-coordinate  (position).
+    Right: (size).
+    Bottom:  (size).
+    * */
     val paint = Paint()
     private val rectPaint = Paint().apply {
 //        color = Color.RED
