@@ -3,8 +3,10 @@ package com.example.pong_extreme
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+
 
 class GameView (context: Context?): SurfaceView(context), SurfaceHolder.Callback, Runnable {
 
@@ -15,6 +17,8 @@ class GameView (context: Context?): SurfaceView(context), SurfaceHolder.Callback
     lateinit var paddle: Paddle
     var mHolder : SurfaceHolder? = holder
 
+
+
     init {
         if (mHolder != null){
             mHolder?.addCallback(this)
@@ -23,8 +27,11 @@ class GameView (context: Context?): SurfaceView(context), SurfaceHolder.Callback
         setup()
     }
 
+
+
     private fun setup(){
-      paddle = Paddle(this.context, Color.BLUE, 50, 50, 100, 100)
+      paddle = Paddle(this.context, Color.GREEN, 500, 300, 300, 250)
+
 
     }
 
@@ -42,12 +49,13 @@ class GameView (context: Context?): SurfaceView(context), SurfaceHolder.Callback
         paddle.update()
     }
 
-    fun draw(){
 
-        canvas = holder!!.lockCanvas()
-        canvas.drawColor(Color.BLUE)
+    fun draw(){
+        canvas = mHolder!!.lockCanvas()
+
+        canvas.drawColor(Color.BLACK)
         paddle.draw(canvas)
-        holder!!.unlockCanvasAndPost(canvas)
+        mHolder!!.unlockCanvasAndPost(canvas)
 
     }
 

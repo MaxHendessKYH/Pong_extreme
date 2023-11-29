@@ -2,7 +2,6 @@ package com.example.pong_extreme
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 
@@ -12,11 +11,9 @@ class Paddle (context: Context, var color: Int, var left: Int, var right: Int, v
 //        color = Color.RED
         style = Paint.Style.FILL
     }
-
     init {
         paint.color = color
     }
-
     fun update(){
 
     }
