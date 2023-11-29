@@ -1,5 +1,6 @@
 package com.example.pong_extreme
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
@@ -13,7 +14,15 @@ class PlayingClassicActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayingClassicBinding.inflate(layoutInflater)
+//        setContentView(GameView(this))
         setContentView(binding.root)
+        val gameView = GameView(this)
+        val container = binding.root
+        container.addView(gameView)
+//        binding.surfaceView.holder.addCallback(GameView(this))
+
+
+
         binding.btnEndGame.setOnClickListener {
             saveScore()
         }
