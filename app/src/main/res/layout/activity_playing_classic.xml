@@ -28,9 +28,10 @@
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_35dp"
+        android:layout_marginBottom="11dp"
         android:orientation="horizontal"
         android:weightSum="3"
-        app:layout_constraintBottom_toTopOf="@+id/surfaceView"
+        app:layout_constraintBottom_toTopOf="@+id/frameLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -86,12 +87,19 @@
             app:layout_constraintTop_toTopOf="parent" />
     </LinearLayout>
 
+
+<FrameLayout
+    android:id="@+id/frameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="520dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent">
     <SurfaceView
         android:id="@+id/surfaceView"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_520dp"
-        android:layout_marginBottom="@dimen/_50dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_height="match_parent"
+        />
+</FrameLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
