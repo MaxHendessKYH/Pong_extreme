@@ -89,7 +89,7 @@
     <SurfaceView
         android:id="@+id/surfaceView"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_520dp"
+        android:layout_height= "@dimen/_520dp"
         android:layout_marginBottom="@dimen/_50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

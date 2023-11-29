@@ -18,7 +18,7 @@ class PlayingClassicActivity : AppCompatActivity() {
         setContentView(binding.root)
         val gameView = GameView(this)
         val container = binding.root
-        container.addView(gameView)
+       container.addView(gameView)
 //        binding.surfaceView.holder.addCallback(GameView(this))
 
 

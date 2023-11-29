@@ -3,29 +3,35 @@ package com.example.pong_extreme
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
+import android.util.AttributeSet
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.view.View
 
-class GameView (context: Context?): SurfaceView(context), SurfaceHolder.Callback, Runnable {
+class GameView (context: Context?): SurfaceView(context), SurfaceHolder.Callback , Runnable {
 
 
     var thread: Thread? = null
     var running = false
-    lateinit var canvas: Canvas
+   lateinit var canvas: Canvas
     lateinit var paddle: Paddle
     var mHolder : SurfaceHolder? = holder
-
     init {
         if (mHolder != null){
             mHolder?.addCallback(this)
         }
-
         setup()
     }
 
     private fun setup(){
-      paddle = Paddle(this.context, Color.BLUE, 50, 50, 100, 100)
 
+  paddle = Paddle(this.context, Color.GREEN, 200, 300, 300, 350)
+
+    }
+    private fun createRectAtBottom(left: Int, top: Int, right: Int, bottom: Int): Paddle {
+        return Paddle(context,Color.GREEN,left, top, right, bottom)
     }
 
     fun start(){
@@ -43,15 +49,13 @@ class GameView (context: Context?): SurfaceView(context), SurfaceHolder.Callback
     }
 
     fun draw(){
-
-        canvas = holder!!.lockCanvas()
-        canvas.drawColor(Color.BLUE)
-        paddle.draw(canvas)
-        holder!!.unlockCanvasAndPost(canvas)
-
+       canvas = mHolder!!.lockCanvas()
+       paddle.draw(canvas)
+      mHolder!!.unlockCanvasAndPost(canvas)
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
+
         start()
 
     }
@@ -74,3 +78,14 @@ class GameView (context: Context?): SurfaceView(context), SurfaceHolder.Callback
 
     }
 }
+
+/*
+positonering canvas ?? funkar kanske ???
+val surfaceViewHeight = context.resources.getDimension(R.dimen._520dp)
+        val surfaceViewWidth = context.resources.getDimension(R.dimen._400dp)
+        val initialX = (surfaceViewWidth - 300) / 2
+        val initialY = surfaceViewHeight - 200
+        val paint = Paint()
+        var rect = Rect(initialX.toInt(), initialY.toInt(), initialX.toInt() +300, initialY.toInt() + 200)
+      canvas.drawRect( rect , paint)
+ */
