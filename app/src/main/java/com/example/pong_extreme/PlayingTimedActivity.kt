@@ -15,6 +15,9 @@ class PlayingTimedActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayingTimedBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val gameView = GameView(this)
+        val container = binding.frameLayout
+        container.addView(gameView)
         binding.btnEndGame.setOnClickListener {
             saveScore()
         }

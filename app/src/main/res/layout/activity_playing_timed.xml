@@ -30,7 +30,7 @@
         android:layout_marginTop="@dimen/_35dp"
         android:orientation="horizontal"
         android:weightSum="3"
-        app:layout_constraintBottom_toTopOf="@+id/surfaceView"
+        app:layout_constraintBottom_toTopOf="@+id/frameLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -85,7 +85,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </LinearLayout>
-
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="520dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
     <SurfaceView
         android:id="@+id/surfaceView"
         android:layout_width="match_parent"
@@ -94,5 +99,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0" />
-
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
