@@ -30,8 +30,7 @@ class GameView (context: Context?): SurfaceView(context), SurfaceHolder.Callback
 
 
     private fun setup(){
-      paddle = Paddle(this.context, Color.GREEN, 500, 300, 300, 250)
-
+        paddle = Paddle(this.context, Color.GREEN, 400 , 650,  1300 , 1350)
 
     }
 
