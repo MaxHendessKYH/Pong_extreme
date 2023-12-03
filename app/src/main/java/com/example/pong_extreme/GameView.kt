@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 
@@ -30,10 +31,10 @@ class GameView (context: Context?): SurfaceView(context), SurfaceHolder.Callback
 
 
     private fun setup(){
-      paddle = Paddle(this.context, Color.GREEN, 500, 300, 300, 250)
-
-
+        paddle = Paddle(this.context, 400f, 0f)
     }
+
+
 
     fun start(){
         running = true
@@ -46,7 +47,7 @@ class GameView (context: Context?): SurfaceView(context), SurfaceHolder.Callback
         thread?.join()
     }
     fun update(){
-        paddle.update()
+        paddle.update(width.toFloat())
     }
 
 
@@ -80,5 +81,10 @@ class GameView (context: Context?): SurfaceView(context), SurfaceHolder.Callback
 
         }
 
+    }
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+
+        paddle.posX = event!!.x
+        return true
     }
 }
