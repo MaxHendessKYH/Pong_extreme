@@ -23,7 +23,9 @@ class PlayingTimedActivity : AppCompatActivity() {
         binding.btnEndGame.setOnClickListener {
             saveScore()
         }
-
+        val gameView = GameView(this)
+        val container = binding.frameLayout
+        container.addView(gameView)
     }
 
 

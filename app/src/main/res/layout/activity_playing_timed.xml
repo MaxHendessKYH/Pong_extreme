@@ -16,7 +16,7 @@
         android:layout_marginEnd="@dimen/_16dp"
         android:background="@drawable/custom_button"
         android:text="@string/end_game"
-        android:textColor="@color/black"
+        android:textColor="@color/space_blue"
         android:textSize="@dimen/_16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,14 +28,15 @@
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_35dp"
+        android:layout_marginBottom="11dp"
         android:orientation="horizontal"
         android:weightSum="3"
-        app:layout_constraintBottom_toTopOf="@+id/surfaceView"
+        app:layout_constraintBottom_toTopOf="@+id/frameLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.81">
+        app:layout_constraintVertical_bias="0.905">
 
         <!-- score button -->
         <TextView
@@ -86,13 +87,19 @@
             app:layout_constraintTop_toTopOf="parent" />
     </LinearLayout>
 
-    <SurfaceView
-        android:id="@+id/surfaceView"
+
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_520dp"
-        android:layout_marginBottom="@dimen/_50dp"
+        android:layout_height="520dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0" />
+        app:layout_constraintEnd_toEndOf="parent">
+        <SurfaceView
+            android:id="@+id/surfaceView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

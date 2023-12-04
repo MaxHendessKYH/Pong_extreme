@@ -1,39 +1,32 @@
 package com.example.pong_extreme
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 
-class Paddle (context: Context, var color: Int, var left: Int, var right: Int, var top: Int , var bottom: Int){
-    /*
-    Left: The x-coordinate (position).
-    Top: The y-coordinate  (position).
-    Right: (size).
-    Bottom:  (size).
-    * */
-    val paint = Paint()
-    private val rectPaint = Paint().apply {
-//        color = Color.RED
-        style = Paint.Style.FILL
-    }
+class Paddle (context: Context, var posX: Float, var speedX: Float) {
+
+    var bitmap:Bitmap
+
     init {
-        paint.color = color
-    }
-    fun update(){
-
+        bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle)
     }
 
-    fun draw (canvas: Canvas?){
-        val rectangle = Rect(left, top, right, bottom)
-        canvas?.drawRect(rectangle, paint)
+    fun update(surfaceWidth: Float) {
+        if (posX + bitmap.width < surfaceWidth) {
+            posX += speedX
+        } else {
+            posX = surfaceWidth - bitmap.width.toFloat()
+        }
     }
 
-
-
-
-
-
-
+    fun draw(canvas: Canvas){
+        val centerX = posX
+        val centerY = canvas.height.toFloat() - 80f
+        canvas?.drawBitmap(bitmap, centerX, centerY, null)
+    }
 
 }
