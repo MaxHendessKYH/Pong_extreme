@@ -23,8 +23,6 @@ class GameView (context: Context?): SurfaceView(context), SurfaceHolder.Callback
         if (mHolder != null){
             mHolder?.addCallback(this)
         }
-
-        setup()
     }
 
 
@@ -51,15 +49,19 @@ class GameView (context: Context?): SurfaceView(context), SurfaceHolder.Callback
 
 
     fun draw(){
-
+       canvas = mHolder!!.lockCanvas()
+       canvas.drawColor(Color.BLACK)
+        paddle.draw(canvas)
+       mHolder!!.unlockCanvasAndPost(canvas)
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
+        if (mHolder != null){
+            mHolder?.addCallback(this)
+        }
+        setup()
         start()
-        canvas = mHolder!!.lockCanvas()
-        canvas.drawColor(Color.BLACK)
-        paddle.draw(canvas)
-        mHolder!!.unlockCanvasAndPost(canvas)
+
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
