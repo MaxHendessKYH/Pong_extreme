@@ -16,8 +16,6 @@ class Brick(context: Context, var posX: Float, var posY: Float){
         bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.brick)
     }
 
-
-
     fun draw(canvas: Canvas?) {
         canvas?.drawBitmap(bitmap, posX, posY, null)
     }

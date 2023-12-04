@@ -49,44 +49,7 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
             posY += 90f
         }
 
-//        var posX: Float = 20f
-//        var posY: Float = 20f
-//
-//        for (i in 0..5) {
-//
-//            var brick = Brick(this.context, 0f + posX, 0f + posY)
-//            brickList.add(brick)
-//            posX += 160f
-//            posY += 0f
-//            for (i in 0..5) {
-//
-//                var brick = Brick(this.context, 0f + posX, 0f + posY)
-//                brickList.add(brick)
-////                posX = 0f
-//                posY += 80f
-//            }
-//            posY = 20f
-//        }
-//        for (i in 0..5){
-//
-//            var brick = Brick(this.context,0f+posX,0f+posY)
-//            brickList.add(brick)
-//            posX = 0f
-//            posY += 80f
-//        }
-//        brickOne = Brick(this.context, 0f, 0f)
-//        brickTwo = Brick(this.context, 160f, 80f)
-
-
-//
-//        // Create a yellow ball at position (100, 100) with a size of 50
         ball = Ball(this.context, Color.YELLOW, 100f, 100f, 50f, 10f, 10f)
-//
-//        // Create a white brick with specified coordinates (0, 300, 300, 350)
-//        brickOne = Brick(this.context, Color.WHITE, 0, 300, 300, 350)
-//
-//        // Create another white brick with different coordinates (500, 800, 400, 450)
-//        brickTwo = Brick(this.context, Color.RED, 500, 800, 400, 450)
 
     }
 
@@ -129,7 +92,7 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
-        if (mHolder != null){
+        if (mHolder != null) {
             mHolder?.addCallback(this)
         }
         setup()
@@ -143,7 +106,6 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         stop()
-
     }
 
     override fun run() {
@@ -151,11 +113,9 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
             update()
             draw()
         }
-
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-
         paddle.posX = event!!.x
         return true
     }
