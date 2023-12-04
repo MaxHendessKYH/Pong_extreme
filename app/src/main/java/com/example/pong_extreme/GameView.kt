@@ -3,7 +3,6 @@ package com.example.pong_extreme
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -52,17 +51,15 @@ class GameView (context: Context?): SurfaceView(context), SurfaceHolder.Callback
 
 
     fun draw(){
-        canvas = mHolder!!.lockCanvas()
-
-        canvas.drawColor(Color.BLACK)
-        paddle.draw(canvas)
-        mHolder!!.unlockCanvasAndPost(canvas)
 
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         start()
-
+        canvas = mHolder!!.lockCanvas()
+        canvas.drawColor(Color.BLACK)
+        paddle.draw(canvas)
+        mHolder!!.unlockCanvasAndPost(canvas)
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
