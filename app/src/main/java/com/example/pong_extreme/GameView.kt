@@ -32,6 +32,7 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
 
 
     private fun setup() {
+        // set paddle
         paddle = Paddle(this.context, 400f, 0f)
 
         var posX: Float = 35f
@@ -39,6 +40,7 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
         val numRows = 8
         val numCols = 6
 
+        // set bricks
         for (row in 0 until numRows) {
             for (col in 0 until numCols) {
                 val brick = Brick(this.context, 0f + posX, 0f + posY)
@@ -49,6 +51,8 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
             posX = 35f
             posY += 90f
         }
+
+        // set ball
         ball = Ball(this.context, Color.YELLOW, 100f, 100f, 25f, 10f, 10f)
     }
 
