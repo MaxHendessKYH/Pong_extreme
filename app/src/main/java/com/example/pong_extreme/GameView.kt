@@ -34,7 +34,7 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
 
 
         // Create a yellow ball at position (100, 100) with a size of 50
-        ball = Ball(this.context, Color.YELLOW, 100f, 100f, 50f)
+        ball = Ball(this.context, Color.YELLOW, 100f, 100f, 50f, 10f, 10f)
 
         // Create a white brick with specified coordinates (0, 300, 300, 350)
         brickOne = Brick(this.context, Color.WHITE, 0, 300, 300, 350)
@@ -58,6 +58,7 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
 
     fun update() {
         paddle.update(width.toFloat())
+        ball.update()
     }
 
     fun draw() {
@@ -106,10 +107,6 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
     override fun onTouchEvent(event: MotionEvent?): Boolean {
 
         paddle.posX = event!!.x
-
-        ball.posX = event.x
-        ball.posY = event.y
-
         return true
     }
 }
