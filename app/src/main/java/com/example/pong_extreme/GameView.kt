@@ -71,6 +71,20 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
         paddle.update(width.toFloat())
         ball.update()
 
+
+//        // Check for ball and wall collisions
+//        handleWallCollisions()
+//
+//        // Check for ball and paddle collision
+//        val isCollisionPaddle = isCollision(ball, paddle)
+//
+//        Log.e("xxxx", isCollisionPaddle.toString())
+//
+//        if (isCollisionPaddle) {
+//            // Reverse the direction of the ball's y-speed to make it bounce
+//            ball.speedY = -ball.speedY
+//        }
+
         for (brick in brickList) {
             if (brick.isCollision(ball)) {
                 brickList.remove(brick)
@@ -80,6 +94,48 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
         }
     }
 
+    private fun isCollision(ball: Ball, paddle: Paddle): Boolean {
+        try {
+            val ballRect = ball.getBoundingBox()
+            val paddleRect = RectF(
+                paddle.posX,
+                canvas.height.toFloat() - 80f,
+                paddle.posX + paddle.bitmap.width,
+                canvas.height.toFloat()
+            )
+            return ballRect.intersect(paddleRect)
+        } catch (e: Exception) {
+            return false
+        }
+    }
+
+    private fun handleWallCollisions() {
+        // Check left wall
+        if (ball.posX - ball.size < 0) {
+            ball.speedX = -ball.speedX
+            ball.posX = ball.size // Adjust the position to prevent getting stuck at the wall
+        }
+
+        // Check right wall
+        if (ball.posX + ball.size > width) {
+            ball.speedX = -ball.speedX
+            ball.posX =
+                width - ball.size // Adjust the position to prevent getting stuck at the wall
+        }
+
+        // Check top wall
+        if (ball.posY - ball.size < 0) {
+            ball.speedY = -ball.speedY
+            ball.posY = ball.size // Adjust the position to prevent getting stuck at the wall
+        }
+
+        // Add any additional checks for bottom wall if needed
+        // Example:
+        if (ball.posY + ball.size > height) {
+            ball.speedY = -ball.speedY
+            ball.posY = height - ball.size
+        }
+    }
 
 
     fun draw() {
