@@ -3,10 +3,13 @@ package com.example.pong_extreme
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Rect
 import android.graphics.RectF
+import java.lang.Math.abs
+import java.lang.Math.max
+import java.lang.Math.min
 
 class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, var size: Float, var speedX: Float, var speedY: Float) {
-
     var paint = Paint()
 
     fun draw(canvas: Canvas?) {
@@ -16,10 +19,20 @@ class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, v
 
     fun update()
     {
-        posX += speedX
-        posY += speedY
+       posX += speedX
+       posY += speedY
     }
 
+    fun checkBounds(bounds: Rect){
+        if(posX-size < bounds.left || posX+size > bounds.right){
+            speedX *= -1
+            posX += speedX*1.2f
+        }
+        if(posY-size < bounds.top || posY+size > bounds.bottom){
+            speedY *= -1
+            posY += speedY*1.2f
+        }
+    }
     fun getBoundingBox(): RectF {
         return RectF(posX - size, posY - size, posX + size, posY + size)
     }
