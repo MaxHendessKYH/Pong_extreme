@@ -10,7 +10,6 @@ class Player() {
     fun reduceLife() {
         lives -= 1
     }
-
     fun showLives(): Int {
         return lives
     }
@@ -18,9 +17,7 @@ class Player() {
     fun getScore(): Int {
         return score
     }
-
-    // It might be needed in the future?? What do you think?
-    //fun increaseScore(points: Int) {
-    //    score += points
-    //}
+    fun increaseScore(points: Int) {
+       score += points
+    }
 }
