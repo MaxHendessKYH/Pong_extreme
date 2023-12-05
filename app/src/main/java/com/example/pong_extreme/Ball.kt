@@ -33,4 +33,5 @@ class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, v
             posY += speedY*1.2f
         }
     }
+
 }
