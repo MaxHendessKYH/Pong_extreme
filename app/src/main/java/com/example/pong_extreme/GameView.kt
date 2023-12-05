@@ -32,52 +32,6 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
             mHolder?.addCallback(this)
         }
     }
-    fun onBallCollision(ball: Ball, paddle: Paddle) {
-        if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
-            ball.speedX = abs(ball.speedX) * -1
-            ball.speedY = abs(ball.speedY) * -1
-        }
-        if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
-            ball.speedX = abs(ball.speedX) * -1
-            ball.speedY = abs(ball.speedY)
-        }
-        if (ball.posX > paddle.posX && ball.posY < paddle.posY) {
-            ball.speedX = abs(ball.speedX)
-            ball.speedY = abs(ball.speedY) * -1
-        }
-        if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
-            ball.speedX = abs(ball.speedX)
-            ball.speedY = abs(ball.speedY)
-        }
-    }
-    fun shapesIntersect(ball: Ball, paddle: Paddle) {
-        // Calculate the center of the circle
-//        val circleCenterX = ball.posX
-//        val circleCenterY = ball.posY
-        // Find the closest point on the square to the center of the circle
-        val closestX =
-            Math.max(this.paddle.posX, Math.min(ball.posX, this.paddle.posX + this.paddle.width))
-        val closestY =
-            Math.max(this.paddle.posY, Math.min(ball.posY, this.paddle.posY + this.paddle.height))
-
-        // Calculate the distance between the circle center and the closest point on the square
-        val distanceX = ball.posX - closestX
-        val distanceY = ball.posY - closestY
-
-        // Check if the distance is less than or equal to the circle's radius
-        val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
-        val radiusSquared = ball.size * ball.size
-//        println("Distance" +distanceSquared)
-
-//        println("Radius" +radiusSquared)
-        if (distanceSquared <= radiusSquared) {
-//            println("Distance" +distanceSquared)
-
-//            println("Radius" +distanceSquared)
-            // Collision detected, handle it accordingly (e.g., call a collision handling function)
-            onBallCollision(ball, paddle)
-        }
-    }
     private fun setup() {
         // set paddle
 //        paddle = Paddle(this.context, 400f, 1200f,50f, 40f, 30f) gammla
@@ -129,15 +83,8 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
         for (brick in brickList) {
             brick.draw(canvas)
         }
-
-//        //draw brick
-//        brickOne.draw(canvas)
-//        brickTwo.draw(canvas)
-
-
         mHolder!!.unlockCanvasAndPost(canvas)
     }
-
     override fun surfaceCreated(holder: SurfaceHolder) {
         if (mHolder != null){
             mHolder?.addCallback(this)
@@ -146,16 +93,13 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
         start()
 
     }
-
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
         bounds = Rect(0,0,width,height)
     }
-
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         stop()
 
     }
-
     override fun run() {
         while (running) {
             update()
@@ -164,29 +108,54 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
           shapesIntersect(ball, paddle)
         }
     }
-//    fun onBallCollision(ball: Ball, paddle: Paddle) {
-//        println("COLLISION!!!!")
-//        if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
-//            ball.speedX = abs(ball.speedX) * -1
-//            ball.speedY = abs(ball.speedY) * -1
-//        }
-//        if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
-//            ball.speedX = abs(ball.speedX) * -1
-//            ball.speedY = abs(ball.speedY)
-//        }
-//        if (ball.posX > paddle.posX && ball.posY < paddle.posY) {
-//            ball.speedX = abs(ball.speedX)
-//            ball.speedY = abs(ball.speedY) * -1
-//        }
-//        if (ball.posX > paddle.posX && ball.posY < paddle.posY) {
-//            ball.speedX = abs(ball.speedX)
-//            ball.speedY = abs(ball.speedY)
-//        }
-//    }
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-//        ball.posX  = paddle.posX
-//    ball.posY = paddle.posY
         paddle.posX = event!!.x
         return true
+    }
+    fun onBallCollision(ball: Ball, paddle: Paddle) {
+        if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
+            ball.speedX = abs(ball.speedX) * -1
+            ball.speedY = abs(ball.speedY) * -1
+        }
+        if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
+            ball.speedX = abs(ball.speedX) * -1
+            ball.speedY = abs(ball.speedY)
+        }
+        if (ball.posX > paddle.posX && ball.posY < paddle.posY) {
+            ball.speedX = abs(ball.speedX)
+            ball.speedY = abs(ball.speedY) * -1
+        }
+        if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
+            ball.speedX = abs(ball.speedX)
+            ball.speedY = abs(ball.speedY)
+        }
+    }
+    fun shapesIntersect(ball: Ball, paddle: Paddle) {
+        // Calculate the center of the circle
+//        val circleCenterX = ball.posX
+//        val circleCenterY = ball.posY
+        // Find the closest point on the square to the center of the circle
+        val closestX =
+            Math.max(this.paddle.posX, Math.min(ball.posX, this.paddle.posX + this.paddle.width))
+        val closestY =
+            Math.max(this.paddle.posY, Math.min(ball.posY, this.paddle.posY + this.paddle.height))
+
+        // Calculate the distance between the circle center and the closest point on the square
+        val distanceX = ball.posX - closestX
+        val distanceY = ball.posY - closestY
+
+        // Check if the distance is less than or equal to the circle's radius
+        val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
+        val radiusSquared = ball.size * ball.size
+//        println("Distance" +distanceSquared)
+
+//        println("Radius" +radiusSquared)
+        if (distanceSquared <= radiusSquared) {
+//            println("Distance" +distanceSquared)
+
+//            println("Radius" +distanceSquared)
+            // Collision detected, handle it accordingly (e.g., call a collision handling function)
+            onBallCollision(ball, paddle)
+        }
     }
 }
