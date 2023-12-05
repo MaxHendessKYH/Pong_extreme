@@ -56,7 +56,7 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
         }
 
         // set ball
-        ball = Ball(this.context, Color.YELLOW, 400f, 1200f, 25f, 20f, -20f)
+        ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f)
     }
 
     fun start() {
