@@ -5,9 +5,11 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
+import java.lang.Math.abs
+import java.lang.Math.max
+import java.lang.Math.min
 
 class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, var size: Float, var speedX: Float, var speedY: Float) {
-
     var paint = Paint()
 
     fun draw(canvas: Canvas?) {
@@ -17,8 +19,8 @@ class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, v
 
     fun update()
     {
-        posX += speedX
-        posY += speedY
+       posX += speedX
+       posY += speedY
     }
 
     fun checkBounds(bounds: Rect){
