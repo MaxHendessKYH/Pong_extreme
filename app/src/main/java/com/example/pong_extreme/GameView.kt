@@ -3,6 +3,8 @@ package com.example.pong_extreme
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.RectF
+import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -68,7 +70,17 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
     fun update() {
         paddle.update(width.toFloat())
         ball.update()
+
+        for (brick in brickList) {
+            if (brick.isCollision(ball)) {
+                brickList.remove(brick)
+                // Handle any other actions you want to take when a collision occurs
+                break // If you want to remove only one brick per frame, otherwise, remove the break statement
+            }
+        }
     }
+
+
 
     fun draw() {
         canvas = mHolder!!.lockCanvas()
@@ -83,11 +95,6 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
             brick.draw(canvas)
         }
 
-//        //draw brick
-//        brickOne.draw(canvas)
-//        brickTwo.draw(canvas)
-
-
         mHolder!!.unlockCanvasAndPost(canvas)
     }
 
@@ -97,7 +104,6 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
         }
         setup()
         start()
-
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
