@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_35dp"
         android:orientation="horizontal"
-        android:weightSum="3"
+        android:weightSum="2"
         app:layout_constraintBottom_toTopOf="@+id/frameLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -60,6 +60,7 @@
             android:layout_height="@dimen/_32dp"
             android:layout_marginHorizontal="@dimen/_20dp"
             android:layout_weight="1"
+            android:textColor="@color/white"
             android:gravity="center"
             android:hint="@string/time"
             android:textColorHint="@color/white"
@@ -69,21 +70,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- lives button -->
-        <TextView
-            android:id="@+id/tv_lives"
-            android:layout_width="@dimen/_89dp"
-            android:layout_height="@dimen/_32dp"
-            android:layout_marginHorizontal="@dimen/_20dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:hint="@string/lives"
-            android:textColorHint="@color/white"
-            android:textSize="@dimen/_20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.909"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+
     </LinearLayout>
     <FrameLayout
         android:id="@+id/frameLayout"
