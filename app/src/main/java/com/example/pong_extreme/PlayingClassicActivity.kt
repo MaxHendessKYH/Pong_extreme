@@ -12,6 +12,8 @@ import androidx.core.view.WindowCompat
 
 class PlayingClassicActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayingClassicBinding
+    lateinit var player: Player
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayingClassicBinding.inflate(layoutInflater)
@@ -22,11 +24,15 @@ class PlayingClassicActivity : AppCompatActivity() {
         container.addView(gameView)
 //        binding.surfaceView.holder.addCallback(GameView(this))
 
-
-
         binding.btnEndGame.setOnClickListener {
             saveScore()
         }
+
+        // set player
+        player = Player()
+        //player.reduceLife()
+
+        binding.tvLives.text = player.showLives().toString()
     }
 
     private fun saveScore()
@@ -37,7 +43,7 @@ class PlayingClassicActivity : AppCompatActivity() {
         builder.setTitle("Game Over!")
         builder.setMessage("Enter Name:")
         builder.setPositiveButton("Submit Score" ) { dialog, id ->
-                    HighscoreManager.addHighScores("classic",Highscore(input.text.toString(), 0))
+                    HighscoreManager.addHighScores("classic",Highscore(input.text.toString(), player.getScore()))
              finish()
             }
         // make button color not white on white
