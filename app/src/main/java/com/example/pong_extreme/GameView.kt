@@ -68,33 +68,32 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
     }
 
     fun update() {
+
         paddle.update(width.toFloat())
         ball.update()
     }
 
+
     fun draw() {
-        canvas = mHolder!!.lockCanvas()
+        val currentHolder = mHolder ?: return
+        canvas = currentHolder.lockCanvas() ?: return
 
-        canvas.drawColor(Color.BLACK)
-        paddle.draw(canvas)
-
-        //draw ball
-        ball.draw(canvas)
-
-        for (brick in brickList) {
-            brick.draw(canvas)
+        try {
+            canvas.drawColor(Color.BLACK)
+            paddle.draw(canvas)
+            ball.draw(canvas)
+            for (brick in brickList) {
+                brick.draw(canvas)
+            }
+        } finally {
+            currentHolder.unlockCanvasAndPost(canvas)
         }
-
-//        //draw brick
-//        brickOne.draw(canvas)
-//        brickTwo.draw(canvas)
-
-
-        mHolder!!.unlockCanvasAndPost(canvas)
     }
 
+
+
     override fun surfaceCreated(holder: SurfaceHolder) {
-        if (mHolder != null){
+        if (mHolder != null) {
             mHolder?.addCallback(this)
         }
         setup()
@@ -103,7 +102,7 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        bounds = Rect(0,0,width,height)
+        bounds = Rect(0, 0, width, height)
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
