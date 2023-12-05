@@ -91,8 +91,10 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
 
         for (brick in brickList) {
             if (brick.isCollision(ball)) {
+                println("BALL TOUCH BRICK")
                 brickList.remove(brick)
                 // Handle any other actions you want to take when a collision occurs
+                onBallCollisionBrick(ball, brick)
                 break // If you want to remove only one brick per frame, otherwise, remove the break statement
             }
         }
@@ -136,6 +138,24 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         paddle.posX = event!!.x
         return true
+    }
+    fun onBallCollisionBrick(ball: Ball, brick: Brick) {
+        if (ball.posX < brick.posX && ball.posY < brick.posY) {
+            ball.speedX = abs(ball.speedX) * -1
+            ball.speedY = abs(ball.speedY) * -1
+        }
+        if (ball.posX < brick.posX && ball.posY > brick.posY) {
+            ball.speedX = abs(ball.speedX) * -1
+            ball.speedY = abs(ball.speedY)
+        }
+        if (ball.posX > brick.posX && ball.posY < brick.posY) {
+            ball.speedX = abs(ball.speedX)
+            ball.speedY = abs(ball.speedY) * -1
+        }
+        if (ball.posX > brick.posX && ball.posY > brick.posY) {
+            ball.speedX = abs(ball.speedX)
+            ball.speedY = abs(ball.speedY)
+        }
     }
     fun onBallCollision(ball: Ball, paddle: Paddle) {
         if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
