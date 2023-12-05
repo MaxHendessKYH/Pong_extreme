@@ -3,6 +3,7 @@ package com.example.pong_extreme
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -19,7 +20,7 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
     lateinit var brickOne: Brick
     lateinit var brickTwo: Brick
     var brickList: MutableList<Brick> = mutableListOf()
-
+    var bounds = Rect()
     var mHolder: SurfaceHolder? = holder
 
 
@@ -31,6 +32,7 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
 
 
     private fun setup() {
+        // set paddle
         paddle = Paddle(this.context, 400f, 0f)
 
         var posX: Float = 35f
@@ -38,6 +40,7 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
         val numRows = 8
         val numCols = 6
 
+        // set bricks
         for (row in 0 until numRows) {
             for (col in 0 until numCols) {
                 val brick = Brick(this.context, 0f + posX, 0f + posY)
@@ -49,47 +52,9 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
             posY += 90f
         }
 
-//        var posX: Float = 20f
-//        var posY: Float = 20f
-//
-//        for (i in 0..5) {
-//
-//            var brick = Brick(this.context, 0f + posX, 0f + posY)
-//            brickList.add(brick)
-//            posX += 160f
-//            posY += 0f
-//            for (i in 0..5) {
-//
-//                var brick = Brick(this.context, 0f + posX, 0f + posY)
-//                brickList.add(brick)
-////                posX = 0f
-//                posY += 80f
-//            }
-//            posY = 20f
-//        }
-//        for (i in 0..5){
-//
-//            var brick = Brick(this.context,0f+posX,0f+posY)
-//            brickList.add(brick)
-//            posX = 0f
-//            posY += 80f
-//        }
-//        brickOne = Brick(this.context, 0f, 0f)
-//        brickTwo = Brick(this.context, 160f, 80f)
-
-
-//
-//        // Create a yellow ball at position (100, 100) with a size of 50
-        ball = Ball(this.context, Color.YELLOW, 100f, 100f, 50f, 10f, 10f)
-//
-//        // Create a white brick with specified coordinates (0, 300, 300, 350)
-//        brickOne = Brick(this.context, Color.WHITE, 0, 300, 300, 350)
-//
-//        // Create another white brick with different coordinates (500, 800, 400, 450)
-//        brickTwo = Brick(this.context, Color.RED, 500, 800, 400, 450)
-
+        // set ball
+        ball = Ball(this.context, Color.YELLOW, 100f, 100f, 25f, 10f, 10f)
     }
-
 
     fun start() {
         running = true
@@ -138,7 +103,7 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-
+        bounds = Rect(0,0,width,height)
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
@@ -150,8 +115,8 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
         while (running) {
             update()
             draw()
+            ball.checkBounds(bounds)
         }
-
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
