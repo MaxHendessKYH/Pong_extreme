@@ -13,10 +13,10 @@
 
         <TextView
             android:id="@+id/tv_highscore"
-            android:layout_width="@dimen/_120dp"
+            android:layout_width="100dp"
             android:layout_height="@dimen/_70dp"
-            android:layout_marginStart="@dimen/_4dp"
-            android:layout_marginTop="@dimen/_4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="12dp"
             android:gravity="left"
             android:padding="@dimen/_10dp"
             android:text="@string/name"
@@ -24,6 +24,24 @@
             android:textSize="@dimen/_20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_score"
+            android:layout_width="100dp"
+            android:layout_height="@dimen/_70dp"
+            android:layout_marginStart="100dp"
+            android:layout_marginTop="4dp"
+            android:gravity="left"
+            android:padding="@dimen/_10dp"
+            android:text="@string/score"
+            android:textColor="@color/space_blue"
+            android:textSize="@dimen/_20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_highscore"
+            app:layout_constraintStart_toStartOf="@+id/tv_highscore"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
