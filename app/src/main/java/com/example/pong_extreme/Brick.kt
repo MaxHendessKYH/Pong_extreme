@@ -8,7 +8,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 
 
-class Brick(context: Context, var posX: Float, var posY: Float){
+class Brick(context: Context, var posX: Float, var posY: Float, val width:Float = 56f, val height:Float = 28f){
 
     var bitmap: Bitmap
 

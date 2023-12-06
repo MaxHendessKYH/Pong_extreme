@@ -3,15 +3,11 @@ package com.example.pong_extreme
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.RectF
-import android.util.Log
 import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import java.lang.Math.abs
-import java.lang.Math.sqrt
-import kotlin.math.pow
 
 
 class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback, Runnable {
@@ -22,8 +18,6 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
     lateinit var canvas: Canvas
     lateinit var paddle: Paddle
     lateinit var ball: Ball
-    lateinit var brickOne: Brick
-    lateinit var brickTwo: Brick
     var brickList: MutableList<Brick> = mutableListOf()
     var bounds = Rect()
     var mHolder: SurfaceHolder? = holder
@@ -38,21 +32,26 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
         // set paddle
 //        paddle = Paddle(this.context, 400f, 1200f,50f, 40f, 30f) gammla
         paddle = Paddle(this.context, 400f,1250f, 250f,28f,0f)
-        var posX: Float = 35f
+        var posX: Float = 10f
         var posY: Float = 40f
+        val brickWidth = 150f
+        val spacing = 3f
+        bounds = Rect(0, 0, width, height)
+        val surfaceViewWidth = bounds.width()
+        println("surfaceView width: $surfaceViewWidth")
         val numRows = 8
-        val numCols = 6
+        val numCols = (surfaceViewWidth / (brickWidth + spacing)).toInt()
 
         // set bricks
         for (row in 0 until numRows) {
             for (col in 0 until numCols) {
-                val brick = Brick(this.context, 0f + posX, 0f + posY)
+                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f)
                 brickList.add(brick)
-                posX += 170f
+                posX += brickWidth + spacing
             }
             // Reset posX for the next row and reset posY to the starting position
-            posX = 35f
-            posY += 90f
+            posX = 10f
+            posY += 85f
         }
 
         // set ball
@@ -91,7 +90,7 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
 
         for (brick in brickList) {
             if (brick.isCollision(ball)) {
-                println("BALL TOUCH BRICK")
+//                println("BALL TOUCH BRICK")
                 brickList.remove(brick)
                 // Handle any other actions you want to take when a collision occurs
                 onBallCollisionBrick(ball, brick)
