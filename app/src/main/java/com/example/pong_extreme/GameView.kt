@@ -9,12 +9,17 @@ import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.widget.EditText
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import java.lang.Math.abs
 import java.lang.Math.sqrt
 import kotlin.math.pow
 
 
-class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback, Runnable {
+class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback, Runnable {
 
 
     var thread: Thread? = null
@@ -22,14 +27,14 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
     lateinit var canvas: Canvas
     lateinit var paddle: Paddle
     lateinit var ball: Ball
-    lateinit var brickOne: Brick
-    lateinit var brickTwo: Brick
+    lateinit var player: Player
     var brickList: MutableList<Brick> = mutableListOf()
     var bounds = Rect()
     var mHolder: SurfaceHolder? = holder
 
 
     init {
+        this.player = player
         if (mHolder != null) {
             mHolder?.addCallback(this)
         }
@@ -132,6 +137,19 @@ class GameView(context: Context?) : SurfaceView(context), SurfaceHolder.Callback
             update()
             draw()
             ball.checkBounds(bounds)
+            // check for collison with bottom of screen
+           val hitBottom = ball.checkCollisionBottom(bounds)
+            if(hitBottom && player.gameMode =="classic") {
+                player.reduceLife()
+                // Check for gameover
+                if(player.showLives() <=0)
+                {
+                    ball.speedX = 0f
+                    ball.speedY= 0f
+                    // at this point endgame dialog should show (See classic activity)
+                }
+            }
+            // Put code for hitBottom in timedActivity here
           shapesIntersect(ball, paddle)
         }
     }

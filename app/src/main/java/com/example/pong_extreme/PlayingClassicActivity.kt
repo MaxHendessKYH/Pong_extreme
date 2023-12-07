@@ -2,6 +2,7 @@ package com.example.pong_extreme
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -13,29 +14,53 @@ import androidx.core.view.WindowCompat
 class PlayingClassicActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayingClassicBinding
     lateinit var player: Player
-
+    private val handler = Handler()
+    private var isUpdateLoopRunning = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayingClassicBinding.inflate(layoutInflater)
-//        setContentView(GameView(this))
         setContentView(binding.root)
-        val gameView = GameView(this)
+        player = Player("classic")
+        val gameView = GameView(this, player)
         val container = binding.frameLayout
         container.addView(gameView)
-//        binding.surfaceView.holder.addCallback(GameView(this))git m
-
         binding.btnEndGame.setOnClickListener {
-            saveScore()
+            showGameOverDialog()
         }
-
-        // set player
-        player = Player()
-        //player.reduceLife()
-
-        binding.tvLives.text = player.showLives().toString()
+      startUpdateLoop()
     }
+    override fun onDestroy() {
+        stopUpdateLoop()
+      handler.removeCallbacksAndMessages(null)
+        super.onDestroy()
+    }
+    private fun startUpdateLoop()
+    {
+        handler.post(object : Runnable {
+            override fun run() {
+                if (!isUpdateLoopRunning) {
+                    return
+                }
+                // update lives text dynamicly
+                    binding.tvLives.text = player.showLives().toString()
+                //Game over - end Game
+                    if (player.showLives() <= 0) {
+                        stopUpdateLoop()
+                        showGameOverDialog()
+                    }
+                // make function run every frame, maybe there is a better solution to update lives text?
+                    handler.postDelayed(
+                        this,
+                        16
+                    )
 
-    private fun saveScore()
+            }
+        })
+    }
+    private fun stopUpdateLoop() {
+        isUpdateLoopRunning = false
+    }
+    private fun showGameOverDialog()
     {
         val builder = AlertDialog.Builder(this)
        val input = EditText(this)
