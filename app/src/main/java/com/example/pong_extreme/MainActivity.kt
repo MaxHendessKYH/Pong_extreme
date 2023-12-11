@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.pong_extreme.databinding.ActivityMainBinding
 import androidx.core.view.WindowCompat
 
@@ -40,7 +41,6 @@ class MainActivity : AppCompatActivity() {
     }
     private fun setAdapter()
     {
-
         var classicHighScores = HighscoreManager.getHighScores("classic")
         val lvClassic = findViewById<ListView>(R.id.lv_highscore_classic)
         val classicAdapter = HighscoreAdapter(this, classicHighScores)

@@ -1,25 +1,26 @@
 package com.example.pong_extreme
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import com.example.pong_extreme.databinding.ActivityPlayingClassicBinding
 import com.example.pong_extreme.databinding.ActivityPlayingTimedBinding
-import androidx.core.view.WindowCompat
 
 class PlayingTimedActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayingTimedBinding
     lateinit var countDownTimer: CountDownTimer
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityPlayingTimedBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         //Start the counter when activity is started, this time i set the timer on 3 minutes
-        Timer(3 * 60 * 1000)
+        Timer(1 * 10 * 1000)
         binding.btnEndGame.setOnClickListener {
             saveScore()
         }
@@ -28,7 +29,6 @@ class PlayingTimedActivity : AppCompatActivity() {
         val container = binding.frameLayout
         container.addView(gameView)
     }
-
 
     private fun saveScore() {
         val builder = AlertDialog.Builder(this)
@@ -40,18 +40,26 @@ class PlayingTimedActivity : AppCompatActivity() {
             HighscoreManager.addHighScores("timed", Highscore(input.text.toString(), 0))
             finish()
         }
+        builder.setNeutralButton("Start Menu") { dialog, which ->
+            navigateToMainActivity()
+            finish()
+        }
+        builder.setNegativeButton("Try again") { dialog, which ->
+            restartGame()
+            finish()
+        }
+
         // make button color not white on white
         val alert: AlertDialog = builder.create()
         alert.setOnShowListener {
             alert.getButton(AlertDialog.BUTTON_POSITIVE)
                 .setTextColor(ContextCompat.getColor(this, R.color.black))
+            alert.getButton(AlertDialog.BUTTON_NEUTRAL)
+                .setTextColor(ContextCompat.getColor(this, R.color.black))
+            alert.getButton(AlertDialog.BUTTON_NEGATIVE)
+                .setTextColor(ContextCompat.getColor(this, R.color.black))
         }
         alert.show()
-        // It makes transparent status bar and navigation bar
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        // It will hide the title bar
-        supportActionBar?.hide()
-        setContentView(R.layout.activity_playing_timed)
     }
 
     private fun Timer(durationMillis: Long) {
@@ -70,13 +78,23 @@ class PlayingTimedActivity : AppCompatActivity() {
             }
         }
         countDownTimer.start()
-
-
     }
     override fun onDestroy() {
         // End timer when activity is destroyed
         countDownTimer.cancel()
         super.onDestroy()
+    }
+
+    private fun navigateToMainActivity() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun restartGame() {
+        val intent = Intent(this, PlayingTimedActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
 
