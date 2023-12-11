@@ -111,7 +111,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         try {
             canvas.drawColor(Color.BLACK)
             paddle.draw(canvas)
-            ball.draw(canvas)
+                ball.draw(canvas)
             for (brick in brickList) {
                 brick.draw(canvas)
             }
@@ -174,6 +174,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             ball.speedX = abs(ball.speedX)
            ball.speedY = abs(ball.speedY)
         }
+        player.increaseScore(100)
     }
     fun onBallCollision(ball: Ball, paddle: Paddle) {
         if (ball.posX < paddle.posX && ball.posY < paddle.posY) {

@@ -1,14 +1,13 @@
 package com.example.pong_extreme
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.example.pong_extreme.databinding.ActivityPlayingClassicBinding
 import androidx.core.view.WindowCompat
+import com.example.pong_extreme.databinding.ActivityPlayingClassicBinding
 
 
 class PlayingClassicActivity : AppCompatActivity() {
@@ -42,7 +41,8 @@ class PlayingClassicActivity : AppCompatActivity() {
                     return
                 }
                 // update lives text dynamicly
-                    binding.tvLives.text = player.showLives().toString()
+                    binding.tvLives.text = "Lives: " + player.showLives().toString()
+                binding.tvScore.text = "Score: " + player.getScore().toString()
                 //Game over - end Game
                     if (player.showLives() <= 0) {
                         stopUpdateLoop()
@@ -62,13 +62,14 @@ class PlayingClassicActivity : AppCompatActivity() {
     }
     private fun showGameOverDialog()
     {
+        val prefs = getSharedPreferences("com.example.com.example.pong_extreme.prefs", MODE_PRIVATE)
         val builder = AlertDialog.Builder(this)
        val input = EditText(this)
        builder.setView(input)
         builder.setTitle("Game Over!")
         builder.setMessage("Enter Name:")
         builder.setPositiveButton("Submit Score" ) { dialog, id ->
-                    HighscoreManager.addHighScores("classic",Highscore(input.text.toString(), player.getScore()))
+                    HighscoreManager.addHighScores(Highscore(input.text.toString(), player.getScore().toString(), "classic"), prefs)
              finish()
             }
         // make button color not white on white

@@ -13,11 +13,12 @@ import androidx.core.view.WindowCompat
 class PlayingTimedActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayingTimedBinding
     lateinit var countDownTimer: CountDownTimer
+    lateinit var player: Player
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayingTimedBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        player = Player("timed")
         //Start the counter when activity is started, this time i set the timer on 3 minutes
         Timer(3 * 60 * 1000)
         binding.btnEndGame.setOnClickListener {
@@ -31,13 +32,14 @@ class PlayingTimedActivity : AppCompatActivity() {
 
 
     private fun saveScore() {
+        val prefs = getSharedPreferences("com.example.com.example.pong_extreme.prefs", MODE_PRIVATE)
         val builder = AlertDialog.Builder(this)
         val input = EditText(this)
         builder.setView(input)
         builder.setTitle("Game Over!")
         builder.setMessage("Enter Name:")
         builder.setPositiveButton("Submit Score") { dialog, id ->
-            HighscoreManager.addHighScores("timed", Highscore(input.text.toString(), 0))
+           HighscoreManager.addHighScores(Highscore(input.text.toString(), binding.tvTime.text.toString(), "timed"), prefs)
             finish()
         }
         // make button color not white on white
