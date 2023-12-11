@@ -49,11 +49,17 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         val numCols = 6
 
         // set bricks
+        var color: Int = 1
         for (row in 0 until numRows) {
             for (col in 0 until numCols) {
-                val brick = Brick(this.context, 0f + posX, 0f + posY)
+                val brick = Brick(this.context, 0f + posX, 0f + posY, color)
                 brickList.add(brick)
                 posX += 170f
+                if(color == 2) {
+                    color = 1
+                }
+                else if(color == 1)
+                    color = 2
             }
             // Reset posX for the next row and reset posY to the starting position
             posX = 35f
@@ -174,7 +180,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             ball.speedX = abs(ball.speedX)
            ball.speedY = abs(ball.speedY)
         }
-        player.increaseScore(100)
+        player.increaseScore(brick.score)
     }
     fun onBallCollision(ball: Ball, paddle: Paddle) {
         if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
