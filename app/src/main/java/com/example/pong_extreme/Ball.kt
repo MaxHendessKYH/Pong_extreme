@@ -28,10 +28,23 @@ class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, v
             speedX *= -1
             posX += speedX*1.2f
         }
-        if(posY-size < bounds.top || posY+size > bounds.bottom){
+        if(posY-size < bounds.top ){
             speedY *= -1
             posY += speedY*1.2f
         }
+    }
+
+    fun checkCollisionBottom(bounds: Rect): Boolean
+    {
+        if(posY+size > bounds.bottom)
+        {
+            // reset ball position and make it go up
+            posX= 400f
+            posY= 1200f
+            speedY *=-1
+            return true
+        }
+        return false
     }
     fun getBoundingBox(): RectF {
         return RectF(posX - size, posY - size, posX + size, posY + size)

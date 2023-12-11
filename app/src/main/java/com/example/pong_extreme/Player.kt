@@ -2,7 +2,7 @@ package com.example.pong_extreme
 
 import android.graphics.BitmapFactory
 
-class Player() {
+class Player(var gameMode: String) {
 
     private var lives: Int = 3
     private var score: Int = 0
