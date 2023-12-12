@@ -1,5 +1,4 @@
 package com.example.pong_extreme
-
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -7,6 +6,7 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import com.example.pong_extreme.databinding.ActivityPlayingClassicBinding
 
 class PlayingClassicActivity : AppCompatActivity() {
@@ -43,7 +43,9 @@ class PlayingClassicActivity : AppCompatActivity() {
                     return
                 }
                 // update lives text dynamicly
-                binding.tvLives.text = player.showLives().toString()
+                    binding.tvLives.text = "Lives: " + player.showLives().toString()
+                binding.tvScore.text = "Score: " + player.getScore().toString()
+
                 //Game over - end Game
                 if (player.showLives() <= 0) {
                     stopUpdateLoop()
@@ -61,17 +63,17 @@ class PlayingClassicActivity : AppCompatActivity() {
     private fun stopUpdateLoop() {
         isUpdateLoopRunning = false
     }
-
-    private fun showGameOverDialog() {
-        val builder = AlertDialog.Builder (this)
-        val input = EditText(this)
-        builder.setView(input)
+    private fun showGameOverDialog()
+    {
+        val prefs = getSharedPreferences("com.example.com.example.pong_extreme.prefs", MODE_PRIVATE)
+        val builder = AlertDialog.Builder(this)
+       val input = EditText(this)
+       builder.setView(input)
         builder.setTitle("Game Over!")
         builder.setMessage("Enter Name:")
-
-        builder.setPositiveButton("Submit Score") { dialog, id -> HighscoreManager
-            .addHighScores("classic", Highscore(input.text.toString(), player.getScore()))
-            finish()
+        builder.setPositiveButton("Submit Score" ) { dialog, id ->
+                    HighscoreManager.addHighScores(Highscore(input.text.toString(), player.getScore().toString(), "classic"), prefs)
+             finish()
         }
 
         builder.setNeutralButton("Start Menu") { dialog, which ->
@@ -93,6 +95,7 @@ class PlayingClassicActivity : AppCompatActivity() {
                     .setTextColor(ContextCompat.getColor(this, R.color.black))
                 alert.getButton(AlertDialog.BUTTON_NEGATIVE)
                     .setTextColor(ContextCompat.getColor(this, R.color.black))
+
             }
             alert.show()
         }
