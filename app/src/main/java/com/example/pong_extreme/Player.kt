@@ -1,7 +1,5 @@
 package com.example.pong_extreme
 
-import android.graphics.BitmapFactory
-
 class Player(var gameMode: String) {
 
     private var lives: Int = 1000
