@@ -13,12 +13,12 @@ import kotlin.random.Random
 class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback,
     Runnable {
 
-
     var thread: Thread? = null
     var running = false
     lateinit var canvas: Canvas
     lateinit var paddle: Paddle
     lateinit var ball: Ball
+    var brokenBrickCount: Int = 0
     var player: Player
     var brickList: MutableList<Brick> = mutableListOf()
     var bounds = Rect()
@@ -370,6 +370,11 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 brickList.remove(brick)
                 // Handle any other actions you want to take when a collision occurs
                 onBallCollisionBrick(ball, brick)
+                brokenBrickCount++
+                if(brokenBrickCount == 10) {
+                    ball.increaseSpeed(1.2f)
+                    brokenBrickCount = 0
+                }
                 player.increaseScore(brick.score)
                 break // If you want to remove only one brick per frame, otherwise, remove the break statement
             }
@@ -413,6 +418,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     fun levelComplete(): Boolean {
         return brickList.isEmpty()
     }
+
     override fun run() {
         while (running) {
             update()
@@ -437,7 +443,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             shapesIntersect(ball, paddle)
         }
     }
-
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         paddle.posX = event!!.x
         return true
