@@ -1,8 +1,10 @@
 package com.example.pong_extreme
 
 import android.content.Intent
+import android.media.MediaPlayer
 import android.content.SharedPreferences
 import android.os.Bundle
+
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
@@ -10,7 +12,7 @@ import com.example.pong_extreme.databinding.ActivityMainBinding
 
 
 class MainActivity : AppCompatActivity() {
-
+    private lateinit var mediaPlayer: MediaPlayer
  lateinit var binding: ActivityMainBinding
   lateinit  var prefs: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,26 +21,37 @@ class MainActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         // It will hide the title bar
         supportActionBar?.hide()
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnClassic.setOnClickListener {
+        //Creates a mediaplayer that can loop through the music
+        mediaPlayer = MediaPlayer.create(this, R.raw.music)
+        mediaPlayer.isLooping = true
+        mediaPlayer.start()
 
+
+        //When any of the buttons are clicked the music stops and mediaplayer is released
+        binding.btnClassic.setOnClickListener {
+            mediaPlayer.stop()
+            mediaPlayer.release()
             val intent = Intent(this, PlayingClassicActivity::class.java)
             startActivity(intent)
         }
         binding.btnTimed.setOnClickListener {
+            mediaPlayer.stop()
+            mediaPlayer.release()
             val intent = Intent(this, PlayingTimedActivity::class.java)
             startActivity(intent)
         }
 
         setAdapter()
     }
+
     override fun onResume() {
         super.onResume()
         setAdapter()
     }
+
     private fun setAdapter()
     {
         prefs = getSharedPreferences("com.example.com.example.pong_extreme.prefs", MODE_PRIVATE)
@@ -50,6 +63,7 @@ class MainActivity : AppCompatActivity() {
        var timedHighScores = HighscoreManager.getHighScores("timed", prefs)
         val lvTimed = findViewById<ListView>(R.id.lv_highscore_timed)
         val timedAdapter = HighscoreAdapter(this, timedHighScores)
-      lvTimed.adapter = timedAdapter
+        lvTimed.adapter = timedAdapter
     }
+
 }

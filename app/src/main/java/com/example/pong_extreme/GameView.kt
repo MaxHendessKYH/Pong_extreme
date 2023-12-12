@@ -3,23 +3,15 @@ package com.example.pong_extreme
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.RectF
-import android.util.Log
 import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.widget.EditText
-import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
 import java.lang.Math.abs
-import java.lang.Math.sqrt
-import kotlin.math.pow
 
 
-class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback, Runnable {
+class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback,
+    Runnable {
 
 
     var thread: Thread? = null
@@ -31,6 +23,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     var brickList: MutableList<Brick> = mutableListOf()
     var bounds = Rect()
     var mHolder: SurfaceHolder? = holder
+    val soundManager = context?.let { SoundManager(it) }
 
 
     init {
@@ -39,10 +32,11 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             mHolder?.addCallback(this)
         }
     }
+
     private fun setup() {
         // set paddle
 //        paddle = Paddle(this.context, 400f, 1200f,50f, 40f, 30f) gammla
-        paddle = Paddle(this.context, 400f,1250f, 250f,28f,0f)
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
         var posX: Float = 35f
         var posY: Float = 40f
         val numRows = 8
@@ -102,6 +96,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
         for (brick in brickList) {
             if (brick.isCollision(ball)) {
+                soundManager?.playSoundBrick()
                 brickList.remove(brick)
                 // Handle any other actions you want to take when a collision occurs
                 onBallCollisionBrick(ball, brick)
@@ -110,6 +105,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             }
         }
     }
+
     fun draw() {
         val currentHolder = mHolder ?: return
         canvas = currentHolder.lockCanvas() ?: return
@@ -125,6 +121,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             currentHolder.unlockCanvasAndPost(canvas)
         }
     }
+
     override fun surfaceCreated(holder: SurfaceHolder) {
         if (mHolder != null) {
             mHolder?.addCallback(this)
@@ -132,61 +129,70 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         setup()
         start()
     }
+
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
         bounds = Rect(0, 0, width, height)
     }
+
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         stop()
+        //Releases the instance of soundpool when game ends
+        soundManager?.release()
     }
+
     override fun run() {
         while (running) {
             update()
             draw()
             ball.checkBounds(bounds)
             // check for collison with bottom of screen
-           val hitBottom = ball.checkCollisionBottom(bounds)
-            if(hitBottom && player.gameMode =="classic") {
+            val hitBottom = ball.checkCollisionBottom(bounds)
+            if (hitBottom && player.gameMode == "classic") {
                 player.reduceLife()
                 // Check for gameover
-                if(player.showLives() <=0)
-                {
+                if (player.showLives() <= 0) {
                     ball.speedX = 0f
-                    ball.speedY= 0f
+                    ball.speedY = 0f
                     // at this point endgame dialog should show (See classic activity)
                 }
             }
             // Put code for hitBottom in timedActivity here
-          shapesIntersect(ball, paddle)
+            shapesIntersect(ball, paddle)
         }
     }
+
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         paddle.posX = event!!.x
         return true
     }
+
     fun onBallCollisionBrick(ball: Ball, brick: Brick) {
+
         if (ball.posX < brick.posX && ball.posY < brick.posY) {
             ball.speedX = abs(ball.speedX) * -1
-           ball.speedY = abs(ball.speedY) * -1
+            ball.speedY = abs(ball.speedY) * -1
         }
         if (ball.posX < brick.posX && ball.posY > brick.posY) {
             ball.speedX = abs(ball.speedX) * -1
-           ball.speedY = abs(ball.speedY)
+            ball.speedY = abs(ball.speedY)
         }
         if (ball.posX > brick.posX && ball.posY < brick.posY) {
             ball.speedX = abs(ball.speedX)
-        ball.speedY = abs(ball.speedY) * -1
+            ball.speedY = abs(ball.speedY) * -1
         }
         if (ball.posX > brick.posX && ball.posY > brick.posY) {
             ball.speedX = abs(ball.speedX)
-           ball.speedY = abs(ball.speedY)
+            ball.speedY = abs(ball.speedY)
         }
     }
+
     fun onBallCollision(ball: Ball, paddle: Paddle) {
         if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
 //            ball.speedX = abs(ball.speedX) * -1
 //            ball.speedY = abs(ball.speedY) * -1
             ball.speedX *= -1
             ball.speedY *= -1
+
         }
         if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
 //            ball.speedX = abs(ball.speedX) * -1
@@ -197,12 +203,16 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 //            ball.speedX = abs(ball.speedX)
 //            ball.speedY = abs(ball.speedY) * -1
             ball.speedY *= -1
+
         }
         if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
 //            ball.speedX = abs(ball.speedX)
 //            ball.speedY = abs(ball.speedY)
         }
+        //Plays the sound every time ball and paddle collides
+        soundManager?.playSoundPaddle()
     }
+
     fun shapesIntersect(ball: Ball, paddle: Paddle) {
         // Calculate the center of the circle
 //        val circleCenterX = ball.posX

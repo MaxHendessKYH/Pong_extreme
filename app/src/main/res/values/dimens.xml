@@ -1,39 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<!--dp-->
+    <dimen name="logo_margin_top">4dp</dimen>
+    <dimen name="logo_margin_bottom">23dp</dimen>
+    <dimen name="btn_layout_margin_bottom">12dp</dimen>
+    <dimen name="layout_listview_margin_bottom">30dp</dimen>
+    <dimen name="lv_width">190dp</dimen>
+    <dimen name="lv_height">400dp</dimen>
+    <dimen name="lv_margin">7dp</dimen>
+    <dimen name="layout_btn_margin_bottom">15dp</dimen>
+    <dimen name="btn_gamemodes_width">100dp</dimen>
+    <dimen name="btn_gamemodes_height">40dp</dimen>
+    <dimen name="btn_gamemodes_margin">45dp</dimen>
+    <dimen name="btn_playing_margin_top">52dp</dimen>
+    <dimen name="btn_playing_margin_end">16dp</dimen>
+    <dimen name="layout_score_marign_top">35dp</dimen>
+    <dimen name="layout_score_margin_bottom">11dp</dimen>
+    <dimen name="tv_score_width">89dp</dimen>
+    <dimen name="tv_score_height">32dp</dimen>
+    <dimen name="tv_score_margin">20dp</dimen>
+    <dimen name="fl_height">520dp</dimen>
+    <dimen name="sv_margin_bottom">50dp</dimen>
+    <dimen name="tv_adapter_width">100dp</dimen>
+    <dimen name="tv_adapter_height">70dp</dimen>
+    <dimen name="tv_adapter_margin_start_name">4dp</dimen>
+    <dimen name="tv_adapter_margin_top">12dp</dimen>
+    <dimen name="padding_adapter">4dp</dimen>
+    <dimen name="tv_adapter_padding">10dp</dimen>
+    <dimen name="tv_adapter_margin_start_score">100dp</dimen>
+    <dimen name="tv_adapter_margin_top_score">4dp</dimen>
 
-    <!-- dp -->
-    <dimen name="_0dp">0dp</dimen>
-    <dimen name="_4dp">4dp</dimen>
-    <dimen name="_7dp">7dp</dimen>
-    <dimen name="_10dp">10dp</dimen>
-    <dimen name="_13dp">13dp</dimen>
-    <dimen name="_15dp">15dp</dimen>
-    <dimen name="_16dp">16dp</dimen>
-    <dimen name="_20dp">20dp</dimen>
-    <dimen name="_32dp">32dp</dimen>
-    <dimen name="_35dp">35dp</dimen>
-    <dimen name="_40dp">40dp</dimen>
-    <dimen name="_45dp">45dp</dimen>
-    <dimen name="_48dp">48dp</dimen>
-    <dimen name="_50dp">50dp</dimen>
-    <dimen name="_52dp">52dp</dimen>
-    <dimen name="_70dp">70dp</dimen>
-    <dimen name="_80dp">80dp</dimen>
-    <dimen name="_89dp">89dp</dimen>
-    <dimen name="_100dp">100dp</dimen>
-    <dimen name="_120dp">120dp</dimen>
-    <dimen name="_140dp">140dp</dimen>
-    <dimen name="_146dp">146dp</dimen>
-    <dimen name="_190dp">190dp</dimen>
-    <dimen name="_195dp">195dp</dimen>
-    <dimen name="_520dp">520dp</dimen>
-    <dimen name="_500dp">500dp</dimen>
-    <dimen name="_600dp">600dp</dimen>
-
-    <!-- sp -->
-    <dimen name="_16sp">16sp</dimen>
-    <dimen name="_20sp">20sp</dimen>
-    <dimen name="_40sp">40sp</dimen>
-    <dimen name="_400dp">400dp</dimen>
-
+<!--sp-->
+    <dimen name="tv_adapter_ts">20sp</dimen>
+    <dimen name="btn_gamemodes_ts">16sp</dimen>
+    <dimen name="highscore_title_ts">20sp</dimen>
 </resources>

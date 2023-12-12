@@ -7,4 +7,6 @@
     <string name="time">Time</string>
     <string name="lives">Lives</string>
     <string name="name">name</string>
+    <string name="tv_higscore_title">Classic Highscore</string>
+    <string name="tv_highscore_title_2">Timed Highscore</string>
 </resources>
