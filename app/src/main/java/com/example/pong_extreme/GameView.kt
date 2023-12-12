@@ -102,10 +102,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
         for (brick in brickList) {
             if (brick.isCollision(ball)) {
-                println("BALL TOUCH BRICK")
                 brickList.remove(brick)
                 // Handle any other actions you want to take when a collision occurs
                 onBallCollisionBrick(ball, brick)
+                player.increaseScore(brick.score)
                 break // If you want to remove only one brick per frame, otherwise, remove the break statement
             }
         }
@@ -180,7 +180,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             ball.speedX = abs(ball.speedX)
            ball.speedY = abs(ball.speedY)
         }
-        player.increaseScore(brick.score)
     }
     fun onBallCollision(ball: Ball, paddle: Paddle) {
         if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
@@ -225,9 +224,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
 //        println("Radius" +radiusSquared)
         if (distanceSquared <= radiusSquared) {
-//            println("Distance" +distanceSquared)
-
-//            println("Radius" +distanceSquared)
             // Collision detected, handle it accordingly (e.g., call a collision handling function)
             onBallCollision(ball, paddle)
         }
