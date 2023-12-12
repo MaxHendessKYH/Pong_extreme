@@ -7,16 +7,11 @@ import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.widget.EditText
-import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
 import java.lang.Math.abs
 import kotlin.random.Random
 
-
-class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback, Runnable {
+class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback,
+    Runnable {
 
 
     var thread: Thread? = null
@@ -29,6 +24,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     var bounds = Rect()
     var mHolder: SurfaceHolder? = holder
     var currentLevel = 0
+    val soundManager = context?.let { SoundManager(it) }
 
     init {
         this.player = player
@@ -36,7 +32,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             mHolder?.addCallback(this)
         }
     }
-
+    
     private fun setup(currentLevel: Int) {
         // Set paddle
         paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
@@ -202,6 +198,12 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun levelOneBrickLayout() {
         var posX: Float = 10f
+    }
+    private fun setup() {
+        // set paddle
+//        paddle = Paddle(this.context, 400f, 1200f,50f, 40f, 30f) gammla
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
+        var posX: Float = 35f
         var posY: Float = 40f
         val brickWidth = 150f
         val spacing = 3f
@@ -210,6 +212,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
 
         // set bricks
+        var color: Int = 1
         for (row in 0 until numRows) {
             var brickType = if (row % 2 == 0) Brick.BrickType.RED else Brick.BrickType.BLUE
             for (col in 0 until numCols) {
@@ -365,14 +368,16 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
         for (brick in brickList) {
             if (brick.isCollision(ball)) {
-//                println("BALL TOUCH BRICK")
+                soundManager?.playSoundBrick()
                 brickList.remove(brick)
                 // Handle any other actions you want to take when a collision occurs
                 onBallCollisionBrick(ball, brick)
+                player.increaseScore(brick.score)
                 break // If you want to remove only one brick per frame, otherwise, remove the break statement
             }
         }
     }
+
     fun draw() {
         val currentHolder = mHolder ?: return
         canvas = currentHolder.lockCanvas() ?: return
@@ -380,7 +385,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         try {
             canvas.drawColor(Color.BLACK)
             paddle.draw(canvas)
-            ball.draw(canvas)
+                ball.draw(canvas)
             for (brick in brickList) {
                 brick.draw(canvas)
             }
@@ -388,6 +393,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             currentHolder.unlockCanvasAndPost(canvas)
         }
     }
+
     override fun surfaceCreated(holder: SurfaceHolder) {
         if (mHolder != null) {
             mHolder?.addCallback(this)
@@ -396,11 +402,15 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         setup(2)
         start()
     }
+
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
         bounds = Rect(0, 0, width, height)
     }
+
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         stop()
+        //Releases the instance of soundpool when game ends
+        soundManager?.release()
     }
     fun levelComplete(): Boolean {
         return brickList.isEmpty()
@@ -411,14 +421,13 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             draw()
             ball.checkBounds(bounds)
             // check for collison with bottom of screen
-           val hitBottom = ball.checkCollisionBottom(bounds)
-            if(hitBottom && player.gameMode =="classic") {
+            val hitBottom = ball.checkCollisionBottom(bounds)
+            if (hitBottom && player.gameMode == "classic") {
                 player.reduceLife()
                 // Check for gameover
-                if(player.showLives() <=0)
-                {
+                if (player.showLives() <= 0) {
                     ball.speedX = 0f
-                    ball.speedY= 0f
+                    ball.speedY = 0f
                     // at this point endgame dialog should show (See classic activity)
                 }
             }
@@ -427,37 +436,42 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 setup(currentLevel)
             }
             // Put code for hitBottom in timedActivity here
-          shapesIntersect(ball, paddle)
+            shapesIntersect(ball, paddle)
         }
     }
+
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         paddle.posX = event!!.x
         return true
     }
+
     fun onBallCollisionBrick(ball: Ball, brick: Brick) {
+
         if (ball.posX < brick.posX && ball.posY < brick.posY) {
             ball.speedX = abs(ball.speedX) * -1
-           ball.speedY = abs(ball.speedY) * -1
+            ball.speedY = abs(ball.speedY) * -1
         }
         if (ball.posX < brick.posX && ball.posY > brick.posY) {
             ball.speedX = abs(ball.speedX) * -1
-           ball.speedY = abs(ball.speedY)
+            ball.speedY = abs(ball.speedY)
         }
         if (ball.posX > brick.posX && ball.posY < brick.posY) {
             ball.speedX = abs(ball.speedX)
-        ball.speedY = abs(ball.speedY) * -1
+            ball.speedY = abs(ball.speedY) * -1
         }
         if (ball.posX > brick.posX && ball.posY > brick.posY) {
             ball.speedX = abs(ball.speedX)
-           ball.speedY = abs(ball.speedY)
+            ball.speedY = abs(ball.speedY)
         }
     }
+
     fun onBallCollision(ball: Ball, paddle: Paddle) {
         if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
 //            ball.speedX = abs(ball.speedX) * -1
 //            ball.speedY = abs(ball.speedY) * -1
             ball.speedX *= -1
             ball.speedY *= -1
+
         }
         if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
 //            ball.speedX = abs(ball.speedX) * -1
@@ -468,12 +482,16 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 //            ball.speedX = abs(ball.speedX)
 //            ball.speedY = abs(ball.speedY) * -1
             ball.speedY *= -1
+
         }
         if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
 //            ball.speedX = abs(ball.speedX)
 //            ball.speedY = abs(ball.speedY)
         }
+        //Plays the sound every time ball and paddle collides
+        soundManager?.playSoundPaddle()
     }
+
     fun shapesIntersect(ball: Ball, paddle: Paddle) {
         // Calculate the center of the circle
 //        val circleCenterX = ball.posX
@@ -495,9 +513,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
 //        println("Radius" +radiusSquared)
         if (distanceSquared <= radiusSquared) {
-//            println("Distance" +distanceSquared)
-
-//            println("Radius" +distanceSquared)
             // Collision detected, handle it accordingly (e.g., call a collision handling function)
             onBallCollision(ball, paddle)
         }

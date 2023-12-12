@@ -4,38 +4,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="@dimen/_10dp">
+    app:cardCornerRadius="10dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/_4dp">
+        android:padding="@dimen/padding_adapter">
 
         <TextView
             android:id="@+id/tv_highscore"
-            android:layout_width="100dp"
-            android:layout_height="@dimen/_70dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="12dp"
+            android:layout_width="@dimen/tv_adapter_width"
+            android:layout_height="@dimen/tv_adapter_height"
+            android:layout_marginStart="@dimen/tv_adapter_margin_start_name"
+            android:layout_marginTop="@dimen/tv_adapter_margin_top"
             android:gravity="left"
-            android:padding="@dimen/_10dp"
+            android:padding="@dimen/tv_adapter_padding"
             android:text="@string/name"
             android:textColor="@color/space_blue"
-            android:textSize="@dimen/_20sp"
+            android:textSize="@dimen/tv_adapter_ts"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_score"
-            android:layout_width="100dp"
-            android:layout_height="@dimen/_70dp"
-            android:layout_marginStart="100dp"
-            android:layout_marginTop="4dp"
+            android:layout_width="@dimen/tv_adapter_width"
+            android:layout_height="@dimen/tv_adapter_height"
+            android:layout_marginStart="@dimen/tv_adapter_margin_start_score"
+            android:layout_marginTop="@dimen/tv_adapter_margin_top_score"
             android:gravity="left"
-            android:padding="@dimen/_10dp"
+            android:padding="@dimen/tv_adapter_padding"
             android:text="@string/score"
             android:textColor="@color/space_blue"
-            android:textSize="@dimen/_20sp"
+            android:textSize="@dimen/tv_adapter_ts"
             app:layout_constraintBottom_toBottomOf="@+id/tv_highscore"
             app:layout_constraintStart_toStartOf="@+id/tv_highscore"
             app:layout_constraintTop_toTopOf="parent"
