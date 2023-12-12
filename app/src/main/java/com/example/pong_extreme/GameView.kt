@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import java.lang.Math.abs
+import kotlin.random.Random
 
 
 class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback, Runnable {
@@ -23,11 +24,11 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     lateinit var canvas: Canvas
     lateinit var paddle: Paddle
     lateinit var ball: Ball
-    lateinit var player: Player
+    var player: Player
     var brickList: MutableList<Brick> = mutableListOf()
     var bounds = Rect()
     var mHolder: SurfaceHolder? = holder
-
+    var currentLevel = 0
 
     init {
         this.player = player
@@ -35,35 +36,316 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             mHolder?.addCallback(this)
         }
     }
-    private fun setup() {
-        // set paddle
-//        paddle = Paddle(this.context, 400f, 1200f,50f, 40f, 30f) gammla
-        paddle = Paddle(this.context, 400f,1250f, 250f,28f,0f)
+
+    private fun setup(currentLevel: Int) {
+        // Set paddle
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
+
+        // Set bricks based on the currentLevel
+        when (currentLevel) {
+            1 -> levelOneBrickLayout()
+            2 -> levelTwoBrickLayout()
+            3 -> levelThreeBrickLayout()
+            else -> levelOneBrickLayout()
+        }
+
+        // Set ball
+        ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f)
+    }
+
+
+    // Normal
+//        private fun levelOneBrickLayout() {
+//        var posX: Float = 10f
+//        var posY: Float = 40f
+//        val brickWidth = 150f
+//        val spacing = 3f
+//        bounds = Rect(0, 0, width, height)
+//        val numRows = 8
+//        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
+//        // set bricks
+//        for (row in 0 until numRows) {
+//            for (col in 0 until numCols) {
+//                val brickType = Brick.BrickType.RED
+//                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
+//                brickList.add(brick)
+//                posX += brickWidth + spacing
+//            }
+//            // Reset posX for the next row and reset posY to the starting position
+//            posX = 10f
+//            posY += 85f
+//        }
+//    }
+//
+//    private fun levelTwoBrickLayout() {
+//        var posX: Float = 10f
+//        var posY: Float = 40f
+//        val brickWidth = 150f
+//        val spacing = 3f
+//        bounds = Rect(0, 0, width, height)
+//
+//
+//        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
+//        val numRows = numCols
+//
+//        for (row in 0 until numRows) {
+//            for (col in 0 until minOf(row + 1, numCols)) {
+//                val brickType = Brick.BrickType.RED
+//                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
+//                brickList.add(brick)
+//                posX += brickWidth + spacing
+//            }
+//            posX = 10f
+//            posY += 85f
+//        }
+//    }
+//
+//    private fun levelThreeBrickLayout() {
+//        var posX: Float = 10f
+//        var posY: Float = 40f
+//        val brickWidth = 150f
+//        val spacing = 3f
+//        bounds = Rect(0, 0, width, height)
+//
+//        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
+//        val numRows = numCols
+//
+//        for (row in 0 until numRows) {
+//            val xCenter = ((numRows - row - 1) / 2f) * (brickWidth + spacing)
+//
+//            for (col in 0 until minOf(row + 1, numCols)) {
+//                val brickType = Brick.BrickType.RED
+//                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
+//                brickList.add(brick)
+//                posX += brickWidth + spacing
+//            }
+//
+//            posX = 10f
+//            posY += (brickWidth + spacing) / 2f
+//        }
+//    }
+
+
+    // One between rows red and blue
+
+//    private fun levelOneBrickLayout() {
+//        var posX: Float = 10f
+//        var posY: Float = 40f
+//        val brickWidth = 150f
+//        val spacing = 3f
+//        bounds = Rect(0, 0, width, height)
+//        val numRows = 8
+//        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
+//
+//        // set bricks
+//        for (row in 0 until numRows) {
+//            val brickType = if (row % 2 == 0) Brick.BrickType.RED else Brick.BrickType.BLUE
+//            for (col in 0 until numCols) {
+//                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
+//                brickList.add(brick)
+//                posX += brickWidth + spacing
+//            }
+//            // Reset posX for the next row and reset posY to the starting position
+//            posX = 10f
+//            posY += 85f
+//        }
+//    }
+//
+//    private fun levelTwoBrickLayout() {
+//        var posX: Float = 10f
+//        var posY: Float = 40f
+//        val brickWidth = 150f
+//        val spacing = 3f
+//        bounds = Rect(0, 0, width, height)
+//
+//        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
+//        val numRows = numCols
+//
+//        for (row in 0 until numRows) {
+//            val brickType = if (row % 2 == 0) Brick.BrickType.RED else Brick.BrickType.BLUE
+//            for (col in 0 until minOf(row + 1, numCols)) {
+//                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
+//                brickList.add(brick)
+//                posX += brickWidth + spacing
+//            }
+//            posX = 10f
+//            posY += 85f
+//        }
+//    }
+//
+//    private fun levelThreeBrickLayout() {
+//        var posX: Float = 10f
+//        var posY: Float = 40f
+//        val brickWidth = 150f
+//        val spacing = 3f
+//        bounds = Rect(0, 0, width, height)
+//
+//        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
+//        val numRows = numCols
+//
+//        for (row in 0 until numRows) {
+//            val brickType = if (row % 2 == 0) Brick.BrickType.RED else Brick.BrickType.BLUE
+//            val xCenter = ((numRows - row - 1) / 2f) * (brickWidth + spacing)
+//
+//            for (col in 0 until minOf(row + 1, numCols)) {
+//                val brick = Brick(this.context, posX + xCenter, posY, 28f, type = brickType)
+//                brickList.add(brick)
+//                posX += brickWidth + spacing
+//            }
+//
+//            posX = 10f
+//            posY += (brickWidth + spacing) / 2f
+//        }
+//    }
+
+    // in between row and column red and blue
+
+    private fun levelOneBrickLayout() {
         var posX: Float = 10f
         var posY: Float = 40f
         val brickWidth = 150f
         val spacing = 3f
         bounds = Rect(0, 0, width, height)
-        val surfaceViewWidth = bounds.width()
-        println("surfaceView width: $surfaceViewWidth")
         val numRows = 8
-        val numCols = (surfaceViewWidth / (brickWidth + spacing)).toInt()
+        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
 
         // set bricks
         for (row in 0 until numRows) {
+            var brickType = if (row % 2 == 0) Brick.BrickType.RED else Brick.BrickType.BLUE
             for (col in 0 until numCols) {
-                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f)
+                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
                 brickList.add(brick)
                 posX += brickWidth + spacing
+                brickType = if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED // alternate between red and blue
             }
             // Reset posX for the next row and reset posY to the starting position
             posX = 10f
             posY += 85f
         }
-
-        // set ball
-        ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f)
     }
+
+    private fun levelTwoBrickLayout() {
+        var posX: Float = 10f
+        var posY: Float = 40f
+        val brickWidth = 150f
+        val spacing = 3f
+        bounds = Rect(0, 0, width, height)
+
+        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
+        val numRows = numCols
+
+        for (row in 0 until numRows) {
+            var brickType = if (row % 2 == 0) Brick.BrickType.RED else Brick.BrickType.BLUE
+            for (col in 0 until minOf(row + 1, numCols)) {
+                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
+                brickList.add(brick)
+                posX += brickWidth + spacing
+                brickType = if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED
+            }
+            posX = 10f
+            posY += 85f
+        }
+    }
+
+    private fun levelThreeBrickLayout() {
+        var posX: Float = 10f
+        var posY: Float = 40f
+        val brickWidth = 150f
+        val spacing = 3f
+        bounds = Rect(0, 0, width, height)
+
+        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
+        val numRows = numCols
+
+        for (row in 0 until numRows) {
+            var brickType = if (row % 2 == 0) Brick.BrickType.RED else Brick.BrickType.BLUE
+            val xCenter = ((numRows - row - 1) / 2f) * (brickWidth + spacing)
+
+            for (col in 0 until minOf(row + 1, numCols)) {
+                val brick = Brick(this.context, posX + xCenter, posY, 28f, type = brickType)
+                brickList.add(brick)
+                posX += brickWidth + spacing
+                brickType = if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED // alternate between red and blue
+            }
+
+            posX = 10f
+            posY += (brickWidth + spacing) / 2f
+        }
+    }
+
+    // Random
+
+//    private fun levelOneBrickLayout() {
+//        var posX: Float = 10f
+//        var posY: Float = 40f
+//        val brickWidth = 150f
+//        val spacing = 3f
+//        bounds = Rect(0, 0, width, height)
+//        val numRows = 8
+//        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
+//
+//        // set bricks
+//        for (row in 0 until numRows) {
+//            for (col in 0 until numCols) {
+//                val randomType = if (Random.nextBoolean()) Brick.BrickType.RED else Brick.BrickType.BLUE
+//                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = randomType)
+//                brickList.add(brick)
+//                posX += brickWidth + spacing
+//            }
+//            // Reset posX for the next row and reset posY to the starting position
+//            posX = 10f
+//            posY += 85f
+//        }
+//    }
+//
+//    private fun levelTwoBrickLayout() {
+//        var posX: Float = 10f
+//        var posY: Float = 40f
+//        val brickWidth = 150f
+//        val spacing = 3f
+//        bounds = Rect(0, 0, width, height)
+//
+//        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
+//        val numRows = numCols
+//
+//        for (row in 0 until numRows) {
+//            for (col in 0 until minOf(row + 1, numCols)) {
+//                val randomType = if (Random.nextBoolean()) Brick.BrickType.RED else Brick.BrickType.BLUE
+//                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = randomType)
+//                brickList.add(brick)
+//                posX += brickWidth + spacing
+//            }
+//            posX = 10f
+//            posY += 85f
+//        }
+//    }
+//
+//    private fun levelThreeBrickLayout() {
+//        var posX: Float = 10f
+//        var posY: Float = 40f
+//        val brickWidth = 150f
+//        val spacing = 3f
+//        bounds = Rect(0, 0, width, height)
+//
+//        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
+//        val numRows = numCols
+//
+//        for (row in 0 until numRows) {
+//            val xCenter = ((numRows - row - 1) / 2f) * (brickWidth + spacing)
+//
+//            for (col in 0 until minOf(row + 1, numCols)) {
+//                val randomType = if (Random.nextBoolean()) Brick.BrickType.RED else Brick.BrickType.BLUE
+//                val brick = Brick(this.context, posX + xCenter, posY, 28f, type = randomType)
+//                brickList.add(brick)
+//                posX += brickWidth + spacing
+//            }
+//
+//            posX = 10f
+//            posY += (brickWidth + spacing) / 2f
+//        }
+//    }
+
+
 
     fun start() {
         running = true
@@ -80,20 +362,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
         paddle.update(width.toFloat())
         ball.update()
-
-
-//        // Check for ball and wall collisions
-//        handleWallCollisions()
-//
-//        // Check for ball and paddle collision
-//        val isCollisionPaddle = isCollision(ball, paddle)
-//
-//        Log.e("xxxx", isCollisionPaddle.toString())
-//
-//        if (isCollisionPaddle) {
-//            // Reverse the direction of the ball's y-speed to make it bounce
-//            ball.speedY = -ball.speedY
-//        }
 
         for (brick in brickList) {
             if (brick.isCollision(ball)) {
@@ -124,7 +392,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         if (mHolder != null) {
             mHolder?.addCallback(this)
         }
-        setup()
+        currentLevel = 1
+        setup(2)
         start()
     }
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
@@ -132,6 +401,9 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     }
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         stop()
+    }
+    fun levelComplete(): Boolean {
+        return brickList.isEmpty()
     }
     override fun run() {
         while (running) {
@@ -149,6 +421,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                     ball.speedY= 0f
                     // at this point endgame dialog should show (See classic activity)
                 }
+            }
+            if (levelComplete()) {
+                currentLevel++
+                setup(currentLevel)
             }
             // Put code for hitBottom in timedActivity here
           shapesIntersect(ball, paddle)

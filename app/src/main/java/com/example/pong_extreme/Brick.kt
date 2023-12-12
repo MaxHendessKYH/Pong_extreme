@@ -8,12 +8,22 @@ import android.graphics.Paint
 import android.graphics.RectF
 
 
-class Brick(context: Context, var posX: Float, var posY: Float, val width:Float = 56f, val height:Float = 28f){
+
+
+class Brick(context: Context, var posX: Float, var posY: Float, val width: Float = 56f, val height: Float = 28f, val type: BrickType) {
 
     var bitmap: Bitmap
 
     init {
-        bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.brick)
+        bitmap = if (type == BrickType.RED) {
+            BitmapFactory.decodeResource(context.resources, R.drawable.brick_red)
+        } else {
+            BitmapFactory.decodeResource(context.resources, R.drawable.brick_blue)
+        }
+    }
+
+    enum class BrickType {
+        RED, BLUE
     }
 
     fun draw(canvas: Canvas?) {

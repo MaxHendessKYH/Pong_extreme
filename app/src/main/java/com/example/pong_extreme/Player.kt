@@ -4,7 +4,7 @@ import android.graphics.BitmapFactory
 
 class Player(var gameMode: String) {
 
-    private var lives: Int = 3
+    private var lives: Int = 1000
     private var score: Int = 0
 
     fun reduceLife() {
