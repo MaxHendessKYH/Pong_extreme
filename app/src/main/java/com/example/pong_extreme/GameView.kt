@@ -92,6 +92,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         for (brick in brickList) {
             if (brick.isCollision(ball)) {
                 println("BALL TOUCH BRICK")
+                soundManager?.playSoundBrick()
                 brickList.remove(brick)
                 // Handle any other actions you want to take when a collision occurs
                 onBallCollisionBrick(ball, brick)
@@ -204,7 +205,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 //            ball.speedY = abs(ball.speedY)
         }
         //Plays the sound every time ball and paddle collides
-        soundManager?.playSound()
+        soundManager?.playSoundPaddle()
     }
 
     fun shapesIntersect(ball: Ball, paddle: Paddle) {
