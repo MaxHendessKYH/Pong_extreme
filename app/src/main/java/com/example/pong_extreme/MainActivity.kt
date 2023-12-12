@@ -1,10 +1,9 @@
 package com.example.pong_extreme
 
 import android.content.Intent
-import android.media.MediaPlayer
 import android.content.SharedPreferences
+import android.media.MediaPlayer
 import android.os.Bundle
-
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
@@ -33,22 +32,23 @@ class MainActivity : AppCompatActivity() {
         //When any of the buttons are clicked the music stops and mediaplayer is released
         binding.btnClassic.setOnClickListener {
             mediaPlayer.stop()
-            mediaPlayer.release()
             val intent = Intent(this, PlayingClassicActivity::class.java)
             startActivity(intent)
         }
         binding.btnTimed.setOnClickListener {
             mediaPlayer.stop()
-            mediaPlayer.release()
             val intent = Intent(this, PlayingTimedActivity::class.java)
             startActivity(intent)
         }
 
         setAdapter()
     }
-
     override fun onResume() {
         super.onResume()
+        mediaPlayer.reset()
+        mediaPlayer = MediaPlayer.create(this, R.raw.music)
+        mediaPlayer.isLooping = true
+        mediaPlayer.start()
         setAdapter()
     }
 
