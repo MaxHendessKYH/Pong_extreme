@@ -198,12 +198,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun levelOneBrickLayout() {
         var posX: Float = 10f
-    }
-    private fun setup() {
         // set paddle
 //        paddle = Paddle(this.context, 400f, 1200f,50f, 40f, 30f) gammla
         paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
-        var posX: Float = 35f
+//        var posX: Float = 35f
         var posY: Float = 40f
         val brickWidth = 150f
         val spacing = 3f

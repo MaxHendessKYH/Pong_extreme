@@ -20,9 +20,15 @@ class Brick(context: Context, var posX: Float, var posY: Float, val width: Float
         } else {
             BitmapFactory.decodeResource(context.resources, R.drawable.brick_blue)
         }
-    }
 
-    enum class BrickType {
+        score = if(type == BrickType.RED) {
+            10
+        } else {
+            15
+        }
+
+    }
+    enum class BrickType{
         RED, BLUE
     }
 
