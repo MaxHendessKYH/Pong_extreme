@@ -17,10 +17,8 @@ class Brick(context: Context, var posX: Float, var posY: Float, val width: Float
     init {
         bitmap = if (type == BrickType.RED) {
             BitmapFactory.decodeResource(context.resources, R.drawable.brick_red)
-                score = 10
         } else {
             BitmapFactory.decodeResource(context.resources, R.drawable.brick_blue)
-                score = 15
         }
     }
 
