@@ -20,7 +20,7 @@ class PlayingTimedActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         //Start the counter when activity is started, this time i set the timer on 3 minutes
-        Timer(1 * 10 * 1000)
+        Timer(3 * 60 * 1000)
         binding.btnEndGame.setOnClickListener {
             saveScore()
         }
