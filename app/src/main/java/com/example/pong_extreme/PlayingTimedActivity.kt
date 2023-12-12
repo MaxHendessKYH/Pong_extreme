@@ -78,7 +78,7 @@ class PlayingTimedActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 binding.tvTime.text = "00:00"
-                saveScore()
+                showGameOverDialog()
             }
         }
         countDownTimer.start()

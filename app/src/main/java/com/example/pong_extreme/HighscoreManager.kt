@@ -10,11 +10,11 @@ object HighscoreManager {
     var timedHighScores:MutableList<Highscore> = mutableListOf(
         Highscore("Dennis" , "500", "timed"))
     fun getHighScores( gameMode: String, prefs: SharedPreferences): MutableList<Highscore> {
-//      deleteAllHighScores(prefs)
+     // deleteAllHighScores(prefs)
         when (gameMode) {
             "classic" -> {
                 classicHighScores.clear()
-                setDummyData(classicHighScores, "classic")
+           //     setDummyData(classicHighScores, "classic")
                 val allPrefs: Map<String, *> = prefs.getAll()
                 for (key in allPrefs.keys) {
                     val gson = Gson()
@@ -29,7 +29,7 @@ object HighscoreManager {
 
             "timed" -> {
                timedHighScores.clear()
-                setDummyData(timedHighScores, "timed")
+//                setDummyData(timedHighScores, "timed")
                 val allPrefs: Map<String, *> = prefs.getAll()
                 for (key in allPrefs.keys) {
                     val gson = Gson()

@@ -33,7 +33,7 @@ public class HighscoreAdapter extends ArrayAdapter {
         TextView tvscore = view.findViewById(R.id.tv_score);
 
         tvhighscore.setText(hs.getName());
-        tvscore.setText(Integer.toString(hs.getScore()));
+        tvscore.setText(hs.getScore());
 
         return view;
     }
