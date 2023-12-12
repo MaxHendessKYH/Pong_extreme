@@ -4,11 +4,13 @@ import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.media.SoundPool
+import android.util.Log
 
 class SoundManager(private val context: Context) {
     var soundPool: SoundPool
     private var ballHitPaddleSound: Int = 0
     private var ballHitBrickSound: Int = 0
+    private var backgroundMusic: Int = 0
 
     // Initializing the SoundPool and loading the sound file
     init {
@@ -20,16 +22,19 @@ class SoundManager(private val context: Context) {
 
         // Building the SoundPool instance
         soundPool = SoundPool.Builder()
-            .setMaxStreams(3)
+            .setMaxStreams(5)
             .setAudioAttributes(audioAttributes)
             .build()
 
         // Loading the sound file into the SoundPool
         ballHitPaddleSound = soundPool.load(context, R.raw.paddle,1)
         ballHitBrickSound = soundPool.load(context, R.raw.brick, 1)
+
         // To load more sound files for example ball collision with bricks implement here
 
     }
+
+
 
     // Releasing resources when they are no longer needed
     fun release() {
