@@ -8,44 +8,94 @@
     tools:context=".PlayingClassicActivity">
 
     <!-- logo -->
+
+    <!-- button layout -->
     <ImageView
         android:id="@+id/tv_logo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_48dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="23dp"
         android:src="@drawable/logo"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="12dp"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Classic Highscore"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
+            app:layout_constraintStart_toStartOf="@+id/linearLayout4" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:text="Timed Highscore"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/linearLayout4"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_520dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_logo">
+
 
         <!-- classic high score -->
         <ListView
             android:id="@+id/lv_highscore_classic"
             android:layout_width="@dimen/_190dp"
-            android:layout_height="@dimen/_500dp"
-            android:layout_marginBottom="@dimen/_146dp"
-            android:layout_marginLeft="@dimen/_7dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_logo" />
-
+            android:layout_height="400dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="7dp"
+            android:layout_marginEnd="@dimen/_7dp"
+            android:layout_weight="1"
+            app:layout_constraintStart_toStartOf="parent" />
         <!-- timed high score -->
         <ListView
             android:id="@+id/lv_highscore_timed"
             android:layout_width="@dimen/_190dp"
-            android:layout_height="@dimen/_500dp"
-            android:layout_marginBottom="@dimen/_146dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_logo" />
+            android:layout_height="400dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="7dp"
+            android:layout_weight="1"
+            app:layout_constraintStart_toStartOf="parent" />
+
     </LinearLayout>
 
-    <!-- button layout -->
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
@@ -59,9 +109,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
+        app:layout_constraintVertical_bias="0.0">
 
         <!-- classic button -->
+
         <Button
             android:id="@+id/btn_classic"
             android:layout_width="@dimen/_100dp"
@@ -73,7 +124,6 @@
             android:textColor="@color/space_blue"
             android:textSize="@dimen/_16sp"
             android:textStyle="bold" />
-
         <!-- timed button -->
         <Button
             android:id="@+id/btn_timed"
@@ -87,5 +137,8 @@
             android:textSize="@dimen/_16sp"
             android:textStyle="bold" />
     </LinearLayout>
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
