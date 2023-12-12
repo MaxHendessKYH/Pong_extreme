@@ -32,6 +32,8 @@ android {
                 "proguard-rules.pro"
             )
         }
+        create("beta") {
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -40,6 +42,17 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+//    flavorDimensions += listOf("app_flavour")
+//    productFlavors {
+//        create("demo") {
+//            dimension = "app_flavour"
+//            applicationIdSuffix = ".demo"
+//        }
+//        create("full") {
+//            dimension = "app_flavour"
+//            applicationIdSuffix = ".full"
+//        }
+//    }
 }
 
 dependencies {

@@ -10,23 +10,22 @@ import android.graphics.RectF
 import androidx.core.graphics.blue
 
 
-class Brick(context: Context, var posX: Float, var posY: Float, var color:Int){
 
+class Brick(context: Context, var posX: Float, var posY: Float, val width: Float = 56f, val height: Float = 28f, val type: BrickType) {
     var bitmap: Bitmap
     var score: Int =0
     init {
-        bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.brick)
-        when(color)
-        {
-            1 ->{
+        bitmap = if (type == BrickType.RED) {
+            BitmapFactory.decodeResource(context.resources, R.drawable.brick_red)
                 score = 10
-                bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.brickblue)
-            }
-            2 -> {
+        } else {
+            BitmapFactory.decodeResource(context.resources, R.drawable.brick_blue)
                 score = 15
-                bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.brick)
-            }
         }
+    }
+
+    enum class BrickType {
+        RED, BLUE
     }
 
     fun draw(canvas: Canvas?) {
@@ -38,5 +37,4 @@ class Brick(context: Context, var posX: Float, var posY: Float, var color:Int){
         val ballRect = ball.getBoundingBox()
         return brickRect.intersect(ballRect)
     }
-
 }
