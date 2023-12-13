@@ -153,7 +153,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 if(player.gameMode == "timed") {
                     brokenBrickCount++
                     if(brokenBrickCount == 10 && maxIncreaseCount < 4) {
-                        ball.increaseSpeed(1.2f)
+                        ball.increaseSpeed(1.1f)
                         maxIncreaseCount++
                         brokenBrickCount = 0
                     }
