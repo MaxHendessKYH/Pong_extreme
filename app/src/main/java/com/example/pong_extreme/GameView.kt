@@ -439,6 +439,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             }
             if (levelComplete()) {
                 currentLevel++
+                if(currentLevel > 3)
+                {
+                    currentLevel = 1
+                }
                 setup(currentLevel)
             }
             // Put code for hitBottom in timedActivity here
