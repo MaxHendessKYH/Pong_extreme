@@ -12,6 +12,7 @@ class Player(var gameMode: String) {
     fun increaseLife() {
         lives += 1
     }
+
     fun showLives(): Int {
         return lives
     }
