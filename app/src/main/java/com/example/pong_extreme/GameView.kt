@@ -18,6 +18,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     lateinit var canvas: Canvas
     lateinit var paddle: Paddle
     lateinit var ball: Ball
+    var maxIncreaseCount: Int = 0
     var brokenBrickCount: Int = 0
     var player: Player
     var brickList: MutableList<Brick> = mutableListOf()
@@ -130,7 +131,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         }
     }
 
-     fun start() {
+    fun start() {
         running = true
         thread = Thread(this)
         thread?.start()
@@ -152,10 +153,13 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 brickList.remove(brick)
                 // Handle any other actions you want to take when a collision occurs
                 onBallCollisionBrick(ball, brick)
-                brokenBrickCount++
-                if(brokenBrickCount == 10) {
-                    ball.increaseSpeed(1.2f)
-                    brokenBrickCount = 0
+                if(player.gameMode == "timed") {
+                    brokenBrickCount++
+                    if(brokenBrickCount == 10 && maxIncreaseCount < 4) {
+                        ball.increaseSpeed(1.2f)
+                        maxIncreaseCount++
+                        brokenBrickCount = 0
+                    }
                 }
                 player.increaseScore(brick.score)
                 break // If you want to remove only one brick per frame, otherwise, remove the break statement
@@ -219,6 +223,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             }
             if (levelComplete()) {
                 currentLevel++
+                if(currentLevel > 3)
+                {
+                    currentLevel = 1
+                }
                 setup(currentLevel)
             }
             // Put code for hitBottom in timedActivity here
