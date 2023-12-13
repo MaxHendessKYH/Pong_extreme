@@ -12,94 +12,84 @@
         android:id="@+id/btn_endGame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_52dp"
-        android:layout_marginEnd="@dimen/_16dp"
+        android:layout_marginTop="@dimen/btn_playing_margin_top"
+        android:layout_marginEnd="@dimen/btn_playing_margin_end"
         android:background="@drawable/custom_button"
         android:text="@string/end_game"
         android:textColor="@color/space_blue"
-        android:textSize="@dimen/_16sp"
+        android:textSize="@dimen/btn_gamemodes_ts"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- button layout -->
+    <!-- Score Time Layout -->
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="@dimen/_0dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_35dp"
-        android:layout_marginBottom="11dp"
+        android:layout_marginTop="@dimen/layout_score_marign_top"
+        android:layout_marginBottom="@dimen/layout_score_margin_bottom"
         android:orientation="horizontal"
-        android:weightSum="3"
+        android:weightSum="2"
         app:layout_constraintBottom_toTopOf="@+id/frameLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.905">
+        app:layout_constraintVertical_bias="0.81">
 
-        <!-- score button -->
+        <!-- score-->
         <TextView
             android:id="@+id/tv_score"
-            android:layout_width="@dimen/_89dp"
-            android:layout_height="@dimen/_32dp"
-            android:layout_marginHorizontal="@dimen/_20dp"
+            android:layout_width="@dimen/tv_score_width"
+            android:layout_height="@dimen/tv_score_height"
+            android:layout_marginHorizontal="@dimen/tv_score_margin"
             android:layout_weight="1"
             android:gravity="center"
             android:hint="@string/score"
+            android:textColor="@color/white"
             android:textColorHint="@color/white"
-            android:textSize="@dimen/_20sp"
+            android:textSize="@dimen/highscore_title_ts"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.173"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- time button -->
+        <!-- time -->
         <TextView
             android:id="@+id/tv_time"
-            android:layout_width="@dimen/_89dp"
-            android:layout_height="@dimen/_32dp"
-            android:layout_marginHorizontal="@dimen/_20dp"
+            android:layout_width="@dimen/tv_score_width"
+            android:layout_height="@dimen/tv_score_height"
+            android:layout_marginHorizontal="@dimen/tv_score_margin"
             android:layout_weight="1"
             android:gravity="center"
             android:hint="@string/time"
+            android:textColor="@color/white"
             android:textColorHint="@color/white"
-            android:textSize="@dimen/_20sp"
+            android:textSize="@dimen/highscore_title_ts"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.546"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- lives button -->
-        <TextView
-            android:id="@+id/tv_lives"
-            android:layout_width="@dimen/_89dp"
-            android:layout_height="@dimen/_32dp"
-            android:layout_marginHorizontal="@dimen/_20dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:hint="@string/lives"
-            android:textColorHint="@color/white"
-            android:textSize="@dimen/_20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.909"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+
     </LinearLayout>
-
-
 
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="520dp"
+        android:layout_height="@dimen/fl_height"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
+
         <SurfaceView
             android:id="@+id/surfaceView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
-    </FrameLayout>
+            android:layout_height="@dimen/fl_height"
+            android:layout_marginBottom="@dimen/sv_margin_bottom"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0" />
 
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,4 +1,6 @@
 package com.example.pong_extreme
 
-class Highscore(var name: String, var score: Int) {
+import java.io.Serializable
+
+class Highscore(var name: String, var score: String, var gameMode: String) {
 }
