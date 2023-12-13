@@ -5,9 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
-import java.lang.Math.abs
-import java.lang.Math.max
-import java.lang.Math.min
 
 class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, var size: Float, var speedX: Float, var speedY: Float) {
     var paint = Paint()
@@ -48,5 +45,10 @@ class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, v
     }
     fun getBoundingBox(): RectF {
         return RectF(posX - size, posY - size, posX + size, posY + size)
+    }
+
+    fun increaseSpeed(factor: Float) {
+        speedX *= factor
+        speedY *= factor
     }
 }
