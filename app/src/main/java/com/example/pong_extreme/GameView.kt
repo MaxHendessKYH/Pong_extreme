@@ -221,6 +221,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             }
             if (levelComplete()) {
                 currentLevel++
+                player.increaseLife()
                 if(currentLevel > 3)
                 {
                     currentLevel = 1
