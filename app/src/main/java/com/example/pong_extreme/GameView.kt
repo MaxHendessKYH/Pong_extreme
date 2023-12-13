@@ -156,6 +156,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                         ball.increaseSpeed(1.1f)
                         maxIncreaseCount++
                         brokenBrickCount = 0
+                        maxIncreaseCount = 0
                     }
                 }
                 player.increaseScore(brick.score)
