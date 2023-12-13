@@ -370,10 +370,12 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 brickList.remove(brick)
                 // Handle any other actions you want to take when a collision occurs
                 onBallCollisionBrick(ball, brick)
-                brokenBrickCount++
-                if(brokenBrickCount == 10) {
-                    ball.increaseSpeed(1.2f)
-                    brokenBrickCount = 0
+                if(player.gameMode == "timed") {
+                    brokenBrickCount++
+                    if(brokenBrickCount == 10) {
+                        ball.increaseSpeed(1.2f)
+                        brokenBrickCount = 0
+                    }
                 }
                 player.increaseScore(brick.score)
                 break // If you want to remove only one brick per frame, otherwise, remove the break statement
