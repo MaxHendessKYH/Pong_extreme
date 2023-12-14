@@ -13,6 +13,8 @@ import com.example.pong_extreme.databinding.ActivityPlayingTimedBinding
 class PlayingTimedActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayingTimedBinding
     lateinit var countDownTimer: CountDownTimer
+    var initialMillis: Long = 1000L
+    var remainingMillis: Long = initialMillis
     lateinit var player: Player
     private val handler = Handler()
     private var isUpdateLoopRunning = true
@@ -30,7 +32,6 @@ class PlayingTimedActivity : AppCompatActivity() {
         val gameView = GameView(this, player)
         val container = binding.frameLayout
         container.addView(gameView)
-        startUpdateLoop()
     }
 
     private fun showGameOverDialog() {
@@ -66,14 +67,27 @@ class PlayingTimedActivity : AppCompatActivity() {
         alert.show()
     }
 
+    fun addTime(time: Long)
+    {
+        countDownTimer.cancel()
+       remainingMillis += time
+        //start new countdown with added time
+       Timer(remainingMillis)
+    }
     private fun Timer(durationMillis: Long) {
         //Creates a countdowntime
         countDownTimer = object : CountDownTimer(durationMillis, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
+            override fun onTick( millisUntilFinished: Long) {
+                //line 83 overrides old timer after timer.cancel() and displays new timers values
+                remainingMillis =millisUntilFinished
                 // Update the textview with whats left of the time
                 val minutes = millisUntilFinished / 1000 / 60
                 val seconds = (millisUntilFinished / 1000) % 60
                 binding.tvTime.text = String.format("%02d:%02d", minutes, seconds)
+                if (player.getLevelComplete()) {
+                    addTime(30000L) // add 30 sec
+                    player.setLevelComplete(false)
+                }
             }
 
             override fun onFinish() {
@@ -83,34 +97,7 @@ class PlayingTimedActivity : AppCompatActivity() {
         }
         countDownTimer.start()
     }
-    private fun startUpdateLoop()
-    {
-        handler.post(object : Runnable {
-            override fun run() {
-                if (!isUpdateLoopRunning) {
-                    return
-                }
-                // update score text dynamicly
-                binding.tvScore.text = "Score: " + player.getScore().toString()
-                //Game over - end Game
-                if (player.showLives() <= 0) {
-                    stopUpdateLoop()
-                    showGameOverDialog()
-                }
-                // make function run every frame, maybe there is a better solution to update lives text?
-                handler.postDelayed(
-                    this,
-                    16
-                )
-
-            }
-        })
-    }
-    private fun stopUpdateLoop() {
-        isUpdateLoopRunning = false
-    }
     override fun onDestroy() {
-        stopUpdateLoop()
         handler.removeCallbacksAndMessages(null)
         // End timer when activity is destroyed
         countDownTimer.cancel()
@@ -129,5 +116,3 @@ class PlayingTimedActivity : AppCompatActivity() {
         finish()
     }
 }
-
-

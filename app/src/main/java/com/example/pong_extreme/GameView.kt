@@ -153,7 +153,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 if(player.gameMode == "timed") {
                     brokenBrickCount++
                     if(brokenBrickCount == 10 && maxIncreaseCount < 4) {
-                        ball.increaseSpeed(1.2f)
+                        ball.increaseSpeed(1.1f)
                         maxIncreaseCount++
                         brokenBrickCount = 0
                     }
@@ -184,7 +184,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         if (mHolder != null) {
             mHolder?.addCallback(this)
         }
-        currentLevel = 1
+        currentLevel = 2
         setup(currentLevel)
         start()
     }
@@ -218,15 +218,21 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                     // at this point endgame dialog should show (See classic activity)
                 }
             }
+            // Put code for hitBottom in timedActivity here
+
+            // Rewards for finishing a level
             if (levelComplete()) {
                 currentLevel++
+                if(player.gameMode == "timed")
+                {
+                    player.setLevelComplete(true)
+                }
                 if(currentLevel > 3)
                 {
                     currentLevel = 1
                 }
                 setup(currentLevel)
             }
-            // Put code for hitBottom in timedActivity here
             shapesIntersect(ball, paddle)
         }
     }
