@@ -58,7 +58,6 @@ class PlayingTimedActivity : AppCompatActivity() {
             finish()
         }
         builder.setNeutralButton("Start Menu") { dialog, which ->
-            navigateToMainActivity()
             finish()
         }
         builder.setNegativeButton("Try again") { dialog, which ->
@@ -156,12 +155,6 @@ class PlayingTimedActivity : AppCompatActivity() {
 
             countDownTimer!!.cancel()
         super.onDestroy()
-    }
-
-    private fun navigateToMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
     }
 
     private fun restartGame() {

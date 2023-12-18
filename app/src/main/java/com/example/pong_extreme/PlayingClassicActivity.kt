@@ -77,7 +77,6 @@ class PlayingClassicActivity : AppCompatActivity() {
         }
 
         builder.setNeutralButton("Start Menu") { dialog, which ->
-//            navigateToMainActivity()
             finish()
         }
 
@@ -100,11 +99,6 @@ class PlayingClassicActivity : AppCompatActivity() {
             alert.show()
         }
 
-    private fun navigateToMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
 
     private fun restartGame() {
         val intent = Intent(this, PlayingClassicActivity::class.java)

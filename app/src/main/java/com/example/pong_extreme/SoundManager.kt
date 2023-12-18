@@ -31,11 +31,8 @@ class SoundManager(private val context: Context) {
         ballHitBrickSound = soundPool.load(context, R.raw.brick, 1)
 
         // To load more sound files for example ball collision with bricks implement here
-
     }
-
-
-
+    
     // Releasing resources when they are no longer needed
     fun release() {
         soundPool.release()

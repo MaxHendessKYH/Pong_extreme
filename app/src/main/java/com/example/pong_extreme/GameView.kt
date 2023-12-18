@@ -63,7 +63,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         val speedFactor = when (currentLevel) {
             1 -> 1.0f // Default
             2 -> 1.2f // Increase by 20%
-            3 -> 1.5f // Increase by 30%
+            3 -> 1.4f // Increase by 20%
             else -> 1.0f // Default
         }
         ball.increaseSpeed(speedFactor)
@@ -318,10 +318,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             ball.speedY *= -1
 
         }
-        if (ball.posX > paddle.posX && ball.posY < paddle.posY ) {
+//        if (ball.posX > paddle.posX && ball.posY < paddle.posY ) {
 //            ball.speedX = abs(ball.speedX)
 //            ball.speedY = abs(ball.speedY)
-        }
+//        }
         //Plays the sound every time ball and paddle collides
         soundManager?.playSoundPaddle()
     }
