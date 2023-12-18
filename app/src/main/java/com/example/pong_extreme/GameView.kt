@@ -430,6 +430,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             }
 
             if (hitBottom && player.gameMode == "timed") {
+                // Timer goes down by 10 when life is lost
                 player.reduceLife()
                 // Check for gameover
             }
