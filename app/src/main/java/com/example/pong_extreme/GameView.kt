@@ -4,9 +4,14 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
+import android.hardware.display.DisplayManager
+import android.util.DisplayMetrics
+import android.view.Display
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.view.WindowManager
+import androidx.core.content.ContextCompat.getSystemService
 import java.lang.Math.abs
 
 class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback,
@@ -295,25 +300,25 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     }
 
     fun onBallCollision(ball: Ball, paddle: Paddle) {
-        if (ball.posX < paddle.posX && ball.posY  < paddle.posY) {
+        if (ball.posX < paddle.posX && ball.posY  < paddle.posY ) {
 //            ball.speedX = abs(ball.speedX) * -1
 //            ball.speedY = abs(ball.speedY) * -1
             ball.speedX *= -1
             ball.speedY *= -1
 
         }
-        if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
+        if (ball.posX < paddle.posX && ball.posY > paddle.posY ) {
 //            ball.speedX = abs(ball.speedX) * -1
 //            ball.speedY = abs(ball.speedY)
             ball.speedX *= -1
         }
-        if (ball.posX > paddle.posX && ball.posY  < paddle.posY) {
+        if (ball.posX > paddle.posX && ball.posY  > paddle.posY ) {
 //            ball.speedX = abs(ball.speedX)
 //            ball.speedY = abs(ball.speedY) * -1
             ball.speedY *= -1
 
         }
-        if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
+        if (ball.posX > paddle.posX && ball.posY < paddle.posY ) {
 //            ball.speedX = abs(ball.speedX)
 //            ball.speedY = abs(ball.speedY)
         }
@@ -333,7 +338,23 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
         // Calculate the distance between the circle center and the closest point on the square
         val distanceX = ball.posX - closestX
-        val distanceY = ball.posY - closestY
+        var distanceY = ball.posY - closestY
+
+        // Get info about device #responsive design
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val displayMetrics = DisplayMetrics()
+        //TODO: hitta not deprecated lösning för windowmanagern
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        // Set values depending on screen size
+        if(displayMetrics.heightPixels == 2154 &&  displayMetrics.widthPixels == 1080) {
+            // Pixel 3a
+             distanceY = ball.posY - closestY - 41
+        }else  if(displayMetrics.heightPixels == 2960   &&  displayMetrics.widthPixels == 1440 )
+        {
+                // set values för bills telefon
+            distanceY = ball.posY - closestY - 45
+        }
+        // closestY Pixel2API 33, Pixel 3a behöver - 35
 
         // Check if the distance is less than or equal to the circle's radius
         val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)

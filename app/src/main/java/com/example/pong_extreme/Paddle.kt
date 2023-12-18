@@ -8,7 +8,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
 
-class Paddle (context: Context, var posX: Float,var posY:Float,val width: Float = 92f, val height: Float = 16f, var speedX: Float) {
+class Paddle (context: Context, var posX: Float,var posY:Float,val width: Float , val height: Float , var speedX: Float) {
 
     var bitmap:Bitmap
 
@@ -28,7 +28,7 @@ class Paddle (context: Context, var posX: Float,var posY:Float,val width: Float 
     fun draw(canvas: Canvas){
         val centerX = posX
         val centerY = canvas.height.toFloat() -80f
-        canvas?.drawBitmap(bitmap, posX - 80f, posY , null)
+        canvas?.drawBitmap(bitmap, posX ,centerY  , null)
     }
 
 }
