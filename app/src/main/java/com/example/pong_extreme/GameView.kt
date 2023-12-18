@@ -37,7 +37,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             mHolder?.addCallback(this)
         }
     }
-
+    
     private fun setup(currentLevel: Int) {
         // Set paddle
         paddle = Paddle(this.context, 400f, 1250f, 92f, 16f, 0f)
@@ -63,7 +63,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         val speedFactor = when (currentLevel) {
             1 -> 1.0f // Default
             2 -> 1.2f // Increase by 20%
-            3 -> 1.5f // Increase by 30%
+            3 -> 1.4f // Increase by 20%
             else -> 1.0f // Default
         }
         ball.increaseSpeed(speedFactor)
@@ -71,11 +71,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
 
     private fun levelOneBrickLayout() {
-        var posX: Float = 10f
+
         // set paddle
-//        paddle = Paddle(this.context, 400f, 1200f,50f, 40f, 30f) gammla
         paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
-//        var posX: Float = 35f
+        var posX: Float = 10f
         var posY: Float = 40f
         val brickWidth = 150f
         val spacing = 3f
@@ -101,6 +100,9 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     }
 
     private fun levelTwoBrickLayout() {
+
+        // set paddle
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
         var posX: Float = 10f
         var posY: Float = 40f
         val brickWidth = 150f
@@ -125,6 +127,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     }
 
     private fun levelThreeBrickLayout() {
+
+        // set paddle
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
+
         var posX: Float = 10f
         var posY: Float = 40f
         val brickWidth = 150f
@@ -263,6 +269,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 setup(currentLevel)
 
             }
+            // Put code for hitBottom in timedActivity here
             shapesIntersect(ball, paddle)
         }
 
@@ -318,10 +325,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             ball.speedY *= -1
 
         }
-        if (ball.posX > paddle.posX && ball.posY < paddle.posY ) {
+//        if (ball.posX > paddle.posX && ball.posY < paddle.posY ) {
 //            ball.speedX = abs(ball.speedX)
 //            ball.speedY = abs(ball.speedY)
-        }
+//        }
         //Plays the sound every time ball and paddle collides
         soundManager?.playSoundPaddle()
     }
