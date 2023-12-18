@@ -13,18 +13,17 @@ import com.example.pong_extreme.databinding.ActivityPlayingTimedBinding
 class PlayingTimedActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayingTimedBinding
     var countDownTimer: CountDownTimer? = null
-    lateinit var countDownTimer: CountDownTimer
+//    lateinit var countDownTimer: CountDownTimer
     var initialMillis: Long = 1000L
     var remainingMillis: Long = initialMillis
     lateinit var player: Player
     private val handler = Handler()
     private var isUpdateLoopRunning = true
     var livesBegin = 0
-    var duration = 0
+    var duration: Long = 0
     lateinit var gameView: GameView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityPlayingTimedBinding.inflate(layoutInflater)
         setContentView(binding.root)
         player = Player("timed")
@@ -38,6 +37,7 @@ class PlayingTimedActivity : AppCompatActivity() {
         gameView = GameView(this, player)
         val container = binding.frameLayout
         container.addView(gameView)
+        startUpdateLoop()
     }
 
     private fun showGameOverDialog() {
@@ -79,18 +79,18 @@ class PlayingTimedActivity : AppCompatActivity() {
         alert.show()
     }
 
-    private fun Timer(durationMillis: Int) {
+    private fun Timer(durationMillis: Long) {
 
         //Creates a countdowntime
         if (countDownTimer != null)
             countDownTimer!!.cancel()
 
         // Create a new CountDownTimer with the updated duration
-        countDownTimer = object : CountDownTimer(durationMillis.toLong(), 1000) {
+        countDownTimer = object : CountDownTimer(durationMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                remainingMillis =millisUntilFinished
                 // Update the textview with what's left of the time
-                duration = millisUntilFinished.toInt()
+                duration = millisUntilFinished
                 val minutes = millisUntilFinished / 1000 / 60
                 val seconds = (millisUntilFinished / 1000) % 60
 
@@ -108,20 +108,17 @@ class PlayingTimedActivity : AppCompatActivity() {
                 showGameOverDialog()
             }
         }
-      countDownTimer.start()
-    }
-    fun addTime(time: Long)
-    {
-        countDownTimer.cancel()
-       remainingMillis += time
-        //start new countdown with added time
-       Timer(remainingMillis)
-    }
-           
-
         // Start the new timer
         if (countDownTimer != null)
             countDownTimer?.start()
+//      countDownTimer.start()
+    }
+    fun addTime(time: Long)
+    {
+        countDownTimer?.cancel()
+       remainingMillis += time
+        //start new countdown with added time
+       Timer(remainingMillis)
     }
     private fun startUpdateLoop() {
         handler.post(object : Runnable {

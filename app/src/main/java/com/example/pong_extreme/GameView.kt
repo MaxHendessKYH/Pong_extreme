@@ -204,7 +204,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         if (mHolder != null) {
             mHolder?.addCallback(this)
         }
-        currentLevel = 2
+        currentLevel = 1
         setup(currentLevel)
         start()
     }
@@ -247,6 +247,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             // Rewards for finishing a level
             if (levelComplete()) {
                 currentLevel++
+                player.increaseScore(100)
                 if(player.gameMode == "timed")
                 {
                     player.setLevelComplete(true)
