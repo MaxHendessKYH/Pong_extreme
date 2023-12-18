@@ -30,7 +30,7 @@ class PlayingTimedActivity : AppCompatActivity() {
         livesBegin = player.showLives();
         //Start the counter when activity is started, this time i set the timer on 3 minutes
         duration = 3 * 60 * 1000;
-        Timer(duration)
+        timer(duration)
         binding.btnEndGame.setOnClickListener {
             showGameOverDialog()
         }
@@ -78,7 +78,7 @@ class PlayingTimedActivity : AppCompatActivity() {
         alert.show()
     }
 
-    private fun Timer(durationMillis: Long) {
+    private fun timer(durationMillis: Long) {
 
         //Creates a countdowntime
         if (countDownTimer != null)
@@ -93,6 +93,7 @@ class PlayingTimedActivity : AppCompatActivity() {
                 val minutes = millisUntilFinished / 1000 / 60
                 val seconds = (millisUntilFinished / 1000) % 60
 
+                //Formats the string so it shows in for example 03:00
                 binding.tvTime.text = String.format("%02d:%02d", minutes, seconds)
                 if (player.getLevelComplete()) {
                     addTime(30000L) // add 30 sec
@@ -100,6 +101,7 @@ class PlayingTimedActivity : AppCompatActivity() {
                 }
             }
             override fun onFinish() {
+                //Sets timer to 00:00 when gameover
                 binding.tvTime.text = "00:00"
                 gameView.gameOver()
 
@@ -110,14 +112,13 @@ class PlayingTimedActivity : AppCompatActivity() {
         // Start the new timer
         if (countDownTimer != null)
             countDownTimer?.start()
-//      countDownTimer.start()
     }
     fun addTime(time: Long)
     {
         countDownTimer?.cancel()
        remainingMillis += time
         //start new countdown with added time
-       Timer(remainingMillis)
+       timer(remainingMillis)
     }
     private fun startUpdateLoop() {
         handler.post(object : Runnable {
@@ -132,7 +133,7 @@ class PlayingTimedActivity : AppCompatActivity() {
                 // Check if the ball touches the bottom
                 if (player.showLives() != livesBegin) {
                     livesBegin = player.showLives()
-                    Timer(duration - 10 * 1000)
+                    timer(duration - 10 * 1000)
                 }
 
                 // make function run every frame, maybe there is a better solution to update lives text?
