@@ -30,7 +30,11 @@ public class HighscoreAdapter extends ArrayAdapter {
 
         Highscore hs = (Highscore) getItem(position);
         TextView tvhighscore = view.findViewById(R.id.tv_highscore);
-        tvhighscore.setText(hs.getName() + "\n" + hs.getScore());
+        TextView tvscore = view.findViewById(R.id.tv_score);
+
+        tvhighscore.setText(hs.getName());
+        tvscore.setText(hs.getScore());
+
         return view;
     }
 }
