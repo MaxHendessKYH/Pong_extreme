@@ -8,7 +8,6 @@ import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import java.lang.Math.abs
-import kotlin.random.Random
 
 class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback,
     Runnable {
@@ -33,7 +32,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             mHolder?.addCallback(this)
         }
     }
-    
+
     private fun setup(currentLevel: Int) {
         // Set paddle
         paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
@@ -46,9 +45,25 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             else -> levelOneBrickLayout()
         }
 
-        // Set ball
         ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f)
+
+        //If the player is in classic game mode, increase the speed in all levels
+        if (player.gameMode == "classic") {
+            increaseBallSpeedForLevel(currentLevel)
+        }
+
     }
+
+    private fun increaseBallSpeedForLevel(currentLevel: Int) {
+        val speedFactor = when (currentLevel) {
+            1 -> 1.0f // Default
+            2 -> 1.2f // Increase by 20%
+            3 -> 1.5f // Increase by 30%
+            else -> 1.0f // Default
+        }
+        ball.increaseSpeed(speedFactor)
+    }
+
 
     private fun levelOneBrickLayout() {
         var posX: Float = 10f
@@ -71,7 +86,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
                 brickList.add(brick)
                 posX += brickWidth + spacing
-                brickType = if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED // alternate between red and blue
+                brickType =
+                    if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED // alternate between red and blue
             }
             // Reset posX for the next row and reset posY to the starting position
             posX = 10f
@@ -95,7 +111,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
                 brickList.add(brick)
                 posX += brickWidth + spacing
-                brickType = if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED
+                brickType =
+                    if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED
             }
             posX = 10f
             posY += 85f
@@ -120,7 +137,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 val brick = Brick(this.context, posX + xCenter, posY, 28f, type = brickType)
                 brickList.add(brick)
                 posX += brickWidth + spacing
-                brickType = if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED // alternate between red and blue
+                brickType =
+                    if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED // alternate between red and blue
             }
 
             posX = 10f
@@ -150,15 +168,16 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 brickList.remove(brick)
                 // Handle any other actions you want to take when a collision occurs
                 onBallCollisionBrick(ball, brick)
-                if(player.gameMode == "timed") {
+                if (player.gameMode == "timed") {
                     brokenBrickCount++
-                    if(brokenBrickCount == 10 && maxIncreaseCount < 4) {
+                    if (brokenBrickCount == 10 && maxIncreaseCount < 4) {
                         ball.increaseSpeed(1.1f)
                         maxIncreaseCount++
                         brokenBrickCount = 0
                         maxIncreaseCount = 0
                     }
                 }
+
                 player.increaseScore(brick.score)
                 break // If you want to remove only one brick per frame, otherwise, remove the break statement
             }
@@ -172,7 +191,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         try {
             canvas.drawColor(Color.BLACK)
             paddle.draw(canvas)
-                ball.draw(canvas)
+            ball.draw(canvas)
             for (brick in brickList) {
                 brick.draw(canvas)
             }
@@ -199,6 +218,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         //Releases the instance of soundpool when game ends
         soundManager?.release()
     }
+
+
     fun levelComplete(): Boolean {
         return brickList.isEmpty()
     }
@@ -221,16 +242,20 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             }
             if (levelComplete()) {
                 currentLevel++
-                if(currentLevel > 3)
-                {
+                if (currentLevel > 3) {
                     currentLevel = 1
                 }
                 setup(currentLevel)
+
             }
+
             // Put code for hitBottom in timedActivity here
             shapesIntersect(ball, paddle)
         }
+
     }
+
+
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         paddle.posX = event!!.x
         return true
