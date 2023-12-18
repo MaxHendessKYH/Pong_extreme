@@ -215,7 +215,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         if (mHolder != null) {
             mHolder?.addCallback(this)
         }
-        currentLevel = 3
+        currentLevel = 1
         setup(currentLevel)
         start()
     }
