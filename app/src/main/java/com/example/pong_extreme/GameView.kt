@@ -235,13 +235,15 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 player.reduceLife()
                 // Check for gameover
                 if (player.showLives() <= 0) {
-                    ball.speedX = 0f
-                    ball.speedY = 0f
+                    gameOver()
                     // at this point endgame dialog should show (See classic activity)
                 }
             }
-            // Put code for hitBottom in timedActivity here
-
+            if (hitBottom && player.gameMode == "timed") {
+                // Timer goes down by 10 when life is lost
+                player.reduceLife()
+                // Check for gameover
+            }
             // Rewards for finishing a level
             if (levelComplete()) {
                 currentLevel++
@@ -264,6 +266,11 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         paddle.posX = event!!.x
         return true
+    }
+
+    fun gameOver(){
+        ball.speedX = 0f
+        ball.speedY = 0f
     }
 
     fun onBallCollisionBrick(ball: Ball, brick: Brick) {

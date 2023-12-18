@@ -1,5 +1,4 @@
 package com.example.pong_extreme
-
 import android.graphics.BitmapFactory
 
 class Player(var gameMode: String ) {
