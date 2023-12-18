@@ -4,11 +4,15 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
+import android.hardware.display.DisplayManager
+import android.util.DisplayMetrics
+import android.view.Display
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.view.WindowManager
+import androidx.core.content.ContextCompat.getSystemService
 import java.lang.Math.abs
-import kotlin.random.Random
 
 class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback,
     Runnable {
@@ -36,7 +40,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     
     private fun setup(currentLevel: Int) {
         // Set paddle
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
+        paddle = Paddle(this.context, 400f, 1250f, 92f, 16f, 0f)
 
         // Set bricks based on the currentLevel
         when (currentLevel) {
@@ -46,12 +50,25 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             else -> levelOneBrickLayout()
         }
 
-        // Set ball
         ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f)
+
+        //If the player is in classic game mode, increase the speed in all levels
+        if (player.gameMode == "classic") {
+            increaseBallSpeedForLevel(currentLevel)
+        }
+
     }
 
+    private fun increaseBallSpeedForLevel(currentLevel: Int) {
+        val speedFactor = when (currentLevel) {
+            1 -> 1.0f // Default
+            2 -> 1.2f // Increase by 20%
+            3 -> 1.5f // Increase by 30%
+            else -> 1.0f // Default
+        }
+        ball.increaseSpeed(speedFactor)
+    }
 
-    // in between row and column red and blue
 
     private fun levelOneBrickLayout() {
         var posX: Float = 10f
@@ -74,7 +91,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
                 brickList.add(brick)
                 posX += brickWidth + spacing
-                brickType = if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED // alternate between red and blue
+                brickType =
+                    if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED // alternate between red and blue
             }
             // Reset posX for the next row and reset posY to the starting position
             posX = 10f
@@ -98,7 +116,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
                 brickList.add(brick)
                 posX += brickWidth + spacing
-                brickType = if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED
+                brickType =
+                    if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED
             }
             posX = 10f
             posY += 85f
@@ -123,7 +142,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 val brick = Brick(this.context, posX + xCenter, posY, 28f, type = brickType)
                 brickList.add(brick)
                 posX += brickWidth + spacing
-                brickType = if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED // alternate between red and blue
+                brickType =
+                    if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED // alternate between red and blue
             }
 
             posX = 10f
@@ -153,15 +173,16 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 brickList.remove(brick)
                 // Handle any other actions you want to take when a collision occurs
                 onBallCollisionBrick(ball, brick)
-                if(player.gameMode == "timed") {
+                if (player.gameMode == "timed") {
                     brokenBrickCount++
-                    if(brokenBrickCount == 10 && maxIncreaseCount < 4) {
+                    if (brokenBrickCount == 10 && maxIncreaseCount < 4) {
                         ball.increaseSpeed(1.1f)
                         maxIncreaseCount++
                         brokenBrickCount = 0
                         maxIncreaseCount = 0
                     }
                 }
+
                 player.increaseScore(brick.score)
                 break // If you want to remove only one brick per frame, otherwise, remove the break statement
             }
@@ -175,7 +196,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         try {
             canvas.drawColor(Color.BLACK)
             paddle.draw(canvas)
-                ball.draw(canvas)
+            ball.draw(canvas)
             for (brick in brickList) {
                 brick.draw(canvas)
             }
@@ -202,6 +223,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         //Releases the instance of soundpool when game ends
         soundManager?.release()
     }
+
+
     fun levelComplete(): Boolean {
         return brickList.isEmpty()
     }
@@ -217,26 +240,44 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 player.reduceLife()
                 // Check for gameover
                 if (player.showLives() <= 0) {
-                    ball.speedX = 0f
-                    ball.speedY = 0f
+                    gameOver()
                     // at this point endgame dialog should show (See classic activity)
                 }
             }
+            if (hitBottom && player.gameMode == "timed") {
+                // Timer goes down by 10 when life is lost
+                player.reduceLife()
+                // Check for gameover
+            }
+            // Rewards for finishing a level
             if (levelComplete()) {
                 currentLevel++
-                if(currentLevel > 3)
+                player.increaseScore(100)
+                if(player.gameMode == "timed")
                 {
+                    player.setLevelComplete(true)
+                }
+                if (currentLevel > 3) {
                     currentLevel = 1
                 }
                 setup(currentLevel)
+
             }
             // Put code for hitBottom in timedActivity here
             shapesIntersect(ball, paddle)
         }
+
     }
+
+
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         paddle.posX = event!!.x
         return true
+    }
+
+    fun gameOver(){
+        ball.speedX = 0f
+        ball.speedY = 0f
     }
 
     fun onBallCollisionBrick(ball: Ball, brick: Brick) {
@@ -260,25 +301,25 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     }
 
     fun onBallCollision(ball: Ball, paddle: Paddle) {
-        if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
+        if (ball.posX < paddle.posX && ball.posY  < paddle.posY ) {
 //            ball.speedX = abs(ball.speedX) * -1
 //            ball.speedY = abs(ball.speedY) * -1
             ball.speedX *= -1
             ball.speedY *= -1
 
         }
-        if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
+        if (ball.posX < paddle.posX && ball.posY > paddle.posY ) {
 //            ball.speedX = abs(ball.speedX) * -1
 //            ball.speedY = abs(ball.speedY)
             ball.speedX *= -1
         }
-        if (ball.posX > paddle.posX && ball.posY < paddle.posY) {
+        if (ball.posX > paddle.posX && ball.posY  > paddle.posY ) {
 //            ball.speedX = abs(ball.speedX)
 //            ball.speedY = abs(ball.speedY) * -1
             ball.speedY *= -1
 
         }
-        if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
+        if (ball.posX > paddle.posX && ball.posY < paddle.posY ) {
 //            ball.speedX = abs(ball.speedX)
 //            ball.speedY = abs(ball.speedY)
         }
@@ -298,7 +339,23 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
         // Calculate the distance between the circle center and the closest point on the square
         val distanceX = ball.posX - closestX
-        val distanceY = ball.posY - closestY
+        var distanceY = ball.posY - closestY
+
+        // Get info about device #responsive design
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val displayMetrics = DisplayMetrics()
+        //TODO: hitta not deprecated lösning för windowmanagern
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        // Set values depending on screen size
+        if(displayMetrics.heightPixels == 2154 &&  displayMetrics.widthPixels == 1080) {
+            // Pixel 3a
+             distanceY = ball.posY - closestY - 41
+        }else  if(displayMetrics.heightPixels == 2960   &&  displayMetrics.widthPixels == 1440 )
+        {
+                // set values för bills telefon
+            distanceY = ball.posY - closestY - 45
+        }
+        // closestY Pixel2API 33, Pixel 3a behöver - 35
 
         // Check if the distance is less than or equal to the circle's radius
         val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
