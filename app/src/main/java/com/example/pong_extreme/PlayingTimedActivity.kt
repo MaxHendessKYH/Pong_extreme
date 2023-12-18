@@ -13,6 +13,9 @@ import com.example.pong_extreme.databinding.ActivityPlayingTimedBinding
 class PlayingTimedActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayingTimedBinding
     var countDownTimer: CountDownTimer? = null
+    lateinit var countDownTimer: CountDownTimer
+    var initialMillis: Long = 1000L
+    var remainingMillis: Long = initialMillis
     lateinit var player: Player
     private val handler = Handler()
     private var isUpdateLoopRunning = true
@@ -35,7 +38,6 @@ class PlayingTimedActivity : AppCompatActivity() {
         gameView = GameView(this, player)
         val container = binding.frameLayout
         container.addView(gameView)
-        startUpdateLoop()
     }
 
     private fun showGameOverDialog() {
@@ -86,14 +88,18 @@ class PlayingTimedActivity : AppCompatActivity() {
         // Create a new CountDownTimer with the updated duration
         countDownTimer = object : CountDownTimer(durationMillis.toLong(), 1000) {
             override fun onTick(millisUntilFinished: Long) {
+               remainingMillis =millisUntilFinished
                 // Update the textview with what's left of the time
                 duration = millisUntilFinished.toInt()
                 val minutes = millisUntilFinished / 1000 / 60
                 val seconds = (millisUntilFinished / 1000) % 60
 
                 binding.tvTime.text = String.format("%02d:%02d", minutes, seconds)
+                if (player.getLevelComplete()) {
+                    addTime(30000L) // add 30 sec
+                    player.setLevelComplete(false)
+                }
             }
-
             override fun onFinish() {
                 binding.tvTime.text = "00:00"
                 gameView.gameOver()
@@ -102,12 +108,21 @@ class PlayingTimedActivity : AppCompatActivity() {
                 showGameOverDialog()
             }
         }
+      countDownTimer.start()
+    }
+    fun addTime(time: Long)
+    {
+        countDownTimer.cancel()
+       remainingMillis += time
+        //start new countdown with added time
+       Timer(remainingMillis)
+    }
+           
 
         // Start the new timer
         if (countDownTimer != null)
             countDownTimer?.start()
     }
-
     private fun startUpdateLoop() {
         handler.post(object : Runnable {
             override fun run() {
@@ -137,9 +152,7 @@ class PlayingTimedActivity : AppCompatActivity() {
     private fun stopUpdateLoop() {
         isUpdateLoopRunning = false
     }
-
     override fun onDestroy() {
-        stopUpdateLoop()
         handler.removeCallbacksAndMessages(null)
         // End timer when activity is destroyed
         if (countDownTimer != null)
@@ -160,5 +173,3 @@ class PlayingTimedActivity : AppCompatActivity() {
         finish()
     }
 }
-
-

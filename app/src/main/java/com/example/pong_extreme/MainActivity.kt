@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
         mediaPlayer.isLooping = true
         mediaPlayer.start()
 
-
         //When any of the buttons are clicked the music stops and mediaplayer is released
         binding.btnClassic.setOnClickListener {
             mediaPlayer.stop()
