@@ -4,9 +4,14 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
+import android.hardware.display.DisplayManager
+import android.util.DisplayMetrics
+import android.view.Display
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.view.WindowManager
+import androidx.core.content.ContextCompat.getSystemService
 import java.lang.Math.abs
 
 class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback,
@@ -35,7 +40,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun setup(currentLevel: Int) {
         // Set paddle
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
+        paddle = Paddle(this.context, 400f, 1250f, 92f, 16f, 0f)
 
         // Set bricks based on the currentLevel
         when (currentLevel) {
@@ -235,21 +240,29 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 player.reduceLife()
                 // Check for gameover
                 if (player.showLives() <= 0) {
-                    ball.speedX = 0f
-                    ball.speedY = 0f
+                    gameOver()
                     // at this point endgame dialog should show (See classic activity)
                 }
             }
+            if (hitBottom && player.gameMode == "timed") {
+                // Timer goes down by 10 when life is lost
+                player.reduceLife()
+                // Check for gameover
+            }
+            // Rewards for finishing a level
             if (levelComplete()) {
                 currentLevel++
+                player.increaseScore(100)
+                if(player.gameMode == "timed")
+                {
+                    player.setLevelComplete(true)
+                }
                 if (currentLevel > 3) {
                     currentLevel = 1
                 }
                 setup(currentLevel)
 
             }
-
-            // Put code for hitBottom in timedActivity here
             shapesIntersect(ball, paddle)
         }
 
@@ -259,6 +272,11 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         paddle.posX = event!!.x
         return true
+    }
+
+    fun gameOver(){
+        ball.speedX = 0f
+        ball.speedY = 0f
     }
 
     fun onBallCollisionBrick(ball: Ball, brick: Brick) {
@@ -282,25 +300,25 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     }
 
     fun onBallCollision(ball: Ball, paddle: Paddle) {
-        if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
+        if (ball.posX < paddle.posX && ball.posY  < paddle.posY ) {
 //            ball.speedX = abs(ball.speedX) * -1
 //            ball.speedY = abs(ball.speedY) * -1
             ball.speedX *= -1
             ball.speedY *= -1
 
         }
-        if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
+        if (ball.posX < paddle.posX && ball.posY > paddle.posY ) {
 //            ball.speedX = abs(ball.speedX) * -1
 //            ball.speedY = abs(ball.speedY)
             ball.speedX *= -1
         }
-        if (ball.posX > paddle.posX && ball.posY < paddle.posY) {
+        if (ball.posX > paddle.posX && ball.posY  > paddle.posY ) {
 //            ball.speedX = abs(ball.speedX)
 //            ball.speedY = abs(ball.speedY) * -1
             ball.speedY *= -1
 
         }
-        if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
+        if (ball.posX > paddle.posX && ball.posY < paddle.posY ) {
 //            ball.speedX = abs(ball.speedX)
 //            ball.speedY = abs(ball.speedY)
         }
@@ -320,7 +338,23 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
         // Calculate the distance between the circle center and the closest point on the square
         val distanceX = ball.posX - closestX
-        val distanceY = ball.posY - closestY
+        var distanceY = ball.posY - closestY
+
+        // Get info about device #responsive design
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val displayMetrics = DisplayMetrics()
+        //TODO: hitta not deprecated lösning för windowmanagern
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        // Set values depending on screen size
+        if(displayMetrics.heightPixels == 2154 &&  displayMetrics.widthPixels == 1080) {
+            // Pixel 3a
+             distanceY = ball.posY - closestY - 41
+        }else  if(displayMetrics.heightPixels == 2960   &&  displayMetrics.widthPixels == 1440 )
+        {
+                // set values för bills telefon
+            distanceY = ball.posY - closestY - 45
+        }
+        // closestY Pixel2API 33, Pixel 3a behöver - 35
 
         // Check if the distance is less than or equal to the circle's radius
         val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
