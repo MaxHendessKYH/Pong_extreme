@@ -35,7 +35,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun setup(currentLevel: Int) {
         // Set paddle
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
+        paddle = Paddle(this.context, 400f, 1250f, 92f, 16f, 0f)
 
         // Set bricks based on the currentLevel
         when (currentLevel) {
@@ -295,7 +295,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     }
 
     fun onBallCollision(ball: Ball, paddle: Paddle) {
-        if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
+        if (ball.posX < paddle.posX && ball.posY  < paddle.posY) {
 //            ball.speedX = abs(ball.speedX) * -1
 //            ball.speedY = abs(ball.speedY) * -1
             ball.speedX *= -1
@@ -307,7 +307,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 //            ball.speedY = abs(ball.speedY)
             ball.speedX *= -1
         }
-        if (ball.posX > paddle.posX && ball.posY < paddle.posY) {
+        if (ball.posX > paddle.posX && ball.posY  < paddle.posY) {
 //            ball.speedX = abs(ball.speedX)
 //            ball.speedY = abs(ball.speedY) * -1
             ball.speedY *= -1
