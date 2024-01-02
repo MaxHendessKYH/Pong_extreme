@@ -4,14 +4,11 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
-import android.hardware.display.DisplayManager
 import android.util.DisplayMetrics
-import android.view.Display
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.WindowManager
-import androidx.core.content.ContextCompat.getSystemService
 import java.lang.Math.abs
 
 class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback,
@@ -29,6 +26,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     var bounds = Rect()
     var mHolder: SurfaceHolder? = holder
     var currentLevel = 0
+    var powerupManager = PowerupManager()
     val soundManager = context?.let { SoundManager(it) }
 
     init {
@@ -316,18 +314,22 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         if (ball.posX < brick.posX && ball.posY < brick.posY) {
             ball.speedX = abs(ball.speedX) * -1
             ball.speedY = abs(ball.speedY) * -1
+            powerupManager.shouldHavePowerup()
         }
         if (ball.posX < brick.posX && ball.posY > brick.posY) {
             ball.speedX = abs(ball.speedX) * -1
             ball.speedY = abs(ball.speedY)
+            powerupManager.shouldHavePowerup()
         }
         if (ball.posX > brick.posX && ball.posY < brick.posY) {
             ball.speedX = abs(ball.speedX)
             ball.speedY = abs(ball.speedY) * -1
+            powerupManager.shouldHavePowerup()
         }
         if (ball.posX > brick.posX && ball.posY > brick.posY) {
             ball.speedX = abs(ball.speedX)
             ball.speedY = abs(ball.speedY)
+            powerupManager.shouldHavePowerup()
         }
     }
 
@@ -383,7 +385,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             distanceY = ball.posY - closestY - 41
         } else if (displayMetrics.heightPixels == 2960 && displayMetrics.widthPixels == 1440) {
             // set values för bills telefon
-            
             //Höj -45 till -52 istället
             distanceY = ball.posY - closestY - 45
         }
