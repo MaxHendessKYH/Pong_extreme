@@ -309,6 +309,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         ball.speedY = 0f
     }
 
+
     fun onBallCollisionBrick(ball: Ball, brick: Brick) {
 
         if (ball.posX < brick.posX && ball.posY < brick.posY) {
