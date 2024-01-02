@@ -4,14 +4,11 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
-import android.hardware.display.DisplayManager
 import android.util.DisplayMetrics
-import android.view.Display
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.WindowManager
-import androidx.core.content.ContextCompat.getSystemService
 import java.lang.Math.abs
 
 class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback,
@@ -29,6 +26,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     var bounds = Rect()
     var mHolder: SurfaceHolder? = holder
     var currentLevel = 0
+    var powerupManager = PowerupManager()
     val soundManager = context?.let { SoundManager(it) }
 
     init {
@@ -37,7 +35,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             mHolder?.addCallback(this)
         }
     }
-    
+
     private fun setup(currentLevel: Int) {
         // Set paddle
         paddle = Paddle(this.context, 400f, 1250f, 92f, 16f, 0f)
@@ -259,8 +257,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             if (levelComplete()) {
                 currentLevel++
                 player.increaseScore(100)
-                if(player.gameMode == "timed")
-                {
+                if (player.gameMode == "timed") {
                     player.setLevelComplete(true)
                 }
                 if (currentLevel > 3) {
@@ -281,7 +278,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         return true
     }
 
-    fun gameOver(){
+    fun gameOver() {
         ball.speedX = 0f
         ball.speedY = 0f
     }
@@ -291,35 +288,39 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         if (ball.posX < brick.posX && ball.posY < brick.posY) {
             ball.speedX = abs(ball.speedX) * -1
             ball.speedY = abs(ball.speedY) * -1
+            powerupManager.shouldHavePowerup()
         }
         if (ball.posX < brick.posX && ball.posY > brick.posY) {
             ball.speedX = abs(ball.speedX) * -1
             ball.speedY = abs(ball.speedY)
+            powerupManager.shouldHavePowerup()
         }
         if (ball.posX > brick.posX && ball.posY < brick.posY) {
             ball.speedX = abs(ball.speedX)
             ball.speedY = abs(ball.speedY) * -1
+            powerupManager.shouldHavePowerup()
         }
         if (ball.posX > brick.posX && ball.posY > brick.posY) {
             ball.speedX = abs(ball.speedX)
             ball.speedY = abs(ball.speedY)
+            powerupManager.shouldHavePowerup()
         }
     }
 
     fun onBallCollision(ball: Ball, paddle: Paddle) {
-        if (ball.posX < paddle.posX && ball.posY  < paddle.posY ) {
+        if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
 //            ball.speedX = abs(ball.speedX) * -1
 //            ball.speedY = abs(ball.speedY) * -1
             ball.speedX *= -1
             ball.speedY *= -1
 
         }
-        if (ball.posX < paddle.posX && ball.posY > paddle.posY ) {
+        if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
 //            ball.speedX = abs(ball.speedX) * -1
 //            ball.speedY = abs(ball.speedY)
             ball.speedX *= -1
         }
-        if (ball.posX > paddle.posX && ball.posY  > paddle.posY ) {
+        if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
 //            ball.speedX = abs(ball.speedX)
 //            ball.speedY = abs(ball.speedY) * -1
             ball.speedY *= -1
@@ -353,12 +354,11 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         //TODO: hitta not deprecated lösning för windowmanagern
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         // Set values depending on screen size
-        if(displayMetrics.heightPixels == 2154 &&  displayMetrics.widthPixels == 1080) {
+        if (displayMetrics.heightPixels == 2154 && displayMetrics.widthPixels == 1080) {
             // Pixel 3a
-             distanceY = ball.posY - closestY - 41
-        }else  if(displayMetrics.heightPixels == 2960   &&  displayMetrics.widthPixels == 1440 )
-        {
-                // set values för bills telefon
+            distanceY = ball.posY - closestY - 41
+        } else if (displayMetrics.heightPixels == 2960 && displayMetrics.widthPixels == 1440) {
+            // set values för bills telefon
             distanceY = ball.posY - closestY - 45
         }
         // closestY Pixel2API 33, Pixel 3a behöver - 35
