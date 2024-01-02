@@ -383,6 +383,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             distanceY = ball.posY - closestY - 41
         } else if (displayMetrics.heightPixels == 2960 && displayMetrics.widthPixels == 1440) {
             // set values för bills telefon
+            
+            //Höj -45 till -52 istället
             distanceY = ball.posY - closestY - 45
         }
         // closestY Pixel2API 33, Pixel 3a behöver - 35
