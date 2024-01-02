@@ -10,6 +10,7 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.WindowManager
 import java.lang.Math.abs
+import java.lang.Math.pow
 
 class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback,
     Runnable {
@@ -196,7 +197,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     fun update() {
 
         paddle.update(width.toFloat())
-        ball.update()
+        ball.update(paddle)
 
         for (brick in brickList) {
             if (brick.isCollision(ball)) {
@@ -302,6 +303,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         paddle.posX = event!!.x
+        if(paddle.isSticky)
+        {
+            ball.posX = event!!.x
+        }
         return true
     }
 
@@ -331,25 +336,27 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     }
 
     fun onBallCollision(ball: Ball, paddle: Paddle) {
-        if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
-            ball.speedX *= -1
-            ball.speedY *= -1
-        }
-        if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
-            ball.speedX *= -1
-        }
-        if (ball.posX > paddle.posX && ball.posY < paddle.posY) {
-          ball.speedY *= -1
-        }
-        if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
-            ball.speedY *= -1
-        }
+            if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
+                ball.speedX *= -1
+                ball.speedY *= -1
+            }
+            if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
+                ball.speedX *= -1
+            }
+            if (ball.posX > paddle.posX && ball.posY < paddle.posY) {
+                ball.speedY *= -1
+            }
+            if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
+                ball.speedY *= -1
+            }
+        powerupManager.checkForPowerup(paddle)
 //        if (ball.posX > paddle.posX && ball.posY < paddle.posY ) {
 //            ball.speedX = abs(ball.speedX)
 //            ball.speedY = abs(ball.speedY)
 //        }
         //Plays the sound every time ball and paddle collides
         soundManager?.playSoundPaddle()
+
     }
     fun shapesIntersect(ball: Ball, paddle: Paddle) {
         // Calculate the center of the circle

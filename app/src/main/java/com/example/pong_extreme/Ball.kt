@@ -14,10 +14,12 @@ class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, v
         canvas?.drawCircle(posX, posY, size, paint)
     }
 
-    fun update()
+    fun update(paddle: Paddle)
     {
-       posX += speedX
-       posY += speedY
+        if (!paddle.isSticky) {
+            posX += speedX
+            posY += speedY
+        }
     }
 
     fun checkBounds(bounds: Rect){

@@ -11,6 +11,7 @@ import android.graphics.RectF
 class Paddle (context: Context, var posX: Float,var posY:Float,val width: Float , val height: Float , var speedX: Float) {
 
     var bitmap:Bitmap
+    var isSticky: Boolean = false
 
     init {
         bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle)
