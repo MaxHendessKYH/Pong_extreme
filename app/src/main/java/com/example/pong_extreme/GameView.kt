@@ -21,6 +21,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     lateinit var ball: Ball
     var maxIncreaseCount: Int = 0
     var brokenBrickCount: Int = 0
+    var ballIsTouchingPaddle = false;
     var player: Player
     var brickList: MutableList<Brick> = mutableListOf()
     var bounds = Rect()
@@ -314,43 +315,34 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         if (ball.posX < brick.posX && ball.posY < brick.posY) {
             ball.speedX = abs(ball.speedX) * -1
             ball.speedY = abs(ball.speedY) * -1
-            powerupManager.shouldHavePowerup()
         }
         if (ball.posX < brick.posX && ball.posY > brick.posY) {
             ball.speedX = abs(ball.speedX) * -1
             ball.speedY = abs(ball.speedY)
-            powerupManager.shouldHavePowerup()
         }
         if (ball.posX > brick.posX && ball.posY < brick.posY) {
             ball.speedX = abs(ball.speedX)
             ball.speedY = abs(ball.speedY) * -1
-            powerupManager.shouldHavePowerup()
         }
         if (ball.posX > brick.posX && ball.posY > brick.posY) {
             ball.speedX = abs(ball.speedX)
             ball.speedY = abs(ball.speedY)
-            powerupManager.shouldHavePowerup()
         }
     }
 
     fun onBallCollision(ball: Ball, paddle: Paddle) {
         if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
-//            ball.speedX = abs(ball.speedX) * -1
-//            ball.speedY = abs(ball.speedY) * -1
             ball.speedX *= -1
             ball.speedY *= -1
-
         }
         if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
-//            ball.speedX = abs(ball.speedX) * -1
-//            ball.speedY = abs(ball.speedY)
             ball.speedX *= -1
         }
+        if (ball.posX > paddle.posX && ball.posY < paddle.posY) {
+          ball.speedY *= -1
+        }
         if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
-//            ball.speedX = abs(ball.speedX)
-//            ball.speedY = abs(ball.speedY) * -1
             ball.speedY *= -1
-
         }
 //        if (ball.posX > paddle.posX && ball.posY < paddle.posY ) {
 //            ball.speedX = abs(ball.speedX)
@@ -359,7 +351,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         //Plays the sound every time ball and paddle collides
         soundManager?.playSoundPaddle()
     }
-
     fun shapesIntersect(ball: Ball, paddle: Paddle) {
         // Calculate the center of the circle
 //        val circleCenterX = ball.posX
@@ -393,12 +384,15 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         // Check if the distance is less than or equal to the circle's radius
         val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
         val radiusSquared = ball.size * ball.size
-//        println("Distance" +distanceSquared)
-
-//        println("Radius" +radiusSquared)
-        if (distanceSquared <= radiusSquared) {
-            // Collision detected, handle it accordingly (e.g., call a collision handling function)
-            onBallCollision(ball, paddle)
+            if (distanceSquared <= radiusSquared && !ballIsTouchingPaddle) {
+                ballIsTouchingPaddle = true
+                // Collision detected, handle it accordingly (e.g., call a collision handling function)
+                onBallCollision(ball, paddle)
+            }
+        // if ball is not touching paddle set ballIsTouchingPaddle = false
+        if(distanceSquared >= radiusSquared)
+        {
+            ballIsTouchingPaddle = false
         }
     }
 }
