@@ -51,4 +51,15 @@ class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, v
         speedX *= factor
         speedY *= factor
     }
+
+//    fun orignalSpeed(){
+//        speedX
+//        speedY
+//    }
+//    fun slowMotionSpeed(){
+//        speedX /= 2
+//        speedY /= 2
+//    }
+
+
 }
