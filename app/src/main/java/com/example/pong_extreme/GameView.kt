@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
-import android.os.Handler
 import android.util.DisplayMetrics
 import android.view.MotionEvent
 import android.view.SurfaceHolder
@@ -362,7 +361,16 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     fun resetBallSpeed(){
         slowmotionActive = false
-        ball.alterSpeed(5f)
+
+        if (currentLevel == 1) {
+            ball.alterSpeed(5f)
+        }
+        if (currentLevel == 2){
+            ball.alterSpeed(6f)
+        }
+        if (currentLevel == 3){
+            ball.alterSpeed(7f)
+        }
     }
 
     fun onBallCollision(ball: Ball, paddle: Paddle) {
