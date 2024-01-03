@@ -40,7 +40,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun setup(currentLevel: Int) {
         // Set paddle
-        paddle = Paddle(this.context, 400f, 1250f, 92f, 16f, 0f)
+        paddle = Paddle(this.context, 400f, 1250f, 92f, 16f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
 
         // Set bricks based on the currentLevel
         when (currentLevel) {
@@ -72,7 +72,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun levelOneBrickLayout() {
         // Set up paddle
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
 
         // Initial position for the bricks
         var posX: Float = 10f
@@ -109,7 +109,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun levelTwoBrickLayout() {
         // Set up paddle (same as levelOneBrickLayout)
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
 
         // Initial position for the bricks
         var posX: Float = 10f
@@ -145,7 +145,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun levelThreeBrickLayout() {
         // Set up paddle (same as levelOneBrickLayout)
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
 
         // Initial position for the bricks
         var posX: Float = 10f

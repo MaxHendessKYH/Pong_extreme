@@ -3,9 +3,11 @@ import kotlin.random.Random
 
 class PowerupManager {
     enum class PowerUpType{
-        BIGPADDLE, SMALLPADDLE, EXTRABALL, STICKYPAD, SLOWMOTION
+        BIGPADDLE, SMALLPADDLE
     }
 
+//    var powerupActivationTime : Long = 15
+    var powerupActive: Boolean = false
     var stickyTimer = 30
     fun shouldHavePowerup(): Boolean{
         val randomize = Random.nextInt(1,101)
@@ -13,7 +15,7 @@ class PowerupManager {
     }
     fun checkForPowerup(paddle: Paddle)
     {
-        if(shouldHavePowerup())
+        if(shouldHavePowerup() && !powerupActive)
         {
             //Apply powerups in when
             var random = Random.nextInt(1, 5)
@@ -21,6 +23,8 @@ class PowerupManager {
             {
                 1 -> setSticky(paddle)
             }
+            powerupActive = true
+//            powerupActivationTime = System.currentTimeMillis()
         }
     }
     fun setSticky(paddle: Paddle)
@@ -32,11 +36,11 @@ class PowerupManager {
     }
     fun stickyPaddleReleaseCountdown(paddle: Paddle)
     {
-        stickyTimer--
-        if(stickyTimer == 0)
-        {
-            setSticky(paddle)
-            stickyTimer = 30
-        }
+            stickyTimer--
+            if (stickyTimer == 0) {
+                setSticky(paddle)
+                stickyTimer = 30
+//                poweupActive = false
+            }
     }
 }
