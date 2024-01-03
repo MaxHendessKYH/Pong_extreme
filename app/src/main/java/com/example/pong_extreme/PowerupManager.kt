@@ -1,12 +1,12 @@
 package com.example.pong_extreme
-
 import kotlin.random.Random
 
-class PowerupManager() {
+class PowerupManager {
     enum class PowerUpType{
         BIGPADDLE, SMALLPADDLE, EXTRABALL, STICKYPAD, SLOWMOTION
     }
 
+    var stickyTimer = 30
     fun shouldHavePowerup(): Boolean{
         val randomize = Random.nextInt(1,101)
         return randomize <= 100
@@ -29,5 +29,14 @@ class PowerupManager() {
             paddle.isSticky = true
         else if(paddle.isSticky)
             paddle.isSticky = false
+    }
+    fun stickyPaddleReleaseCountdown(paddle: Paddle)
+    {
+        stickyTimer--
+        if(stickyTimer == 0)
+        {
+            setSticky(paddle)
+            stickyTimer = 30
+        }
     }
 }

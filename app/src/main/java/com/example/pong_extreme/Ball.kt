@@ -8,15 +8,19 @@ import android.graphics.RectF
 
 class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, var size: Float, var speedX: Float, var speedY: Float) {
     var paint = Paint()
-
     fun draw(canvas: Canvas?) {
         paint.color = color
         canvas?.drawCircle(posX, posY, size, paint)
     }
 
-    fun update(paddle: Paddle)
+    fun update(paddle: Paddle, isTouchingPaddle: Boolean)
     {
-        if (!paddle.isSticky) {
+        // prevent ball from moving when paddle is sticky and ball is touching paddle
+        if (paddle.isSticky && isTouchingPaddle) {
+
+        }
+        else
+        {
             posX += speedX
             posY += speedY
         }

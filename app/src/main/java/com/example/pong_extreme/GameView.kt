@@ -197,7 +197,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     fun update() {
 
         paddle.update(width.toFloat())
-        ball.update(paddle)
+        ball.update(paddle, ballIsTouchingPaddle )
 
         for (brick in brickList) {
             if (brick.isCollision(ball)) {
@@ -218,6 +218,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 player.increaseScore(brick.score)
                 break // If you want to remove only one brick per frame, otherwise, remove the break statement
             }
+        }
+        if(paddle.isSticky && ballIsTouchingPaddle)
+        {
+            powerupManager.stickyPaddleReleaseCountdown(paddle)
         }
     }
 
@@ -303,9 +307,9 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         paddle.posX = event!!.x
-        if(paddle.isSticky)
+        if(paddle.isSticky && ballIsTouchingPaddle)
         {
-            ball.posX = event!!.x
+            ball.posX = event!!.x + paddle.width / 2
         }
         return true
     }
@@ -333,6 +337,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             ball.speedX = abs(ball.speedX)
             ball.speedY = abs(ball.speedY)
         }
+
+        powerupManager.checkForPowerup(paddle)
     }
 
     fun onBallCollision(ball: Ball, paddle: Paddle) {
@@ -349,11 +355,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
                 ball.speedY *= -1
             }
-        powerupManager.checkForPowerup(paddle)
-//        if (ball.posX > paddle.posX && ball.posY < paddle.posY ) {
-//            ball.speedX = abs(ball.speedX)
-//            ball.speedY = abs(ball.speedY)
-//        }
         //Plays the sound every time ball and paddle collides
         soundManager?.playSoundPaddle()
 
@@ -391,7 +392,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         // Check if the distance is less than or equal to the circle's radius
         val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
         val radiusSquared = ball.size * ball.size
-            if (distanceSquared <= radiusSquared && !ballIsTouchingPaddle) {
+        if (distanceSquared <= radiusSquared && !ballIsTouchingPaddle) {
                 ballIsTouchingPaddle = true
                 // Collision detected, handle it accordingly (e.g., call a collision handling function)
                 onBallCollision(ball, paddle)
