@@ -4,7 +4,7 @@ import kotlin.random.Random
 
 class PowerupManager {
     enum class PowerUpType{
-        BIGPADDLE, SMALLPADDLE, EXTRABALL, STICKYPAD, SLOWMOTION
+        BIGPADDLE, SMALLPADDLE
     }
 
     fun shouldHavePowerup(): Boolean{
