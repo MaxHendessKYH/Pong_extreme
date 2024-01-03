@@ -225,8 +225,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 }
 
 
-
-
                 player.increaseScore(brick.score)
                 break // If you want to remove only one brick per frame, otherwise, remove the break statement
             }
@@ -348,7 +346,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             powerupManager.shouldHavePowerup()
         }
         val triggeredPowerUpType = powerupManager.triggerPowerUp()
-        if(triggeredPowerUpType == PowerupManager.PowerUpType.SLOWMOTION) {
+        if(triggeredPowerUpType == PowerupManager.PowerUpType.SLOWMOTION && !slowmotionActive) {
             activateSlowMotionPowerup()
         }
     }
@@ -356,8 +354,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     fun activateSlowMotionPowerup(){
         slowmotionActive = true
         slowMotionStartTime = System.currentTimeMillis()
-        ball.alterSpeed(0.2f)
-
+        ball.alterSpeed(0.20f)
     }
 
     fun resetBallSpeed(){
