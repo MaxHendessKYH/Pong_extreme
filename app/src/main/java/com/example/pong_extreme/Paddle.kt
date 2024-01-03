@@ -12,7 +12,7 @@ class Paddle(
     val width: Float = 80f,
     val height: Float = 16f,
     var speedX: Float = 0f,
-    var type: PaddleType
+   var type: PaddleType
 ) {
 
     var bitmap: Bitmap

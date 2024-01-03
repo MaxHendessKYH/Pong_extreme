@@ -41,8 +41,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun setup(currentLevel: Int) {
         // Set paddle
-        paddle = Paddle(this.context, 100f, 200f, 80f, 20f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
-
+//        paddle = Paddle(this.context, 100f, 200f, 80f, 20f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
         // Set bricks based on the currentLevel
         when (currentLevel) {
             1 -> levelOneBrickLayout()
@@ -76,7 +76,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun levelOneBrickLayout() {
         // Set up paddle
-        paddle = Paddle(this.context, 100f, 200f, 80f, 20f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
 
 
         // Initial position for the bricks
@@ -114,7 +114,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun levelTwoBrickLayout() {
         // Set up paddle (same as levelOneBrickLayout)
-        paddle = Paddle(this.context, 100f, 200f, 80f, 20f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
 
 
         // Initial position for the bricks
@@ -151,7 +151,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun levelThreeBrickLayout() {
         // Set up paddle (same as levelOneBrickLayout)
-        paddle = Paddle(this.context, 100f, 200f, 80f, 20f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
 
 
         // Initial position for the bricks
@@ -425,9 +425,9 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         // Check if the distance is less than or equal to the circle's radius
         val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
         val radiusSquared = ball.size * ball.size
-//        println("Distance" +distanceSquared)
+       println("Distance" +distanceSquared)
 
-//        println("Radius" +radiusSquared)
+       println("Radius" +radiusSquared)
         if (distanceSquared <= radiusSquared) {
             // Collision detected, handle it accordingly (e.g., call a collision handling function)
             onBallCollision(ball, paddle)
