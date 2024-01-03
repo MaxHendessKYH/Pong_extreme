@@ -7,6 +7,17 @@ class PowerupManager {
         BIGPADDLE, SMALLPADDLE, EXTRABALL, STICKYPAD, SLOWMOTION
     }
 
+    fun triggerPowerUp() : PowerUpType? {
+        if(shouldHavePowerup()){
+            val randomNumber = Random.nextInt(1,5)
+
+            if(randomNumber == 1){
+                return PowerUpType.SLOWMOTION
+            }
+        }
+        return null
+    }
+
     fun shouldHavePowerup(): Boolean{
         val randomize = Random.nextInt(1,101)
         return randomize <= 20

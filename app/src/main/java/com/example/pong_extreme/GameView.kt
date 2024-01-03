@@ -64,7 +64,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             3 -> 1.4f // Increase by 20%
             else -> 1.0f // Default
         }
-        ball.increaseSpeed(speedFactor)
+        ball.alterSpeed(speedFactor)
     }
 
 
@@ -206,7 +206,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 if (player.gameMode == "timed") {
                     brokenBrickCount++
                     if (brokenBrickCount == 10 && maxIncreaseCount < 4) {
-                        ball.increaseSpeed(1.1f)
+                        ball.alterSpeed(1.1f)
                         maxIncreaseCount++
                         brokenBrickCount = 0
                         maxIncreaseCount = 0
@@ -315,7 +315,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         if (ball.posX < brick.posX && ball.posY < brick.posY) {
             ball.speedX = abs(ball.speedX) * -1
             ball.speedY = abs(ball.speedY) * -1
-            powerupManager.shouldHavePowerup()
+            val triggeredPowerUpType = powerupManager.triggerPowerUp()
+            if(triggeredPowerUpType == PowerupManager.PowerUpType.SLOWMOTION) {
+                ball.alterSpeed(0.5f)
+            }
         }
         if (ball.posX < brick.posX && ball.posY > brick.posY) {
             ball.speedX = abs(ball.speedX) * -1
