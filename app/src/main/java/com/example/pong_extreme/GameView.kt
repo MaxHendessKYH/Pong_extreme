@@ -334,17 +334,14 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         if (ball.posX < brick.posX && ball.posY > brick.posY) {
             ball.speedX = abs(ball.speedX) * -1
             ball.speedY = abs(ball.speedY)
-            powerupManager.shouldHavePowerup()
         }
         if (ball.posX > brick.posX && ball.posY < brick.posY) {
             ball.speedX = abs(ball.speedX)
             ball.speedY = abs(ball.speedY) * -1
-            powerupManager.shouldHavePowerup()
         }
         if (ball.posX > brick.posX && ball.posY > brick.posY) {
             ball.speedX = abs(ball.speedX)
             ball.speedY = abs(ball.speedY)
-            powerupManager.shouldHavePowerup()
         }
         val triggeredPowerUpType = powerupManager.triggerPowerUp()
         if(triggeredPowerUpType == PowerupManager.PowerUpType.SLOWMOTION) {
@@ -356,21 +353,11 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         slowmotionActive = true
         slowMotionStartTime = System.currentTimeMillis()
         ball.alterSpeed(0.2f)
-
     }
 
     fun resetBallSpeed(){
         slowmotionActive = false
-
-        if (currentLevel == 1) {
-            ball.alterSpeed(5f)
-        }
-        if (currentLevel == 2){
-            ball.alterSpeed(6f)
-        }
-        if (currentLevel == 3){
-            ball.alterSpeed(7f)
-        }
+        ball.alterSpeed(5f) //1.0f
     }
 
     fun onBallCollision(ball: Ball, paddle: Paddle) {
