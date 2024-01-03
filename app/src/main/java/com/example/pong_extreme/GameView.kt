@@ -1,6 +1,7 @@
 package com.example.pong_extreme
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
@@ -30,6 +31,9 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     var currentLevel = 0
     var powerupManager = PowerupManager()
     val soundManager = context?.let { SoundManager(it) }
+    private var powerupActivationTime: Long = 0
+    private val powerupDurationMillis: Long = 15000 // 15 seconds in milliseconds
+
 
     init {
         this.player = player
@@ -40,7 +44,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun setup(currentLevel: Int) {
         // Set paddle
-        paddle = Paddle(this.context, 400f, 1250f, 92f, 16f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
 
         // Set bricks based on the currentLevel
         when (currentLevel) {
@@ -56,7 +60,9 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         if (player.gameMode == "classic") {
             increaseBallSpeedForLevel(currentLevel)
         }
-
+        if (powerupManager.shouldHavePowerup()) {
+            activatePowerup()
+        }
     }
 
     private fun increaseBallSpeedForLevel(currentLevel: Int) {
@@ -219,12 +225,25 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 break // If you want to remove only one brick per frame, otherwise, remove the break statement
             }
         }
+        // Reset powerup section
+        if (System.currentTimeMillis() - powerupActivationTime >= powerupDurationMillis) {
+            resetPaddleSize()
+            powerupManager.setSticky(paddle)
+            powerupManager.activePower = "None"
+//            powerupManager.powerupActive = false // comment to test time limit on powerups
+        }
+        // handle sticky paddle shoot ball
         if(paddle.isSticky && ballIsTouchingPaddle)
         {
+            // start countdown until ball shoots from sticky paddle
             powerupManager.stickyPaddleReleaseCountdown(paddle)
         }
+        // make sure sticky mode is on after shooting with sticky powerup.
+        if(!paddle.isSticky && !ballIsTouchingPaddle && powerupManager.activePower == "Sticky")
+        {
+            paddle.isSticky = true
+        }
     }
-
     fun draw() {
         val currentHolder = mHolder ?: return
         canvas = currentHolder.lockCanvas() ?: return
@@ -338,9 +357,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             ball.speedY = abs(ball.speedY)
         }
 
-        powerupManager.checkForPowerup(paddle)
+        if (powerupManager.shouldHavePowerup() && !powerupManager.powerupActive) {
+            activatePowerup()
+        }
     }
-
     fun onBallCollision(ball: Ball, paddle: Paddle) {
             if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
                 ball.speedX *= -1
@@ -358,6 +378,29 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         //Plays the sound every time ball and paddle collides
         soundManager?.playSoundPaddle()
 
+    }
+    private fun activatePowerup() {
+        powerupManager.powerupActive = true
+        // Determine the type of power-up
+        var powerupType = PowerupManager.PowerUpType.values().random()
+        powerupType = PowerupManager.PowerUpType.STICKY
+        when (powerupType) {
+            PowerupManager.PowerUpType.BIGPADDLE -> {
+                paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle_big)
+            }
+            PowerupManager.PowerUpType.SMALLPADDLE -> {
+                paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle_small)
+            }
+            PowerupManager.PowerUpType.STICKY -> {
+                powerupManager.setSticky(paddle)
+                powerupManager.activePower = "Sticky"
+            }
+        }
+        powerupActivationTime = System.currentTimeMillis()
+    }
+    private fun resetPaddleSize() {
+        // Reset paddle to normal size
+        paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle)
     }
     fun shapesIntersect(ball: Ball, paddle: Paddle) {
         // Calculate the center of the circle
