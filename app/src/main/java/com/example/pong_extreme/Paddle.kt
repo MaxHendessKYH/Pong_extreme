@@ -16,7 +16,7 @@ class Paddle(
 ) {
 
     var bitmap: Bitmap
-
+    var isSticky: Boolean = false
     init {
         bitmap = when (type) {
             PaddleType.SMALL_PADDLE

@@ -12,6 +12,7 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.WindowManager
 import java.lang.Math.abs
+import java.lang.Math.pow
 
 class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback,
     Runnable {
@@ -23,6 +24,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     lateinit var ball: Ball
     var maxIncreaseCount: Int = 0
     var brokenBrickCount: Int = 0
+    var ballIsTouchingPaddle = false;
     var player: Player
     var brickList: MutableList<Brick> = mutableListOf()
     var bounds = Rect()
@@ -37,6 +39,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     val powerupDurationMillis: Long = 15000 // 15 seconds in milliseconds
 
 
+
     init {
         this.player = player
         if (mHolder != null) {
@@ -46,8 +49,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun setup(currentLevel: Int) {
         // Set paddle
-//        paddle = Paddle(this.context, 100f, 200f, 80f, 20f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
         paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
+
         // Set bricks based on the currentLevel
         when (currentLevel) {
             1 -> levelOneBrickLayout()
@@ -65,7 +68,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         if (powerupManager.shouldHavePowerup()) {
             activatePowerup()
         }
-
     }
 
     private fun increaseBallSpeedForLevel(currentLevel: Int) {
@@ -82,7 +84,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     private fun levelOneBrickLayout() {
         // Set up paddle
         paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
-
 
         // Initial position for the bricks
         var posX: Float = 10f
@@ -121,7 +122,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         // Set up paddle (same as levelOneBrickLayout)
         paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
 
-
         // Initial position for the bricks
         var posX: Float = 10f
         var posY: Float = 40f
@@ -157,7 +157,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     private fun levelThreeBrickLayout() {
         // Set up paddle (same as levelOneBrickLayout)
         paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
-
 
         // Initial position for the bricks
         var posX: Float = 10f
@@ -209,7 +208,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     fun update() {
 
         paddle.update(width.toFloat())
-        ball.update()
+        ball.update(paddle, ballIsTouchingPaddle )
 
         for (brick in brickList) {
 
@@ -238,17 +237,26 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 player.increaseScore(brick.score)
                 break // If you want to remove only one brick per frame, otherwise, remove the break statement
             }
-                    }
+        }
+        // Reset powerup section
         if (System.currentTimeMillis() - powerupActivationTime >= powerupDurationMillis) {
             resetPaddleSize()
+            powerupManager.setSticky(paddle)
+            powerupManager.activePower = "None"
+//            powerupManager.powerupActive = false // comment to test time limit on powerups
+        }
+        // handle sticky paddle shoot ball
+        if(paddle.isSticky && ballIsTouchingPaddle)
+        {
+            // start countdown until ball shoots from sticky paddle
+            powerupManager.stickyPaddleReleaseCountdown(paddle)
+        }
+        // make sure sticky mode is on after shooting with sticky powerup.
+        if(!paddle.isSticky && !ballIsTouchingPaddle && powerupManager.activePower == "Sticky")
+        {
+            paddle.isSticky = true
         }
     }
-
-    private fun resetPaddleSize() {
-        // Reset paddle to normal size
-        paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle)
-    }
-
     fun draw() {
         val currentHolder = mHolder ?: return
         canvas = currentHolder.lockCanvas() ?: return
@@ -333,9 +341,12 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         paddle.posX = event!!.x
+        if(paddle.isSticky && ballIsTouchingPaddle)
+        {
+            ball.posX = event!!.x + paddle.width / 2
+        }
         return true
     }
-
 
     fun gameOver() {
         ball.speedX = 0f
@@ -362,7 +373,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             ball.speedY = abs(ball.speedY)
         }
 
-        if (powerupManager.shouldHavePowerup()) {
+        if (powerupManager.shouldHavePowerup() && !powerupManager.powerupActive) {
             activatePowerup()
         }
         val triggeredPowerUpType = powerupManager.triggerPowerUp()
@@ -381,10 +392,29 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         slowmotionActive = false
         ball.alterSpeed(5f)
     }
-    private fun activatePowerup() {
-        // Determine the type of power-up
-        val powerupType = PowerupManager.PowerUpType.values().random()
+    fun onBallCollision(ball: Ball, paddle: Paddle) {
+            if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
+                ball.speedX *= -1
+                ball.speedY *= -1
+            }
+            if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
+                ball.speedX *= -1
+            }
+            if (ball.posX > paddle.posX && ball.posY < paddle.posY) {
+                ball.speedY *= -1
+            }
+            if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
+                ball.speedY *= -1
+            }
+        //Plays the sound every time ball and paddle collides
+        soundManager?.playSoundPaddle()
 
+    }
+    private fun activatePowerup() {
+        powerupManager.powerupActive = true
+        // Determine the type of power-up
+        var powerupType = PowerupManager.PowerUpType.values().random()
+        powerupType = PowerupManager.PowerUpType.STICKY
         when (powerupType) {
             PowerupManager.PowerUpType.BIGPADDLE -> {
                 paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle_big)
@@ -392,37 +422,17 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             PowerupManager.PowerUpType.SMALLPADDLE -> {
                 paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle_small)
             }
-
+            PowerupManager.PowerUpType.STICKY -> {
+                powerupManager.setSticky(paddle)
+                powerupManager.activePower = "Sticky"
+            }
         }
         powerupActivationTime = System.currentTimeMillis()
     }
-    fun onBallCollision(ball: Ball, paddle: Paddle) {
-        if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
-//            ball.speedX = abs(ball.speedX) * -1
-//            ball.speedY = abs(ball.speedY) * -1
-            ball.speedX *= -1
-            ball.speedY *= -1
-
-        }
-        if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
-//            ball.speedX = abs(ball.speedX) * -1
-//            ball.speedY = abs(ball.speedY)
-            ball.speedX *= -1
-        }
-        if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
-//            ball.speedX = abs(ball.speedX)
-//            ball.speedY = abs(ball.speedY) * -1
-            ball.speedY *= -1
-
-        }
-//        if (ball.posX > paddle.posX && ball.posY < paddle.posY ) {
-//            ball.speedX = abs(ball.speedX)
-//            ball.speedY = abs(ball.speedY)
-//        }
-        //Plays the sound every time ball and paddle collides
-        soundManager?.playSoundPaddle()
+    private fun resetPaddleSize() {
+        // Reset paddle to normal size
+        paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle)
     }
-
     fun shapesIntersect(ball: Ball, paddle: Paddle) {
         // Calculate the center of the circle
 //        val circleCenterX = ball.posX
@@ -449,19 +459,22 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         } else if (displayMetrics.heightPixels == 2960 && displayMetrics.widthPixels == 1440) {
             // set values för bills telefon
             //Höj -45 till -52 istället
-            distanceY = ball.posY - closestY - 52
+            distanceY = ball.posY - closestY - 45
         }
         // closestY Pixel2API 33, Pixel 3a behöver - 35
 
         // Check if the distance is less than or equal to the circle's radius
         val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
         val radiusSquared = ball.size * ball.size
-       println("Distance" +distanceSquared)
-
-       println("Radius" +radiusSquared)
-        if (distanceSquared <= radiusSquared) {
-            // Collision detected, handle it accordingly (e.g., call a collision handling function)
-            onBallCollision(ball, paddle)
+        if (distanceSquared <= radiusSquared && !ballIsTouchingPaddle) {
+                ballIsTouchingPaddle = true
+                // Collision detected, handle it accordingly (e.g., call a collision handling function)
+                onBallCollision(ball, paddle)
+            }
+        // if ball is not touching paddle set ballIsTouchingPaddle = false
+        if(distanceSquared >= radiusSquared)
+        {
+            ballIsTouchingPaddle = false
         }
     }
 }
