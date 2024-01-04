@@ -64,9 +64,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         if (player.gameMode == "classic") {
             increaseBallSpeedForLevel(currentLevel)
         }
-        if (powerupManager.shouldHavePowerup()) {
-            activatePowerup()
-        }
     }
 
     private fun increaseBallSpeedForLevel(currentLevel: Int) {
@@ -224,9 +221,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                         maxIncreaseCount = 0
                     }
                 }
-
-
-
                 player.increaseScore(brick.score)
                 break // If you want to remove only one brick per frame, otherwise, remove the break statement
             }
@@ -235,7 +229,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         if (System.currentTimeMillis() - powerupActivationTime >= powerupDurationMillis) {
             resetPaddleSize()
             powerupManager.powerupActive = false
-            powerupManager.setSticky(paddle)
+            paddle.isSticky = false
             powerupManager.activePower = "None"
 //            powerupManager.powerupActive = false // comment to test time limit on powerups
         }
