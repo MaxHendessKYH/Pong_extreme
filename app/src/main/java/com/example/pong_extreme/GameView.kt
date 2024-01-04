@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
+import android.os.Handler
 import android.util.DisplayMetrics
 import android.view.MotionEvent
 import android.view.SurfaceHolder
@@ -31,8 +32,12 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     var currentLevel = 0
     var powerupManager = PowerupManager()
     val soundManager = context?.let { SoundManager(it) }
-    private var powerupActivationTime: Long = 0
-    private val powerupDurationMillis: Long = 15000 // 15 seconds in milliseconds
+    var slowmotionActive = false
+    var slowMotionStartTime: Long = 0
+    val slowMotionDuration = 15000L
+    var powerupActivationTime: Long = 0
+    val powerupDurationMillis: Long = 15000 // 15 seconds in milliseconds
+
 
 
     init {
@@ -72,7 +77,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             3 -> 1.4f // Increase by 20%
             else -> 1.0f // Default
         }
-        ball.increaseSpeed(speedFactor)
+        ball.alterSpeed(speedFactor)
     }
 
 
@@ -206,6 +211,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         ball.update(paddle, ballIsTouchingPaddle )
 
         for (brick in brickList) {
+
             if (brick.isCollision(ball)) {
                 soundManager?.playSoundBrick()
                 brickList.remove(brick)
@@ -214,12 +220,19 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 if (player.gameMode == "timed") {
                     brokenBrickCount++
                     if (brokenBrickCount == 10 && maxIncreaseCount < 4) {
-                        ball.increaseSpeed(1.1f)
+                        ball.alterSpeed(1.1f)
                         maxIncreaseCount++
                         brokenBrickCount = 0
                         maxIncreaseCount = 0
                     }
                 }
+                if (slowmotionActive) {
+                    val elapsedTime = System.currentTimeMillis() - slowMotionStartTime
+                    if (elapsedTime >= slowMotionDuration) {
+                        resetBallSpeed() // Återställ bollens hastighet när slow motion-tiden har gått ut
+                    }
+                }
+
 
                 player.increaseScore(brick.score)
                 break // If you want to remove only one brick per frame, otherwise, remove the break statement
@@ -289,6 +302,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             update()
             draw()
             ball.checkBounds(bounds)
+
+
             // check for collison with bottom of screen
             val hitBottom = ball.checkCollisionBottom(bounds)
             if (hitBottom && player.gameMode == "classic") {
@@ -338,6 +353,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         ball.speedY = 0f
     }
 
+
     fun onBallCollisionBrick(ball: Ball, brick: Brick) {
 
         if (ball.posX < brick.posX && ball.posY < brick.posY) {
@@ -360,6 +376,21 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         if (powerupManager.shouldHavePowerup() && !powerupManager.powerupActive) {
             activatePowerup()
         }
+        val triggeredPowerUpType = powerupManager.triggerPowerUp()
+        if(triggeredPowerUpType == PowerupManager.PowerUpType.SLOWMOTION && !slowmotionActive) {
+            activateSlowMotionPowerup()
+        }
+    }
+
+    fun activateSlowMotionPowerup(){
+        slowmotionActive = true
+        slowMotionStartTime = System.currentTimeMillis()
+        ball.alterSpeed(0.20f)
+    }
+
+    fun resetBallSpeed(){
+        slowmotionActive = false
+        ball.alterSpeed(5f)
     }
     fun onBallCollision(ball: Ball, paddle: Paddle) {
             if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
