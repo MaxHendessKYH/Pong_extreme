@@ -1,6 +1,7 @@
 package com.example.pong_extreme
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
@@ -32,6 +33,9 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     var slowmotionActive = false
     var slowMotionStartTime: Long = 0
     val slowMotionDuration = 15000L
+    var powerupActivationTime: Long = 0
+    val powerupDurationMillis: Long = 15000 // 15 seconds in milliseconds
+
 
     init {
         this.player = player
@@ -42,8 +46,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun setup(currentLevel: Int) {
         // Set paddle
-        paddle = Paddle(this.context, 400f, 1250f, 92f, 16f, 0f)
-
+//        paddle = Paddle(this.context, 100f, 200f, 80f, 20f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
         // Set bricks based on the currentLevel
         when (currentLevel) {
             1 -> levelOneBrickLayout()
@@ -57,6 +61,9 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         //If the player is in classic game mode, increase the speed in all levels
         if (player.gameMode == "classic") {
             increaseBallSpeedForLevel(currentLevel)
+        }
+        if (powerupManager.shouldHavePowerup()) {
+            activatePowerup()
         }
 
     }
@@ -74,7 +81,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun levelOneBrickLayout() {
         // Set up paddle
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
+
 
         // Initial position for the bricks
         var posX: Float = 10f
@@ -111,7 +119,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun levelTwoBrickLayout() {
         // Set up paddle (same as levelOneBrickLayout)
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
+
 
         // Initial position for the bricks
         var posX: Float = 10f
@@ -147,7 +156,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     private fun levelThreeBrickLayout() {
         // Set up paddle (same as levelOneBrickLayout)
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
+
 
         // Initial position for the bricks
         var posX: Float = 10f
@@ -228,7 +238,15 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 player.increaseScore(brick.score)
                 break // If you want to remove only one brick per frame, otherwise, remove the break statement
             }
+                    }
+        if (System.currentTimeMillis() - powerupActivationTime >= powerupDurationMillis) {
+            resetPaddleSize()
         }
+    }
+
+    private fun resetPaddleSize() {
+        // Reset paddle to normal size
+        paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle)
     }
 
     fun draw() {
@@ -318,6 +336,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         return true
     }
 
+
     fun gameOver() {
         ball.speedX = 0f
         ball.speedY = 0f
@@ -333,17 +352,18 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         if (ball.posX < brick.posX && ball.posY > brick.posY) {
             ball.speedX = abs(ball.speedX) * -1
             ball.speedY = abs(ball.speedY)
-            powerupManager.shouldHavePowerup()
         }
         if (ball.posX > brick.posX && ball.posY < brick.posY) {
             ball.speedX = abs(ball.speedX)
             ball.speedY = abs(ball.speedY) * -1
-            powerupManager.shouldHavePowerup()
         }
         if (ball.posX > brick.posX && ball.posY > brick.posY) {
             ball.speedX = abs(ball.speedX)
             ball.speedY = abs(ball.speedY)
-            powerupManager.shouldHavePowerup()
+        }
+
+        if (powerupManager.shouldHavePowerup()) {
+            activatePowerup()
         }
         val triggeredPowerUpType = powerupManager.triggerPowerUp()
         if(triggeredPowerUpType == PowerupManager.PowerUpType.SLOWMOTION && !slowmotionActive) {
@@ -361,7 +381,21 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         slowmotionActive = false
         ball.alterSpeed(5f)
     }
+    private fun activatePowerup() {
+        // Determine the type of power-up
+        val powerupType = PowerupManager.PowerUpType.values().random()
 
+        when (powerupType) {
+            PowerupManager.PowerUpType.BIGPADDLE -> {
+                paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle_big)
+            }
+            PowerupManager.PowerUpType.SMALLPADDLE -> {
+                paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle_small)
+            }
+
+        }
+        powerupActivationTime = System.currentTimeMillis()
+    }
     fun onBallCollision(ball: Ball, paddle: Paddle) {
         if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
 //            ball.speedX = abs(ball.speedX) * -1
@@ -415,16 +449,16 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         } else if (displayMetrics.heightPixels == 2960 && displayMetrics.widthPixels == 1440) {
             // set values för bills telefon
             //Höj -45 till -52 istället
-            distanceY = ball.posY - closestY - 45
+            distanceY = ball.posY - closestY - 52
         }
         // closestY Pixel2API 33, Pixel 3a behöver - 35
 
         // Check if the distance is less than or equal to the circle's radius
         val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
         val radiusSquared = ball.size * ball.size
-//        println("Distance" +distanceSquared)
+       println("Distance" +distanceSquared)
 
-//        println("Radius" +radiusSquared)
+       println("Radius" +radiusSquared)
         if (distanceSquared <= radiusSquared) {
             // Collision detected, handle it accordingly (e.g., call a collision handling function)
             onBallCollision(ball, paddle)
