@@ -47,8 +47,19 @@ class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, v
         return RectF(posX - size, posY - size, posX + size, posY + size)
     }
 
-    fun increaseSpeed(factor: Float) {
+    fun alterSpeed(factor: Float) {
         speedX *= factor
         speedY *= factor
     }
+
+//    fun orignalSpeed(){
+//        speedX
+//        speedY
+//    }
+//    fun slowMotionSpeed(){
+//        speedX /= 2
+//        speedY /= 2
+//    }
+
+
 }
