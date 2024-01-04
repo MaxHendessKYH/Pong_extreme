@@ -8,6 +8,7 @@ import android.graphics.RectF
 
 class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, var size: Float, var speedX: Float, var speedY: Float) {
     var paint = Paint()
+
     fun draw(canvas: Canvas?) {
         paint.color = color
         canvas?.drawCircle(posX, posY, size, paint)
@@ -57,15 +58,4 @@ class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, v
         speedX *= factor
         speedY *= factor
     }
-
-//    fun orignalSpeed(){
-//        speedX
-//        speedY
-//    }
-//    fun slowMotionSpeed(){
-//        speedX /= 2
-//        speedY /= 2
-//    }
-
-
 }

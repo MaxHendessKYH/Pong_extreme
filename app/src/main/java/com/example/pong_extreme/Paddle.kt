@@ -9,7 +9,7 @@ class Paddle(
     private val context: Context,
     var posX: Float = 100f,
     var posY: Float = 200f,
-    val width: Float = 80f,
+    var width: Float = 80f,
     val height: Float = 16f,
     var speedX: Float = 0f,
    var type: PaddleType
@@ -46,6 +46,6 @@ class Paddle(
     fun draw(canvas: Canvas) {
         val centerX = posX
         val centerY = canvas.height.toFloat() - 80f
-        canvas.drawBitmap(bitmap, posX, centerY, null)
+        canvas?.drawBitmap(bitmap, posX, centerY, null)
     }
 }

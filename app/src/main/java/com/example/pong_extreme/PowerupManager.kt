@@ -3,7 +3,7 @@ import kotlin.random.Random
 
 class PowerupManager {
     enum class PowerUpType{
-        BIGPADDLE, SMALLPADDLE,STICKY
+        BIGPADDLE, SMALLPADDLE,STICKY, SLOWMOTION
     }
 
     var activePower = "None"
@@ -24,7 +24,7 @@ class PowerupManager {
 
     fun shouldHavePowerup(): Boolean{
         val randomize = Random.nextInt(1,101)
-        return randomize <= 100
+        return randomize <= 20
     }
     fun setSticky(paddle: Paddle)
     {
