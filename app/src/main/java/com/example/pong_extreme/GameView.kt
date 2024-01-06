@@ -525,13 +525,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 powerupManager.setSticky(paddle)
                 powerupManager.activePower = "Sticky"
             }
-
-            PowerupManager.PowerUpType.EXTRA_BALL -> {
-//                // Add two extra balls when EXTRA_BALL power-up is activated
-//                balls.add(Ball(context, Color.RED, 200f, 800f, 20f, 5f, -5f, isExtraBall = true))
-//                balls.add(Ball(context, Color.BLUE, 600f, 800f, 20f, -5f, -5f, isExtraBall = true))
-            }
-
         }
 //        Add two  balls power-up is activated
         if (balls.size < 3) {
