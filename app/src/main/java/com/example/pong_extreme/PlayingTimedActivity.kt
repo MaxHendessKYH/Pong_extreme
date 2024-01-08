@@ -33,6 +33,7 @@ class PlayingTimedActivity : AppCompatActivity() {
         timer(duration)
         binding.btnEndGame.setOnClickListener {
             showGameOverDialog()
+            gameView.gameOver()
         }
         gameView = GameView(this, player)
         val container = binding.frameLayout
