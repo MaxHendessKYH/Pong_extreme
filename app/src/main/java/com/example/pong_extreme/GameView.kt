@@ -528,8 +528,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             //        Add two  balls power-up is activated
             PowerupManager.PowerUpType.MULTIBALLS ->{
                 if (balls.size < 3) {
-                    balls.add(Ball(context, Color.RED, 200f, 800f, 20f, ball.speedX,  ball.speedY, isExtraBall = true))
-                    balls.add(Ball(context, Color.BLUE, 600f, 800f, 20f,  ball.speedX, ball.speedY, isExtraBall = true))
+                    balls.add(Ball(context, Color.RED, 200f, 800f, 25f, ball.speedX,  ball.speedY, isExtraBall = true))
+                    balls.add(Ball(context, Color.BLUE, 600f, 800f, 25f,  ball.speedX, ball.speedY, isExtraBall = true))
                     drawMore()
                 }
             }

@@ -26,6 +26,7 @@ class PlayingClassicActivity : AppCompatActivity() {
         container.addView(gameView)
         binding.btnEndGame.setOnClickListener {
             showGameOverDialog()
+            gameView.gameOver()
         }
         startUpdateLoop()
     }
