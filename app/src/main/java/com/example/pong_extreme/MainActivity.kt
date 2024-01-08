@@ -12,8 +12,8 @@ import com.example.pong_extreme.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mediaPlayer: MediaPlayer
- lateinit var binding: ActivityMainBinding
-  lateinit  var prefs: SharedPreferences
+    lateinit var binding: ActivityMainBinding
+    lateinit var prefs: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // It makes transparent status bar and navigation bar
@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, PlayingClassicActivity::class.java)
             startActivity(intent)
         }
+
         binding.btnTimed.setOnClickListener {
             mediaPlayer.stop()
             val intent = Intent(this, PlayingTimedActivity::class.java)
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         setAdapter()
     }
+
     override fun onResume() {
         super.onResume()
         mediaPlayer.reset()
@@ -51,15 +53,14 @@ class MainActivity : AppCompatActivity() {
         setAdapter()
     }
 
-    private fun setAdapter()
-    {
+    private fun setAdapter() {
         prefs = getSharedPreferences("com.example.com.example.pong_extreme.prefs", MODE_PRIVATE)
         var classicHighScores = HighscoreManager.getHighScores("classic", prefs)
         val lvClassic = findViewById<ListView>(R.id.lv_highscore_classic)
         val classicAdapter = HighscoreAdapter(this, classicHighScores)
         lvClassic.adapter = classicAdapter
 
-       var timedHighScores = HighscoreManager.getHighScores("timed", prefs)
+        var timedHighScores = HighscoreManager.getHighScores("timed", prefs)
         val lvTimed = findViewById<ListView>(R.id.lv_highscore_timed)
         val timedAdapter = HighscoreAdapter(this, timedHighScores)
         lvTimed.adapter = timedAdapter

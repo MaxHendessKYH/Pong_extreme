@@ -38,6 +38,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     var powerupActivationTime: Long = 0
     val powerupDurationMillis: Long = 15000 // 15 seconds in milliseconds
 
+    private var balls: MutableList<Ball> = mutableListOf()
 
     init {
         this.player = player
@@ -58,7 +59,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             else -> levelOneBrickLayout()
         }
 
-        ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f)
+        ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f, true)
 
         //If the player is in classic game mode, increase the speed in all levels
         if (player.gameMode == "classic") {
@@ -206,6 +207,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         paddle.update(width.toFloat())
         ball.update(paddle, ballIsTouchingPaddle)
 
+        for (ball in balls) {
+            ball.update(paddle, ballIsTouchingPaddle)
+        }
+
         for (brick in brickList) {
             if (brick.isCollision(ball)) {
                 soundManager?.playSoundBrick()
@@ -232,6 +237,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             paddle.isSticky = false
             powerupManager.activePower = "None"
 //            powerupManager.powerupActive = false // comment to test time limit on powerups
+            resetPowerup()
         }
         // handle sticky paddle shoot ball
         if (paddle.isSticky && ballIsTouchingPaddle) {
@@ -250,6 +256,27 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         }
     }
 
+
+    private fun resetPowerup() {
+        // Reset power-up effects
+        when (powerupManager.activePower) {
+            "SLOWMOTION" -> resetSlowMotionPowerup()
+            // Add cases for other power-ups if needed
+        }
+
+        // Reset power-up manager
+        powerupManager.powerupActive = false
+        paddle.isSticky = false
+        powerupManager.activePower = "None"
+    }
+
+    private fun resetSlowMotionPowerup() {
+        // Reset slow motion power-up effects
+        slowmotionActive = false
+        ball.alterSpeed(5f)
+    }
+
+
     fun draw() {
         val currentHolder = mHolder ?: return
         canvas = currentHolder.lockCanvas() ?: return
@@ -261,10 +288,28 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             for (brick in brickList) {
                 brick.draw(canvas)
             }
+            for (ball in balls) {
+                ball.draw(canvas)
+            }
         } finally {
             currentHolder.unlockCanvasAndPost(canvas)
         }
     }
+    fun drawMore() {
+        val currentHolder = mHolder ?: return
+        canvas = currentHolder.lockCanvas() ?: return
+
+        try {
+
+            for (ball in balls) {
+                ball.draw(canvas)
+            }
+        } finally {
+            currentHolder.unlockCanvasAndPost(canvas)
+        }
+    }
+
+
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         if (mHolder != null) {
@@ -285,7 +330,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         soundManager?.release()
     }
 
-
     fun levelComplete(): Boolean {
         return brickList.isEmpty()
     }
@@ -294,10 +338,68 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         while (running) {
             update()
             draw()
+
+            // Check for the total number of balls
+//            if (balls.size < 3) {
+//                // Add an extra ball when needed
+//                balls.add(Ball(context, Color.RED, 200f, 800f, 20f, 5f, -5f, isExtraBall = true))
+//            }
+            // Iterate through all balls
+            for (ball in balls.toList()) {
+                ball.checkBounds(bounds)
+
+                // check for collision with bottom of screen
+                val hitBottom = ball.checkCollisionBottom(bounds)
+
+                if (hitBottom && player.gameMode == "classic" && !ball.isExtraBall) {
+                    player.reduceLife()
+
+                    // Check for gameover
+                    if (player.showLives() <= 0) {
+                        gameOver()
+                        // at this point endgame dialog should show (See classic activity)
+                    }
+                }
+
+                if (hitBottom && player.gameMode == "timed" && !ball.isExtraBall) {
+                    // Timer goes down by 10 when life is lost
+                    player.reduceLife()
+                    // Check for gameover
+                }
+
+                if (hitBottom && ball.isExtraBall) {
+                    balls.remove(ball)
+                }
+                shapesIntersect(ball, paddle)
+
+            }
+
+            // Check if any ball collides with bricks
+            for (ball in balls) {
+                for (brick in brickList.toList()) {
+                    if (brick.isCollision(ball)) {
+                        soundManager?.playSoundBrick()
+                        brickList.remove(brick)
+                        onBallCollisionBrick(ball, brick)
+                        if (player.gameMode == "timed") {
+                            brokenBrickCount++
+                            if (brokenBrickCount == 10 && maxIncreaseCount < 4) {
+                                ball.alterSpeed(1.1f)
+                                maxIncreaseCount++
+                                brokenBrickCount = 0
+                            }
+                        }
+                        player.increaseScore(brick.score)
+                    }
+                }
+            }
+
+
+
             ball.checkBounds(bounds)
             // check for collison with bottom of screen
             val hitBottom = ball.checkCollisionBottom(bounds)
-            if (hitBottom && player.gameMode == "classic") {
+            if (hitBottom && player.gameMode == "classic" && !ball.isExtraBall) {
                 player.reduceLife()
                 // Check for gameover
                 if (player.showLives() <= 0) {
@@ -305,7 +407,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                     // at this point endgame dialog should show (See classic activity)
                 }
             }
-            if (hitBottom && player.gameMode == "timed") {
+            if (hitBottom && player.gameMode == "timed" && !ball.isExtraBall) {
                 // Timer goes down by 10 when life is lost
                 player.reduceLife()
                 // Check for gameover
@@ -325,6 +427,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             }
             // Put code for hitBottom in timedActivity here
             shapesIntersect(ball, paddle)
+
+
         }
 
     }
@@ -365,10 +469,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         if (powerupManager.shouldHavePowerup() && !powerupManager.powerupActive) {
             activatePowerup()
         }
-//        val triggeredPowerUpType = powerupManager.triggerPowerUp()
-//        if (powerupManager.shouldHavePowerup() && !powerupManager.slowmotionActive) {
-//
-//        }
     }
 
     fun activateSlowMotionPowerup() {
@@ -400,81 +500,93 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         soundManager?.playSoundPaddle()
     }
 
-private fun activatePowerup() {
-    powerupManager.powerupActive = true
-    // Determine the type of power-up
-    var powerupType = PowerupManager.PowerUpType.values().random()
+    private fun activatePowerup() {
+        powerupManager.powerupActive = true
+        // Determine the type of power-up
+        var powerupType = PowerupManager.PowerUpType.values().random()
 //    powerupType = PowerupManager.PowerUpType.STICKY
-    when (powerupType) {
-        PowerupManager.PowerUpType.BIGPADDLE -> {
-            paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle_big)
+        when (powerupType) {
+            PowerupManager.PowerUpType.BIGPADDLE -> {
+                paddle.bitmap =
+                    BitmapFactory.decodeResource(context.resources, R.drawable.paddle_big)
+            }
+
+            PowerupManager.PowerUpType.SMALLPADDLE -> {
+                paddle.bitmap =
+                    BitmapFactory.decodeResource(context.resources, R.drawable.paddle_small)
+            }
+
+            PowerupManager.PowerUpType.SLOWMOTION -> {
+                powerupManager.activePower = "SLOWMOTION"
+                activateSlowMotionPowerup()
+            }
+
+            PowerupManager.PowerUpType.STICKY -> {
+                powerupManager.setSticky(paddle)
+                powerupManager.activePower = "Sticky"
+            }
+            //        Add two  balls power-up is activated
+            PowerupManager.PowerUpType.MULTIBALLS ->{
+                if (balls.size < 3) {
+                    balls.add(Ball(context, Color.RED, 200f, 800f, 20f, ball.speedX,  ball.speedY, isExtraBall = true))
+                    balls.add(Ball(context, Color.BLUE, 600f, 800f, 20f,  ball.speedX, ball.speedY, isExtraBall = true))
+                    drawMore()
+                }
+            }
+
         }
 
-        PowerupManager.PowerUpType.SMALLPADDLE -> {
-            paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle_small)
-        }
-        PowerupManager.PowerUpType.SLOWMOTION -> {
-        powerupManager.activePower = "SLOWMOTION"
-            activateSlowMotionPowerup()
-        }
-
-        PowerupManager.PowerUpType.STICKY -> {
-            powerupManager.setSticky(paddle)
-            powerupManager.activePower = "Sticky"
-        }
-
+        powerupActivationTime = System.currentTimeMillis()
     }
-    powerupActivationTime = System.currentTimeMillis()
-}
 
-private fun resetPaddleSize() {
-    // Reset paddle to normal size
-    paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle)
-}
+    private fun resetPaddleSize() {
+        // Reset paddle to normal size
+        paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle)
+    }
 
-fun shapesIntersect(ball: Ball, paddle: Paddle) {
-    // Calculate the center of the circle
+    fun shapesIntersect(ball: Ball, paddle: Paddle) {
+        // Calculate the center of the circle
 //        val circleCenterX = ball.posX
 //        val circleCenterY = ball.posY
-    // Find the closest point on the square to the center of the circle
-    val closestX =
-        Math.max(this.paddle.posX, Math.min(ball.posX, this.paddle.posX + this.paddle.width))
-    val closestY =
-        Math.max(this.paddle.posY, Math.min(ball.posY, this.paddle.posY + this.paddle.height))
+        // Find the closest point on the square to the center of the circle
+        val closestX =
+            Math.max(this.paddle.posX, Math.min(ball.posX, this.paddle.posX + this.paddle.width))
+        val closestY =
+            Math.max(this.paddle.posY, Math.min(ball.posY, this.paddle.posY + this.paddle.height))
 
-    // Calculate the distance between the circle center and the closest point on the square
-    val distanceX = ball.posX - closestX
-    var distanceY = ball.posY - closestY
+        // Calculate the distance between the circle center and the closest point on the square
+        val distanceX = ball.posX - closestX
+        var distanceY = ball.posY - closestY
 
-    // Get info about device #responsive design
-    val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    val displayMetrics = DisplayMetrics()
-    //TODO: hitta not deprecated lösning för windowmanagern
-    windowManager.defaultDisplay.getMetrics(displayMetrics)
-    // Set values depending on screen size
-    if (displayMetrics.heightPixels == 2154 && displayMetrics.widthPixels == 1080) {
-        // Pixel 3a
-        distanceY = ball.posY - closestY - 41
-    } else if (displayMetrics.heightPixels == 2960 && displayMetrics.widthPixels == 1440) {
-        // set values för bills telefon
-        //Höj -45 till -52 istället
-        distanceY = ball.posY - closestY - 52
-    }
-    // closestY Pixel2API 33, Pixel 3a behöver - 35
+        // Get info about device #responsive design
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val displayMetrics = DisplayMetrics()
+        //TODO: hitta not deprecated lösning för windowmanagern
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        // Set values depending on screen size
+        if (displayMetrics.heightPixels == 2154 && displayMetrics.widthPixels == 1080) {
+            // Pixel 3a
+            distanceY = ball.posY - closestY - 41
+        } else if (displayMetrics.heightPixels == 2960 && displayMetrics.widthPixels == 1440) {
+            // set values för bills telefon
+            //Höj -45 till -52 istället
+            distanceY = ball.posY - closestY - 52
+        }
+        // closestY Pixel2API 33, Pixel 3a behöver - 35
 
-    // Check if the distance is less than or equal to the circle's radius
-    val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
-    val radiusSquared = ball.size * ball.size
-    if (distanceSquared <= radiusSquared && !ballIsTouchingPaddle) {
-        ballIsTouchingPaddle = true
-        // Collision detected, handle it accordingly (e.g., call a collision handling function)
-        onBallCollision(ball, paddle)
+        // Check if the distance is less than or equal to the circle's radius
+        val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
+        val radiusSquared = ball.size * ball.size
+        if (distanceSquared <= radiusSquared && !ballIsTouchingPaddle) {
+            ballIsTouchingPaddle = true
+            // Collision detected, handle it accordingly (e.g., call a collision handling function)
+            onBallCollision(ball, paddle)
+        }
+        // if ball is not touching paddle set ballIsTouchingPaddle = false
+        if (distanceSquared >= radiusSquared) {
+            ballIsTouchingPaddle = false
+        }
     }
-    // if ball is not touching paddle set ballIsTouchingPaddle = false
-    if (distanceSquared >= radiusSquared) {
-        ballIsTouchingPaddle = false
-    }
-}
 }
 
 
