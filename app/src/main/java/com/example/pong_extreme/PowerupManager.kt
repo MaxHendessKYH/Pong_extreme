@@ -3,7 +3,7 @@ import kotlin.random.Random
 
 class PowerupManager {
     enum class PowerUpType{
-        BIGPADDLE, SMALLPADDLE,STICKY, SLOWMOTION
+        BIGPADDLE, SMALLPADDLE,STICKY, SLOWMOTION, MULTIBALLS
     }
 
     var activePower = "None"
