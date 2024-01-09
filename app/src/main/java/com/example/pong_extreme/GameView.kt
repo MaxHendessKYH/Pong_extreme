@@ -24,7 +24,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     lateinit var ball: Ball
     var maxIncreaseCount: Int = 0
     var brokenBrickCount: Int = 0
-    var ballIsTouchingPaddle = false;
+//    var ballIsTouchingPaddle = false;
     var player: Player
     var brickList: MutableList<Brick> = mutableListOf()
     var bounds = Rect()
@@ -59,7 +59,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             else -> levelOneBrickLayout()
         }
 
-        ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f, true)
+        ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f, false)
 
         //If the player is in classic game mode, increase the speed in all levels
         if (player.gameMode == "classic") {
@@ -205,10 +205,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     fun update() {
 
         paddle.update(width.toFloat())
-        ball.update(paddle, ballIsTouchingPaddle)
+        ball.update(paddle, ball.ballIsTouchingPaddle)
 
         for (ball in balls) {
-            ball.update(paddle, ballIsTouchingPaddle)
+            ball.update(paddle, ball.ballIsTouchingPaddle)
         }
 
         for (brick in brickList) {
@@ -240,12 +240,12 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             resetPowerup()
         }
         // handle sticky paddle shoot ball
-        if (paddle.isSticky && ballIsTouchingPaddle) {
+        if (paddle.isSticky && ball.ballIsTouchingPaddle) {
             // start countdown until ball shoots from sticky paddle
             powerupManager.stickyPaddleReleaseCountdown(paddle)
         }
         // make sure sticky mode is on after shooting with sticky powerup.
-        if (!paddle.isSticky && !ballIsTouchingPaddle && powerupManager.activePower == "Sticky") {
+        if (!paddle.isSticky && !ball.ballIsTouchingPaddle && powerupManager.activePower == "Sticky") {
             paddle.isSticky = true
         }
         if (slowmotionActive) {
@@ -423,9 +423,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                     currentLevel = 1
                 }
                 setup(currentLevel)
-
             }
-            // Put code for hitBottom in timedActivity here
             shapesIntersect(ball, paddle)
 
 
@@ -436,7 +434,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         paddle.posX = event!!.x
-        if (paddle.isSticky && ballIsTouchingPaddle) {
+        if (paddle.isSticky && ball.ballIsTouchingPaddle) {
             ball.posX = event!!.x + paddle.width / 2
         }
         return true
@@ -504,7 +502,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         powerupManager.powerupActive = true
         // Determine the type of power-up
         var powerupType = PowerupManager.PowerUpType.values().random()
-//    powerupType = PowerupManager.PowerUpType.STICKY
+ //powerupType = PowerupManager.PowerUpType.STICKY
         when (powerupType) {
             PowerupManager.PowerUpType.BIGPADDLE -> {
                 paddle.bitmap =
@@ -577,14 +575,14 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         // Check if the distance is less than or equal to the circle's radius
         val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
         val radiusSquared = ball.size * ball.size
-        if (distanceSquared <= radiusSquared && !ballIsTouchingPaddle) {
-            ballIsTouchingPaddle = true
+        if (distanceSquared <= radiusSquared && !ball.ballIsTouchingPaddle) {
+            ball.ballIsTouchingPaddle = true
             // Collision detected, handle it accordingly (e.g., call a collision handling function)
             onBallCollision(ball, paddle)
         }
         // if ball is not touching paddle set ballIsTouchingPaddle = false
         if (distanceSquared >= radiusSquared) {
-            ballIsTouchingPaddle = false
+            ball.ballIsTouchingPaddle = false
         }
     }
 }

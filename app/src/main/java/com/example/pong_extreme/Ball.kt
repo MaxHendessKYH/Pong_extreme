@@ -8,7 +8,7 @@ import android.graphics.RectF
 
 class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, var size: Float, var speedX: Float, var speedY: Float,var isExtraBall: Boolean = false) {
     var paint = Paint()
-
+    var ballIsTouchingPaddle = false
     fun draw(canvas: Canvas?) {
         paint.color = color
         canvas?.drawCircle(posX, posY, size, paint)
@@ -28,14 +28,22 @@ class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, v
     }
 
     fun checkBounds(bounds: Rect){
-        if(posX-size < bounds.left || posX+size > bounds.right){
+        if(posX-size < bounds.left ){
             speedX *= -1
+           posX += 15f
+            posX += speedX*1.2f
+        }
+        if(posX+size > bounds.right)
+        {
+            speedX *= -1
+            posX -= 15f
             posX += speedX*1.2f
         }
         if(posY-size < bounds.top ){
             speedY *= -1
             posY += speedY*1.2f
         }
+
     }
 
     fun checkCollisionBottom(bounds: Rect): Boolean
