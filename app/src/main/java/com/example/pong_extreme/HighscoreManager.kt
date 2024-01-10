@@ -6,9 +6,9 @@ import com.google.gson.Gson
 // Manager defined as object so that there can be only 1 Manager ( Singleton pattern)
 object HighscoreManager {
     var classicHighScores:MutableList<Highscore> = mutableListOf(
-        Highscore("Max" , "500", "classic"))
+        Highscore("Max" , 500, "classic"))
     var timedHighScores:MutableList<Highscore> = mutableListOf(
-        Highscore("Dennis" , "500", "timed"))
+        Highscore("Dennis" , 500, "timed"))
     fun getHighScores( gameMode: String, prefs: SharedPreferences): MutableList<Highscore> {
      // deleteAllHighScores(prefs)
         when (gameMode) {
@@ -57,10 +57,10 @@ object HighscoreManager {
     }
  fun setDummyData(list: MutableList<Highscore>, gameMode: String): MutableList<Highscore>
  {
-     list.add(Highscore("Max" , "500", gameMode))
-     list.add(Highscore("Mehdi" , "500", gameMode))
-     list.add(Highscore("Dennis" , "500", gameMode))
-     list.add(Highscore("Juhee" , "500", gameMode))
+     list.add(Highscore("Max" , 500, gameMode))
+     list.add(Highscore("Mehdi" , 600, gameMode))
+     list.add(Highscore("Dennis" , 400, gameMode))
+     list.add(Highscore("Juhee" , 800, gameMode))
      return list
  }
     fun deleteAllHighScores(prefs: SharedPreferences)

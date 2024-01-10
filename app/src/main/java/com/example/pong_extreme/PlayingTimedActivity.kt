@@ -52,7 +52,7 @@ class PlayingTimedActivity : AppCompatActivity() {
             HighscoreManager.addHighScores(
                 Highscore(
                     input.text.toString(),
-                    player.getScore().toString(),
+                    player.getScore(),
                     "timed"
                 ), prefs
             )

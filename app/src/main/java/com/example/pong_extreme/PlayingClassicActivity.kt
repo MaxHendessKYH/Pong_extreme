@@ -73,7 +73,7 @@ class PlayingClassicActivity : AppCompatActivity() {
         builder.setTitle("Game Over!")
         builder.setMessage("Enter Name:")
         builder.setPositiveButton("Submit Score" ) { dialog, id ->
-                  HighscoreManager.addHighScores(Highscore(input.text.toString(), player.getScore().toString(), "classic"), prefs)
+                  HighscoreManager.addHighScores(Highscore(input.text.toString(), player.getScore(), "classic"), prefs)
              finish()
         }
 
