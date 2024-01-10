@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
+import android.os.Looper
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -13,7 +14,6 @@ import com.example.pong_extreme.databinding.ActivityPlayingTimedBinding
 class PlayingTimedActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayingTimedBinding
     var countDownTimer: CountDownTimer? = null
-//    lateinit var countDownTimer: CountDownTimer
     var initialMillis: Long = 1000L
     var remainingMillis: Long = initialMillis
     lateinit var player: Player
@@ -27,19 +27,26 @@ class PlayingTimedActivity : AppCompatActivity() {
         binding = ActivityPlayingTimedBinding.inflate(layoutInflater)
         setContentView(binding.root)
         player = Player("timed")
-        livesBegin = player.showLives();
-        //Start the counter when activity is started, this time i set the timer on 3 minutes
-        duration = 3 * 60 * 1000;
-        timer(duration)
+        livesBegin = player.showLives()
+        duration = 3 * 60 * 1000
+
         binding.btnEndGame.setOnClickListener {
             showGameOverDialog()
             gameView.gameOver()
         }
+
         gameView = GameView(this, player)
         val container = binding.frameLayout
         container.addView(gameView)
-        startUpdateLoop()
+
+        // Timer delays with 3 seconds
+        val delayMillis = 3000L
+        Handler(Looper.getMainLooper()).postDelayed({
+            timer(duration)
+            startUpdateLoop()
+        }, delayMillis)
     }
+
 
     private fun showGameOverDialog() {
         val prefs = getSharedPreferences("com.example.com.example.pong_extreme.prefs", MODE_PRIVATE)
@@ -114,6 +121,7 @@ class PlayingTimedActivity : AppCompatActivity() {
         if (countDownTimer != null)
             countDownTimer?.start()
     }
+
     fun addTime(time: Long)
     {
         countDownTimer?.cancel()

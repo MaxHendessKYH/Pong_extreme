@@ -1,18 +1,18 @@
 package com.example.pong_extreme
 
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
-import android.os.Handler
+import android.os.CountDownTimer
 import android.util.DisplayMetrics
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.WindowManager
 import java.lang.Math.abs
-import java.lang.Math.pow
 
 class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback,
     Runnable {
@@ -24,7 +24,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     lateinit var ball: Ball
     var maxIncreaseCount: Int = 0
     var brokenBrickCount: Int = 0
-    var ballIsTouchingPaddle = false;
+    var ballIsTouchingPaddle = false
     var player: Player
     var brickList: MutableList<Brick> = mutableListOf()
     var bounds = Rect()
@@ -37,6 +37,9 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     val slowMotionDuration = 15000L
     var powerupActivationTime: Long = 0
     val powerupDurationMillis: Long = 15000 // 15 seconds in milliseconds
+    var gameStartCountDownTimer: CountDownTimer? = null
+    var alertDialog: AlertDialog? = null
+
 
     private var balls: MutableList<Ball> = mutableListOf()
 
@@ -191,7 +194,8 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         }
     }
 
-    fun start() {
+
+    fun startGame() {
         running = true
         thread = Thread(this)
         thread?.start()
@@ -291,10 +295,12 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             for (ball in balls) {
                 ball.draw(canvas)
             }
+
         } finally {
             currentHolder.unlockCanvasAndPost(canvas)
         }
     }
+
     fun drawMore() {
         val currentHolder = mHolder ?: return
         canvas = currentHolder.lockCanvas() ?: return
@@ -310,15 +316,18 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     }
 
 
-
     override fun surfaceCreated(holder: SurfaceHolder) {
         if (mHolder != null) {
             mHolder?.addCallback(this)
         }
+
         currentLevel = 1
         setup(currentLevel)
-        start()
+        draw()
+
+
     }
+
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
         bounds = Rect(0, 0, width, height)
@@ -338,6 +347,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         while (running) {
             update()
             draw()
+
 
             // Check for the total number of balls
 //            if (balls.size < 3) {
@@ -435,12 +445,62 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
 
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        paddle.posX = event!!.x
-        if (paddle.isSticky && ballIsTouchingPaddle) {
-            ball.posX = event!!.x + paddle.width / 2
+
+
+        // Handles when the user is touching the screen
+        if (event?.action == MotionEvent.ACTION_DOWN) {
+            //If the game is not running, delay the start with startCountdown
+            if (!running) {
+                startCountdown()
+                return true
+            }
         }
+        //If the game is running
+        if (running) {
+            paddle.posX = event?.x ?: paddle.posX
+            if (paddle.isSticky && ballIsTouchingPaddle) {
+                ball.posX = event?.x ?: (ball.posX + paddle.width / 2)
+            }
+        }
+
         return true
     }
+
+    private fun startCountdown() {
+        // Start a countdown timer
+        gameStartCountDownTimer = object : CountDownTimer(3000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val secondsRemaining = (millisUntilFinished + 999) / 1000
+                val message = "Starting in $secondsRemaining seconds"
+
+                // If the dialog is not yet created, create it
+                if (alertDialog == null) {
+                    alertDialog = AlertDialog.Builder(context)
+                        .setCancelable(false)
+                        .create()
+                }
+                // Update the message in the time left
+                alertDialog?.setMessage(message)
+                // Show the dialog
+                alertDialog?.show()
+
+            }
+
+            override fun onFinish() {
+                // Dismiss the dialog when the countdown is finished
+                alertDialog?.dismiss()
+                // Cancel the countdown timer to prevent further counting
+                gameStartCountDownTimer?.cancel()
+                // Starts the game or perform any relevant action
+                startGame()
+            }
+        }
+
+        // Start the countdown timer
+        gameStartCountDownTimer?.start()
+
+    }
+
 
     fun gameOver() {
         ball.speedX = 0f
@@ -526,10 +586,32 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
                 powerupManager.activePower = "Sticky"
             }
             //        Add two  balls power-up is activated
-            PowerupManager.PowerUpType.MULTIBALLS ->{
+            PowerupManager.PowerUpType.MULTIBALLS -> {
                 if (balls.size < 3) {
-                    balls.add(Ball(context, Color.RED, 200f, 800f, 25f, ball.speedX,  ball.speedY, isExtraBall = true))
-                    balls.add(Ball(context, Color.BLUE, 600f, 800f, 25f,  ball.speedX, ball.speedY, isExtraBall = true))
+                    balls.add(
+                        Ball(
+                            context,
+                            Color.RED,
+                            200f,
+                            800f,
+                            25f,
+                            ball.speedX,
+                            ball.speedY,
+                            isExtraBall = true
+                        )
+                    )
+                    balls.add(
+                        Ball(
+                            context,
+                            Color.BLUE,
+                            600f,
+                            800f,
+                            25f,
+                            ball.speedX,
+                            ball.speedY,
+                            isExtraBall = true
+                        )
+                    )
                     drawMore()
                 }
             }
