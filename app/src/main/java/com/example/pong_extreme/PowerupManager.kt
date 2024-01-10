@@ -2,9 +2,13 @@ package com.example.pong_extreme
 import kotlin.random.Random
 
 class PowerupManager {
-    enum class PowerUpType{
-        BIGPADDLE, SMALLPADDLE,STICKY, SLOWMOTION, MULTIBALLS
-    }
+        enum class PowerUpType(val bitmap: Int) {
+            BIGPADDLE(R.drawable.bigpaddle),
+            SMALLPADDLE(R.drawable.smallpaddle),
+            STICKY(R.drawable.sticky),
+            SLOWMOTION(R.drawable.slowmotion),
+            MULTIBALLS(R.drawable.multiballs)
+        }
 
     var activePower = "None"
     var powerupActive: Boolean = false
