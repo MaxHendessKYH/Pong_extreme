@@ -59,7 +59,7 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
             else -> levelOneBrickLayout()
         }
 
-        ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f, true)
+        ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f, false)
 
         //If the player is in classic game mode, increase the speed in all levels
         if (player.gameMode == "classic") {
