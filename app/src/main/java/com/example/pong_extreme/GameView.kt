@@ -14,7 +14,11 @@ import android.view.SurfaceView
 import android.view.WindowManager
 import java.lang.Math.abs
 
-class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback,
+class GameView(
+    context: Context?,
+    player: Player,
+    private val activity: PlayingTimedActivity? = null
+) : SurfaceView(context), SurfaceHolder.Callback,
     Runnable {
 
     var thread: Thread? = null
@@ -199,6 +203,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
         running = true
         thread = Thread(this)
         thread?.start()
+        //Starts timer in timedmode
+        activity?.startTimer()
+
+
     }
 
     fun stop() {

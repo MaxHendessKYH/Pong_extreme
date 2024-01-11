@@ -1,13 +1,12 @@
 package com.example.pong_extreme
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
-import android.os.Looper
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.pong_extreme.databinding.ActivityPlayingTimedBinding
 
@@ -35,16 +34,13 @@ class PlayingTimedActivity : AppCompatActivity() {
             gameView.gameOver()
         }
 
-        gameView = GameView(this, player)
+        gameView = GameView(this, player, this)
         val container = binding.frameLayout
         container.addView(gameView)
 
-        // Timer delays with 3 seconds
-        val delayMillis = 3000L
-        Handler(Looper.getMainLooper()).postDelayed({
-            timer(duration)
-            startUpdateLoop()
-        }, delayMillis)
+//        timer(duration)
+        startUpdateLoop()
+
     }
 
 
@@ -86,6 +82,7 @@ class PlayingTimedActivity : AppCompatActivity() {
         alert.show()
     }
 
+
     private fun timer(durationMillis: Long) {
 
         //Creates a countdowntime
@@ -95,7 +92,7 @@ class PlayingTimedActivity : AppCompatActivity() {
         // Create a new CountDownTimer with the updated duration
         countDownTimer = object : CountDownTimer(durationMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-               remainingMillis =millisUntilFinished
+                remainingMillis = millisUntilFinished
                 // Update the textview with what's left of the time
                 duration = millisUntilFinished
                 val minutes = millisUntilFinished / 1000 / 60
@@ -108,11 +105,11 @@ class PlayingTimedActivity : AppCompatActivity() {
                     player.setLevelComplete(false)
                 }
             }
+
             override fun onFinish() {
                 //Sets timer to 00:00 when gameover
                 binding.tvTime.text = "00:00"
                 gameView.gameOver()
-
                 stopUpdateLoop()
                 showGameOverDialog()
             }
@@ -121,14 +118,19 @@ class PlayingTimedActivity : AppCompatActivity() {
         if (countDownTimer != null)
             countDownTimer?.start()
     }
-
-    fun addTime(time: Long)
-    {
-        countDownTimer?.cancel()
-       remainingMillis += time
-        //start new countdown with added time
-       timer(remainingMillis)
+    fun startTimer() {
+        timer(duration)
+        countDownTimer?.start()
     }
+
+
+    fun addTime(time: Long) {
+        countDownTimer?.cancel()
+        remainingMillis += time
+        //start new countdown with added time
+        timer(remainingMillis)
+    }
+
     private fun startUpdateLoop() {
         handler.post(object : Runnable {
             override fun run() {
@@ -158,6 +160,7 @@ class PlayingTimedActivity : AppCompatActivity() {
     private fun stopUpdateLoop() {
         isUpdateLoopRunning = false
     }
+
     override fun onDestroy() {
         handler.removeCallbacksAndMessages(null)
         // End timer when activity is destroyed
@@ -172,4 +175,5 @@ class PlayingTimedActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
+
 }
