@@ -30,8 +30,10 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     var bounds = Rect()
     var mHolder: SurfaceHolder? = holder
     var currentLevel = 0
-    var powerupManager: PowerupManager = context?.let { PowerupManager(it, PowerupManager.PowerUpType.BIGPADDLE) }
-        ?: throw IllegalArgumentException("Context cannot be null")
+    var powerupType = PowerupManager.PowerUpType.values().random()
+    var powerupManager = PowerupManager(this.context, powerupType)
+//    var powerupManager: PowerupManager = context?.let { PowerupManager(it, PowerupManager.PowerUpType.BIGPADDLE) }
+//        ?: throw IllegalArgumentException("Context cannot be null")
     val soundManager = context?.let { SoundManager(it) }
     var slowmotionActive = false
     var slowMotionStartTime: Long = 0
@@ -505,9 +507,12 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     }
 
     private fun activatePowerup() {
+
         powerupManager.powerupActive = true
         // Determine the type of power-up
-        var powerupType = PowerupManager.PowerUpType.values().random()
+//        var powerupType = PowerupManager.PowerUpType.values().random()
+
+
 //    powerupType = PowerupManager.PowerUpType.STICKY
         when (powerupType) {
             PowerupManager.PowerUpType.BIGPADDLE -> {
