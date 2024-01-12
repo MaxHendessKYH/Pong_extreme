@@ -144,7 +144,7 @@ class GameView(
         if (slowmotionActive) {
             val elapsedTime = System.currentTimeMillis() - slowMotionStartTime
             if (elapsedTime >= slowMotionDuration) {
-                resetBallSpeed() // Återställ bollens hastighet när slow motion-tiden har gått ut
+                powerupManager.resetBallSpeed(ball) // Återställ bollens hastighet när slow motion-tiden har gått ut
             }
         }
     }
@@ -364,13 +364,10 @@ class GameView(
 
         if (powerupManager.shouldHavePowerup() && !powerupManager.powerupActive) {
             powerupManager.activatePowerup(paddle, this.context, balls, ball)
-            powerupActivationTime = powerupDurationMillis
+            powerupActivationTime = System.currentTimeMillis()
         }
     }
-    fun resetBallSpeed() {
-        slowmotionActive = false
-        ball.alterSpeed(5f)
-    }
+
     fun onBallCollision(ball: Ball, paddle: Paddle) {
         if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
             ball.speedX *= -1
@@ -388,11 +385,6 @@ class GameView(
         //Plays the sound every time ball and paddle collides
         soundManager?.playSoundPaddle()
     }
-    private fun resetPaddleSize() {
-        // Reset paddle to normal size
-        paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle)
-    }
-
     fun shapesIntersect(ball: Ball, paddle: Paddle) {
         // Calculate the center of the circle
 //        val circleCenterX = ball.posX
@@ -437,7 +429,14 @@ class GameView(
         }
     }
 }
-/*
+/*fun resetBallSpeed() {
+        slowmotionActive = false
+        ball.alterSpeed(5f)
+    }
+private fun resetPaddleSize() {
+        // Reset paddle to normal size
+        paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle)
+    }
 fun drawMore() {
         val currentHolder = mHolder ?: return
         canvas = currentHolder.lockCanvas() ?: return

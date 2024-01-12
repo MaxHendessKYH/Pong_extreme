@@ -47,11 +47,13 @@ import kotlin.random.Random
             powerupType = PowerupManager.PowerUpType.values().random()
             when (powerupType) {
                 PowerUpType.BIGPADDLE -> {
+                    activePower = "BIGPADDLE"
                     paddle.bitmap =
                         BitmapFactory.decodeResource(context.resources, R.drawable.paddle_big)
                 }
 
                 PowerUpType.SMALLPADDLE -> {
+                    activePower = "SMALLPADDLE"
                     paddle.bitmap =
                         BitmapFactory.decodeResource(context.resources, R.drawable.paddle_small)
                 }
@@ -91,24 +93,25 @@ import kotlin.random.Random
                                 isExtraBall = true
                             )
                         )
-//                       drawMore(balls) behöves inte balls ritas up nånannstans anyway
                     }
                 }
             }
-
-//            powerupActivationTime = System.currentTimeMillis()
+        }
+        fun resetBallSpeed(ball: Ball) {
+            slowmotionActive = false
+            ball.alterSpeed(5f)
         }
         fun resetPowerup(paddle : Paddle, ball : Ball) {
             // Reset power-up effects
             powerupActive = false
             paddle.isSticky = false
-            activePower = "None"
             when (activePower) {
                 "SLOWMOTION" -> resetSlowMotionPowerup(ball)
                 "BIGPADDLE" ->  resetPaddleSize(paddle)
                 "SMALLPADDLE" ->  resetPaddleSize(paddle)
                 // Add cases for other power-ups if needed
             }
+            activePower = "None"
         }
         private fun resetSlowMotionPowerup(ball : Ball) {
             // Reset slow motion power-up effects
