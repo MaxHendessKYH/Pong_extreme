@@ -1,5 +1,4 @@
 package com.example.pong_extreme
-
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -14,14 +13,12 @@ import android.view.SurfaceView
 import android.view.WindowManager
 import java.lang.Math.abs
 import java.util.logging.Level
-
 class GameView(
     context: Context?,
     player: Player,
     private val activity: PlayingTimedActivity? = null
 ) : SurfaceView(context), SurfaceHolder.Callback,
     Runnable {
-
     var thread: Thread? = null
     var running = false
     lateinit var canvas: Canvas
@@ -65,7 +62,6 @@ class GameView(
             else -> levelManager.levelOneBrickLayout()
         }
         ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f, false)
-
         //If the player is in classic game mode, increase the speed in all levels
         if (player.gameMode == "classic") {
             increaseBallSpeedForLevel(currentLevel)
@@ -120,15 +116,7 @@ class GameView(
         if (System.currentTimeMillis() - powerupActivationTime >= powerupDurationMillis) {
             powerupManager.resetPowerup(paddle , ball)
         }
-        // handle sticky paddle shoot ball
-        if (paddle.isSticky && ball.ballIsTouchingPaddle) {
-            // start countdown until ball shoots from sticky paddle
-            powerupManager.stickyPaddleReleaseCountdown(paddle)
-        }
-        // make sure sticky mode is on after shooting with sticky powerup.
-        if (!paddle.isSticky && !ball.ballIsTouchingPaddle && powerupManager.activePower == "Sticky") {
-            paddle.isSticky = true
-        }
+        powerupManager.checkIfPaddleIsSticky(paddle, ball)
         if (slowmotionActive) {
             val elapsedTime = System.currentTimeMillis() - slowMotionStartTime
             if (elapsedTime >= slowMotionDuration) {
@@ -196,7 +184,7 @@ class GameView(
                 if (hitBottom && ball.isExtraBall) {
                     balls.remove(ball)
                 }
-                collisionManager.shapesIntersect(ball, paddle, context)
+                ballHitPaddle(ball, paddle)
             }
             // Check if any ball collides with bricks
             for (ball in balls) {
@@ -245,7 +233,7 @@ class GameView(
                 }
                 setup(currentLevel)
             }
-            collisionManager.shapesIntersect(ball, paddle, context)
+           ballHitPaddle(ball, paddle)
         }
     }
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -283,7 +271,6 @@ class GameView(
                 // Show the dialog
                 alertDialog?.show()
             }
-
             override fun onFinish() {
                 // Dismiss the dialog when the countdown is finished
                 alertDialog?.dismiss()
@@ -293,10 +280,8 @@ class GameView(
                 startGame()
             }
         }
-
         // Start the countdown timer
         gameStartCountDownTimer?.start()
-
     }
     fun gameOver() {
         ball.speedX = 0f
@@ -311,91 +296,13 @@ class GameView(
             powerupActivationTime = System.currentTimeMillis()
         }
     }
+    fun ballHitPaddle(ball: Ball , paddle: Paddle)
+    {
+        val collision = collisionManager.shapesIntersect(ball, paddle, context)
+        if(collision)
+        {
+            //Plays the sound every time ball and paddle collides
+            soundManager?.playSoundPaddle()
+        }
+    }
 }
-/*fun resetBallSpeed() {
-        slowmotionActive = false
-        ball.alterSpeed(5f)
-    }
-private fun resetPaddleSize() {
-        // Reset paddle to normal size
-        paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle)
-    }
-fun drawMore() {
-        val currentHolder = mHolder ?: return
-        canvas = currentHolder.lockCanvas() ?: return
-
-        try {
-
-            for (ball in balls) {
-                ball.draw(canvas)
-            }
-        } finally {
-            currentHolder.unlockCanvasAndPost(canvas)
-        }
-    }
-fun activateSlowMotionPowerup() {
-        slowmotionActive = true
-        slowMotionStartTime = System.currentTimeMillis()
-        ball.alterSpeed(0.20f)
-    }
-* private fun activatePowerup() {
-
-        powerupManager.powerupActive = true
-        // Determine the type of power-up
-
-        when (powerupType) {
-            PowerupManager.PowerUpType.BIGPADDLE -> {
-                paddle.bitmap =
-                    BitmapFactory.decodeResource(context.resources, R.drawable.paddle_big)
-            }
-
-            PowerupManager.PowerUpType.SMALLPADDLE -> {
-                paddle.bitmap =
-                    BitmapFactory.decodeResource(context.resources, R.drawable.paddle_small)
-            }
-
-            PowerupManager.PowerUpType.SLOWMOTION -> {
-                powerupManager.activePower = "SLOWMOTION"
-                activateSlowMotionPowerup()
-            }
-
-            PowerupManager.PowerUpType.STICKY -> {
-                powerupManager.setSticky(paddle)
-                powerupManager.activePower = "Sticky"
-            }
-            //        Add two  balls power-up is activated
-            PowerupManager.PowerUpType.MULTIBALLS -> {
-                if (balls.size < 3) {
-                    balls.add(
-                        Ball(
-                            context,
-                            Color.RED,
-                            200f,
-                            800f,
-                            25f,
-                            ball.speedX,
-                            ball.speedY,
-                            isExtraBall = true
-                        )
-                    )
-                    balls.add(
-                        Ball(
-                            context,
-                            Color.BLUE,
-                            600f,
-                            800f,
-                            25f,
-                            ball.speedX,
-                            ball.speedY,
-                            isExtraBall = true
-                        )
-                    )
-                    drawMore()
-                }
-            }
-
-        }
-
-        powerupActivationTime = System.currentTimeMillis()
-    }
-* */

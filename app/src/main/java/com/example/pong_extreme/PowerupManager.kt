@@ -129,6 +129,18 @@ import kotlin.random.Random
         else if(paddle.isSticky)
             paddle.isSticky = false
     }
+        fun checkIfPaddleIsSticky(paddle : Paddle, ball : Ball)
+        {
+            // handle sticky paddle shoot ball
+            if (paddle.isSticky && ball.ballIsTouchingPaddle) {
+                // start countdown until ball shoots from sticky paddle
+                stickyPaddleReleaseCountdown(paddle)
+            }
+            // make sure sticky mode is on after shooting with sticky powerup.
+            if (!paddle.isSticky && !ball.ballIsTouchingPaddle && activePower == "Sticky") {
+                paddle.isSticky = true
+            }
+        }
     fun stickyPaddleReleaseCountdown(paddle: Paddle)
     {
             stickyTimer--

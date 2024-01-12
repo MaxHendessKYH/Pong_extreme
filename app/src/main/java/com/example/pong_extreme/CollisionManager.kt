@@ -41,10 +41,9 @@ class CollisionManager(powerupManager: PowerupManager) {
         if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
             ball.speedY *= -1
         }
-        //Plays the sound every time ball and paddle collides
-//        soundManager?.playSoundPaddle()
+
     }
-    fun shapesIntersect(ball: Ball, paddle: Paddle, context : Context) {
+    fun shapesIntersect(ball: Ball, paddle: Paddle, context : Context): Boolean {
         // Find the closest point on the square to the center of the circle
         val closestX =
             Math.max(paddle.posX, Math.min(ball.posX, paddle.posX + paddle.width))
@@ -75,10 +74,12 @@ class CollisionManager(powerupManager: PowerupManager) {
             ball.ballIsTouchingPaddle = true
             // Collision detected, handle it accordingly (e.g., call a collision handling function)
             onBallCollision(ball, paddle)
+            return true
         }
         // if ball is not touching paddle set ballIsTouchingPaddle = false
         if (distanceSquared >= radiusSquared) {
             ball.ballIsTouchingPaddle = false
         }
+        return false
     }
 }
