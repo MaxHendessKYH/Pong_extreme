@@ -51,6 +51,7 @@ class PlayingClassicActivity : AppCompatActivity() {
                 if (player.showLives() <= 0) {
                     stopUpdateLoop()
                     showGameOverDialog()
+
                 }
                 // make function run every frame, maybe there is a better solution to update lives text?
                 handler.postDelayed(
