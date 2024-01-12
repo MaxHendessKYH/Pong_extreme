@@ -28,7 +28,6 @@ class GameView(
     lateinit var ball: Ball
     var maxIncreaseCount: Int = 0
     var brokenBrickCount: Int = 0
-    var ballIsTouchingPaddle = false
     var player: Player
     var brickList: MutableList<Brick> = mutableListOf()
     var bounds = Rect()
@@ -67,9 +66,7 @@ class GameView(
             else -> levelOneBrickLayout()
         }
 
-
         ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f, false)
-
 
         //If the player is in classic game mode, increase the speed in all levels
         if (player.gameMode == "classic") {
@@ -221,10 +218,10 @@ class GameView(
     fun update() {
 
         paddle.update(width.toFloat())
-        ball.update(paddle, ballIsTouchingPaddle)
+        ball.update(paddle, ball.ballIsTouchingPaddle)
 
         for (ball in balls) {
-            ball.update(paddle, ballIsTouchingPaddle)
+            ball.update(paddle, ball.ballIsTouchingPaddle)
         }
 
         for (brick in brickList) {
@@ -256,12 +253,12 @@ class GameView(
             resetPowerup()
         }
         // handle sticky paddle shoot ball
-        if (paddle.isSticky && ballIsTouchingPaddle) {
+        if (paddle.isSticky && ball.ballIsTouchingPaddle) {
             // start countdown until ball shoots from sticky paddle
             powerupManager.stickyPaddleReleaseCountdown(paddle)
         }
         // make sure sticky mode is on after shooting with sticky powerup.
-        if (!paddle.isSticky && !ballIsTouchingPaddle && powerupManager.activePower == "Sticky") {
+        if (!paddle.isSticky && !ball.ballIsTouchingPaddle && powerupManager.activePower == "Sticky") {
             paddle.isSticky = true
         }
         if (slowmotionActive) {
@@ -445,9 +442,7 @@ class GameView(
                     currentLevel = 1
                 }
                 setup(currentLevel)
-
             }
-            // Put code for hitBottom in timedActivity here
             shapesIntersect(ball, paddle)
 
 
@@ -457,8 +452,6 @@ class GameView(
 
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-
-
         // Handles when the user is touching the screen
         if (event?.action == MotionEvent.ACTION_DOWN) {
             //If the game is not running, delay the start with startCountdown
@@ -576,10 +569,7 @@ class GameView(
 
         powerupManager.powerupActive = true
         // Determine the type of power-up
-//        var powerupType = PowerupManager.PowerUpType.values().random()
 
-
-//    powerupType = PowerupManager.PowerUpType.STICKY
         when (powerupType) {
             PowerupManager.PowerUpType.BIGPADDLE -> {
                 paddle.bitmap =
@@ -674,14 +664,14 @@ class GameView(
         // Check if the distance is less than or equal to the circle's radius
         val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
         val radiusSquared = ball.size * ball.size
-        if (distanceSquared <= radiusSquared && !ballIsTouchingPaddle) {
-            ballIsTouchingPaddle = true
+        if (distanceSquared <= radiusSquared && !ball.ballIsTouchingPaddle) {
+            ball.ballIsTouchingPaddle = true
             // Collision detected, handle it accordingly (e.g., call a collision handling function)
             onBallCollision(ball, paddle)
         }
         // if ball is not touching paddle set ballIsTouchingPaddle = false
         if (distanceSquared >= radiusSquared) {
-            ballIsTouchingPaddle = false
+            ball.ballIsTouchingPaddle = false
         }
     }
 }
