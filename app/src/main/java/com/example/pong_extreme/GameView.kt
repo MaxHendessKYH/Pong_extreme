@@ -463,7 +463,7 @@ class GameView(
         //If the game is running
         if (running) {
             paddle.posX = event?.x ?: paddle.posX
-            if (paddle.isSticky && ballIsTouchingPaddle) {
+            if (paddle.isSticky && ball.ballIsTouchingPaddle) {
                 ball.posX = event?.x ?: (ball.posX + paddle.width / 2)
             }
         }
