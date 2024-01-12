@@ -537,6 +537,8 @@ class GameView(
     }
 
     fun activateSlowMotionPowerup() {
+        powerupType = PowerupManager.PowerUpType.values().random()
+        powerupManager.powerupActive
         slowmotionActive = true
         slowMotionStartTime = System.currentTimeMillis()
         ball.alterSpeed(0.20f)
