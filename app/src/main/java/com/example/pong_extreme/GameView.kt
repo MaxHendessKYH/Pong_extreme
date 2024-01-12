@@ -66,7 +66,8 @@ class GameView(
             else -> levelOneBrickLayout()
         }
 
-        ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f, false)
+        ball = Ball(this.context, Color.WHITE, paddle.posX + paddle.width / 2, paddle.posY, 25f, 20f, -20f, false)
+        ball.ballIsTouchingPaddle = true
 
         //If the player is in classic game mode, increase the speed in all levels
         if (player.gameMode == "classic") {
@@ -110,7 +111,7 @@ class GameView(
             var brickType = if (row % 2 == 0) Brick.BrickType.RED else Brick.BrickType.BLUE
 
             for (col in 0 until numCols) {
-                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
+                val brick = Brick(this.context, 0f + posX, 0f + posY, 56f, type = brickType)
                 brickList.add(brick)
                 posX += brickWidth + spacing
                 brickType =
@@ -146,7 +147,7 @@ class GameView(
             var brickType = if (row % 2 == 0) Brick.BrickType.RED else Brick.BrickType.BLUE
 
             for (col in 0 until minOf(row + 1, numCols)) {
-                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
+                val brick = Brick(this.context, 0f + posX, 0f + posY, 56f, type = brickType)
                 brickList.add(brick)
                 posX += brickWidth + spacing
                 brickType =
@@ -186,7 +187,7 @@ class GameView(
 
             for (col in 0 until minOf(row + 1, numCols)) {
                 // Place the brick at a centered x-position and the current y-position
-                val brick = Brick(this.context, posX + xCenter, posY, 28f, type = brickType)
+                val brick = Brick(this.context, posX + xCenter, posY, 56f, type = brickType)
                 brickList.add(brick)
                 posX += brickWidth + spacing
                 brickType =
@@ -568,7 +569,7 @@ class GameView(
     }
 
     private fun activatePowerup() {
-
+        powerupType = PowerupManager.PowerUpType.values().random()
         powerupManager.powerupActive = true
         // Determine the type of power-up
 
@@ -576,11 +577,13 @@ class GameView(
             PowerupManager.PowerUpType.BIGPADDLE -> {
                 paddle.bitmap =
                     BitmapFactory.decodeResource(context.resources, R.drawable.paddle_big)
+                paddle.width = 376f
             }
 
             PowerupManager.PowerUpType.SMALLPADDLE -> {
                 paddle.bitmap =
                     BitmapFactory.decodeResource(context.resources, R.drawable.paddle_small)
+                paddle.width = 92f
             }
 
             PowerupManager.PowerUpType.SLOWMOTION -> {
@@ -638,6 +641,12 @@ class GameView(
 //        val circleCenterX = ball.posX
 //        val circleCenterY = ball.posY
         // Find the closest point on the square to the center of the circle
+        if(powerupType == PowerupManager.PowerUpType.BIGPADDLE){
+            paddle.width = 376f
+        }
+        if(powerupType == PowerupManager.PowerUpType.SMALLPADDLE){
+            paddle.width = 92f
+        }
         val closestX =
             Math.max(this.paddle.posX, Math.min(ball.posX, this.paddle.posX + this.paddle.width))
         val closestY =
@@ -655,7 +664,7 @@ class GameView(
         // Set values depending on screen size
         if (displayMetrics.heightPixels == 2154 && displayMetrics.widthPixels == 1080) {
             // Pixel 3a
-            distanceY = ball.posY - closestY - 41
+        distanceY = ball.posY - closestY - 41
         } else if (displayMetrics.heightPixels == 2960 && displayMetrics.widthPixels == 1440) {
             // set values för bills telefon
             //Höj -45 till -52 istället
