@@ -129,4 +129,7 @@ class LevelManager(paddle: Paddle, bounds: Rect, brickList: MutableList<Brick>, 
             posY += (brickWidth + spacing) / 2f
         }
     }
+    fun levelComplete(): Boolean {
+        return brickList.isEmpty()
+    }
 }
