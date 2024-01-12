@@ -9,7 +9,7 @@ class Paddle(
     private val context: Context,
     var posX: Float = 100f,
     var posY: Float = 200f,
-    var width: Float = 80f,
+    var width: Float = 92f,
     val height: Float = 16f,
     var speedX: Float = 0f,
    var type: PaddleType
