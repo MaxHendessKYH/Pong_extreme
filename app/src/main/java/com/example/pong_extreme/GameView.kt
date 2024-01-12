@@ -32,8 +32,6 @@ class GameView(context: Context?, player: Player) : SurfaceView(context), Surfac
     var currentLevel = 0
     var powerupType = PowerupManager.PowerUpType.values().random()
     var powerupManager = PowerupManager(this.context, powerupType)
-//    var powerupManager: PowerupManager = context?.let { PowerupManager(it, PowerupManager.PowerUpType.BIGPADDLE) }
-//        ?: throw IllegalArgumentException("Context cannot be null")
     val soundManager = context?.let { SoundManager(it) }
     var slowmotionActive = false
     var slowMotionStartTime: Long = 0
