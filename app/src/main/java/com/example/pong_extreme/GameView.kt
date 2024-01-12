@@ -377,6 +377,7 @@ class GameView(
                     // Check for gameover
                     if (player.showLives() <= 0) {
                         gameOver()
+
                         // at this point endgame dialog should show (See classic activity)
                     }
                 }
@@ -421,8 +422,10 @@ class GameView(
             val hitBottom = ball.checkCollisionBottom(bounds)
             if (hitBottom && player.gameMode == "classic" && !ball.isExtraBall) {
                 player.reduceLife()
+
                 // Check for gameover
                 if (player.showLives() <= 0) {
+
                     gameOver()
                     // at this point endgame dialog should show (See classic activity)
                 }
@@ -511,6 +514,12 @@ class GameView(
     fun gameOver() {
         ball.speedX = 0f
         ball.speedY = 0f
+        if (player.gameMode == "classic" && player.showLives() == 0) {
+            soundManager?.playSoundGameOver()
+        }
+        if (player.gameMode == "timed" && player.timedFinished) {
+            soundManager?.playSoundGameOver()
+        }
     }
 
     fun onBallCollisionBrick(ball: Ball, brick: Brick) {

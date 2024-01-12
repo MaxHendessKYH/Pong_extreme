@@ -107,11 +107,14 @@ class PlayingTimedActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
+//                soundManager.playSoundGameOver()
                 //Sets timer to 00:00 when gameover
+                player.timedFinished = true
                 binding.tvTime.text = "00:00"
                 gameView.gameOver()
                 stopUpdateLoop()
                 showGameOverDialog()
+
             }
         }
         // Start the new timer
@@ -121,6 +124,7 @@ class PlayingTimedActivity : AppCompatActivity() {
     fun startTimer() {
         timer(duration)
         countDownTimer?.start()
+
     }
 
 
