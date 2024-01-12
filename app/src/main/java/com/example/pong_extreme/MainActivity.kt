@@ -55,14 +55,21 @@ class MainActivity : AppCompatActivity() {
 
     private fun setAdapter() {
         prefs = getSharedPreferences("com.example.com.example.pong_extreme.prefs", MODE_PRIVATE)
+
         var classicHighScores = HighscoreManager.getHighScores("classic", prefs)
-       classicHighScores = classicHighScores.sortedByDescending { it.score } as MutableList<Highscore>
+        if(!classicHighScores.isEmpty()) {
+            classicHighScores =
+                classicHighScores.sortedByDescending { it.score } as MutableList<Highscore>
+        }
         val lvClassic = findViewById<ListView>(R.id.lv_highscore_classic)
         val classicAdapter = HighscoreAdapter(this, classicHighScores)
         lvClassic.adapter = classicAdapter
 
         var timedHighScores = HighscoreManager.getHighScores("timed", prefs)
-        timedHighScores = timedHighScores.sortedByDescending {  it.score } as MutableList<Highscore>
+        if(!timedHighScores.isEmpty()) {
+            timedHighScores =
+                timedHighScores.sortedByDescending { it.score } as MutableList<Highscore>
+        }
         val lvTimed = findViewById<ListView>(R.id.lv_highscore_timed)
         val timedAdapter = HighscoreAdapter(this, timedHighScores)
         lvTimed.adapter = timedAdapter
