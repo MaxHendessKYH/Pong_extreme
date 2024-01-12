@@ -37,6 +37,7 @@ class GameView(
     var powerupType = PowerupManager.PowerUpType.values().random()
     var powerupManager = PowerupManager(this.context, powerupType)
     lateinit var levelManager : LevelManager
+    var collisionManager = CollisionManager(powerupManager)
     val soundManager = context?.let { SoundManager(it) }
     var slowmotionActive = false
     var slowMotionStartTime: Long = 0
@@ -101,7 +102,7 @@ class GameView(
                 soundManager?.playSoundBrick()
                 brickList.remove(brick)
                 // Handle any other actions you want to take when a collision occurs
-                onBallCollisionBrick(ball, brick)
+              ballHitBrick(ball, brick)
                 if (player.gameMode == "timed") {
                     brokenBrickCount++
                     if (brokenBrickCount == 10 && maxIncreaseCount < 4) {
@@ -195,7 +196,7 @@ class GameView(
                 if (hitBottom && ball.isExtraBall) {
                     balls.remove(ball)
                 }
-                shapesIntersect(ball, paddle)
+                collisionManager.shapesIntersect(ball, paddle, context)
             }
             // Check if any ball collides with bricks
             for (ball in balls) {
@@ -203,7 +204,7 @@ class GameView(
                     if (brick.isCollision(ball)) {
                         soundManager?.playSoundBrick()
                         brickList.remove(brick)
-                        onBallCollisionBrick(ball, brick)
+                        ballHitBrick(ball, brick)
                         if (player.gameMode == "timed") {
                             brokenBrickCount++
                             if (brokenBrickCount == 10 && maxIncreaseCount < 4) {
@@ -244,7 +245,7 @@ class GameView(
                 }
                 setup(currentLevel)
             }
-            shapesIntersect(ball, paddle)
+            collisionManager.shapesIntersect(ball, paddle, context)
         }
     }
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -301,80 +302,13 @@ class GameView(
         ball.speedX = 0f
         ball.speedY = 0f
     }
-    fun onBallCollisionBrick(ball: Ball, brick: Brick) {
-        if (ball.posX < brick.posX && ball.posY < brick.posY) {
-            ball.speedX = abs(ball.speedX) * -1
-            ball.speedY = abs(ball.speedY) * -1
-        }
-        if (ball.posX < brick.posX && ball.posY > brick.posY) {
-            ball.speedX = abs(ball.speedX) * -1
-            ball.speedY = abs(ball.speedY)
-        }
-        if (ball.posX > brick.posX && ball.posY < brick.posY) {
-            ball.speedX = abs(ball.speedX)
-            ball.speedY = abs(ball.speedY) * -1
-        }
-        if (ball.posX > brick.posX && ball.posY > brick.posY) {
-            ball.speedX = abs(ball.speedX)
-            ball.speedY = abs(ball.speedY)
-        }
-        if (powerupManager.shouldHavePowerup() && !powerupManager.powerupActive) {
+    fun ballHitBrick(ball: Ball , brick:Brick)
+    {
+        collisionManager.onBallCollisionBrick(ball, brick)
+        //roll for powerup
+        if ( powerupManager.shouldHavePowerup() && !powerupManager.powerupActive) {
             powerupManager.activatePowerup(paddle, this.context, balls, ball)
             powerupActivationTime = System.currentTimeMillis()
-        }
-    }
-    fun onBallCollision(ball: Ball, paddle: Paddle) {
-        if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
-            ball.speedX *= -1
-            ball.speedY *= -1
-        }
-        if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
-            ball.speedX *= -1
-        }
-        if (ball.posX > paddle.posX && ball.posY < paddle.posY) {
-            ball.speedY *= -1
-        }
-        if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
-            ball.speedY *= -1
-        }
-        //Plays the sound every time ball and paddle collides
-        soundManager?.playSoundPaddle()
-    }
-    fun shapesIntersect(ball: Ball, paddle: Paddle) {
-        // Find the closest point on the square to the center of the circle
-        val closestX =
-            Math.max(this.paddle.posX, Math.min(ball.posX, this.paddle.posX + this.paddle.width))
-        val closestY =
-            Math.max(this.paddle.posY, Math.min(ball.posY, this.paddle.posY + this.paddle.height))
-        // Calculate the distance between the circle center and the closest point on the square
-        val distanceX = ball.posX - closestX
-        var distanceY = ball.posY - closestY
-        // Get info about device #responsive design
-        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val displayMetrics = DisplayMetrics()
-        //TODO: hitta not deprecated lösning för windowmanagern
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-        // Set values depending on screen size
-        if (displayMetrics.heightPixels == 2154 && displayMetrics.widthPixels == 1080) {
-            // Pixel 3a
-            distanceY = ball.posY - closestY - 41
-        } else if (displayMetrics.heightPixels == 2960 && displayMetrics.widthPixels == 1440) {
-            // set values för bills telefon
-            //Höj -45 till -52 istället
-            distanceY = ball.posY - closestY - 52
-        }
-        // closestY Pixel2API 33, Pixel 3a behöver - 35
-        // Check if the distance is less than or equal to the circle's radius
-        val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
-        val radiusSquared = ball.size * ball.size
-        if (distanceSquared <= radiusSquared && !ball.ballIsTouchingPaddle) {
-            ball.ballIsTouchingPaddle = true
-            // Collision detected, handle it accordingly (e.g., call a collision handling function)
-            onBallCollision(ball, paddle)
-        }
-        // if ball is not touching paddle set ballIsTouchingPaddle = false
-        if (distanceSquared >= radiusSquared) {
-            ball.ballIsTouchingPaddle = false
         }
     }
 }
