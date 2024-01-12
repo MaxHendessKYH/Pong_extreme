@@ -13,6 +13,7 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.WindowManager
 import java.lang.Math.abs
+import java.util.logging.Level
 
 class GameView(
     context: Context?,
@@ -35,6 +36,7 @@ class GameView(
     var currentLevel = 0
     var powerupType = PowerupManager.PowerUpType.values().random()
     var powerupManager = PowerupManager(this.context, powerupType)
+    lateinit var levelManager : LevelManager
     val soundManager = context?.let { SoundManager(it) }
     var slowmotionActive = false
     var slowMotionStartTime: Long = 0
@@ -43,8 +45,6 @@ class GameView(
     val powerupDurationMillis: Long = 15000 // 15 seconds in milliseconds
     var gameStartCountDownTimer: CountDownTimer? = null
     var alertDialog: AlertDialog? = null
-
-
     private var balls: MutableList<Ball> = mutableListOf()
 
     init {
@@ -53,17 +53,16 @@ class GameView(
             mHolder?.addCallback(this)
         }
     }
-
     private fun setup(currentLevel: Int) {
         // Set paddle
         paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
-
+            levelManager = LevelManager(paddle, bounds, brickList, this.context, width, height)
         // Set bricks based on the currentLevel
         when (currentLevel) {
-            1 -> levelOneBrickLayout()
-            2 -> levelTwoBrickLayout()
-            3 -> levelThreeBrickLayout()
-            else -> levelOneBrickLayout()
+            1 -> levelManager.levelOneBrickLayout()
+            2 -> levelManager.levelTwoBrickLayout()
+            3 -> levelManager.levelThreeBrickLayout()
+            else -> levelManager.levelOneBrickLayout()
         }
 
         ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f, false)
@@ -74,7 +73,6 @@ class GameView(
         }
 
     }
-
     private fun increaseBallSpeedForLevel(currentLevel: Int) {
         val speedFactor = when (currentLevel) {
             1 -> 1.0f // Default
@@ -84,122 +82,6 @@ class GameView(
         }
         ball.alterSpeed(speedFactor)
     }
-
-
-    private fun levelOneBrickLayout() {
-        // Set up paddle
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
-
-        // Initial position for the bricks
-        var posX: Float = 10f
-        var posY: Float = 40f
-
-        // Define brick width, spacing, and bounds
-        val brickWidth = 150f
-        val spacing = 3f
-        bounds = Rect(0, 0, width, height)
-
-        // Calculate the number of rows and columns
-        val numRows = 8
-        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
-
-        // Set up bricks
-        var color: Int = 1
-        for (row in 0 until numRows) {
-            // Alternate between red and blue bricks for each row
-            var brickType = if (row % 2 == 0) Brick.BrickType.RED else Brick.BrickType.BLUE
-
-            for (col in 0 until numCols) {
-                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
-                brickList.add(brick)
-                posX += brickWidth + spacing
-                brickType =
-                    if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED
-            }
-
-            // Reset posX for the next row and reset posY to the starting position
-            posX = 10f
-            posY += 85f
-        }
-    }
-
-    private fun levelTwoBrickLayout() {
-        // Set up paddle (same as levelOneBrickLayout)
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
-
-        // Initial position for the bricks
-        var posX: Float = 10f
-        var posY: Float = 40f
-
-        // Define brick width, spacing, and bounds
-        val brickWidth = 150f
-        val spacing = 3f
-        bounds = Rect(0, 0, width, height)
-
-        // Calculate the number of columns based on screen width
-        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
-
-        // Set up bricks in a triangular pattern
-        val numRows = numCols
-        for (row in 0 until numRows) {
-            // Alternate between red and blue bricks for each row
-            var brickType = if (row % 2 == 0) Brick.BrickType.RED else Brick.BrickType.BLUE
-
-            for (col in 0 until minOf(row + 1, numCols)) {
-                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
-                brickList.add(brick)
-                posX += brickWidth + spacing
-                brickType =
-                    if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED
-            }
-
-            // Reset posX for the next row and reset posY to the starting position
-            posX = 10f
-            posY += 85f
-        }
-    }
-
-    private fun levelThreeBrickLayout() {
-        // Set up paddle (same as levelOneBrickLayout)
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
-
-        // Initial position for the bricks
-        var posX: Float = 10f
-        var posY: Float = 40f
-
-        // Define brick width, spacing, and bounds
-        val brickWidth = 150f
-        val spacing = 3f
-        bounds = Rect(0, 0, width, height)
-
-        // Calculate the number of columns based on screen width
-        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
-
-        // Set up bricks in a triangular pattern with a centered starting point for each row
-        val numRows = numCols
-        for (row in 0 until numRows) {
-            // Alternate between red and blue bricks for each row
-            var brickType = if (row % 2 == 0) Brick.BrickType.RED else Brick.BrickType.BLUE
-
-            // Calculate the x-center for the current row
-            val xCenter = ((numRows - row - 1) / 2f) * (brickWidth + spacing)
-
-            for (col in 0 until minOf(row + 1, numCols)) {
-                // Place the brick at a centered x-position and the current y-position
-                val brick = Brick(this.context, posX + xCenter, posY, 28f, type = brickType)
-                brickList.add(brick)
-                posX += brickWidth + spacing
-                brickType =
-                    if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED
-            }
-
-            // Reset posX for the next row and adjust posY for a staggered appearance
-            posX = 10f
-            posY += (brickWidth + spacing) / 2f
-        }
-    }
-
-
     fun startGame() {
         running = true
         thread = Thread(this)
@@ -209,13 +91,13 @@ class GameView(
 
 
     }
-
     fun stop() {
         running = false
         thread?.join()
     }
-
     fun update() {
+        if(powerupActivationTime > 0)
+        println(powerupActivationTime)
 
         paddle.update(width.toFloat())
         ball.update(paddle, ball.ballIsTouchingPaddle)
@@ -245,12 +127,10 @@ class GameView(
         }
         // Reset powerup section
         if (System.currentTimeMillis() - powerupActivationTime >= powerupDurationMillis) {
-            resetPaddleSize()
-            powerupManager.powerupActive = false
-            paddle.isSticky = false
-            powerupManager.activePower = "None"
+//            resetPaddleSize()
+
 //            powerupManager.powerupActive = false // comment to test time limit on powerups
-            resetPowerup()
+            powerupManager.resetPowerup(paddle , ball)
         }
         // handle sticky paddle shoot ball
         if (paddle.isSticky && ball.ballIsTouchingPaddle) {
@@ -268,28 +148,6 @@ class GameView(
             }
         }
     }
-
-
-    private fun resetPowerup() {
-        // Reset power-up effects
-        when (powerupManager.activePower) {
-            "SLOWMOTION" -> resetSlowMotionPowerup()
-            // Add cases for other power-ups if needed
-        }
-
-        // Reset power-up manager
-        powerupManager.powerupActive = false
-        paddle.isSticky = false
-        powerupManager.activePower = "None"
-    }
-
-    private fun resetSlowMotionPowerup() {
-        // Reset slow motion power-up effects
-        slowmotionActive = false
-        ball.alterSpeed(5f)
-    }
-
-
     fun draw() {
         val currentHolder = mHolder ?: return
         canvas = currentHolder.lockCanvas() ?: return
@@ -309,22 +167,6 @@ class GameView(
             currentHolder.unlockCanvasAndPost(canvas)
         }
     }
-
-    fun drawMore() {
-        val currentHolder = mHolder ?: return
-        canvas = currentHolder.lockCanvas() ?: return
-
-        try {
-
-            for (ball in balls) {
-                ball.draw(canvas)
-            }
-        } finally {
-            currentHolder.unlockCanvasAndPost(canvas)
-        }
-    }
-
-
     override fun surfaceCreated(holder: SurfaceHolder) {
         if (mHolder != null) {
             mHolder?.addCallback(this)
@@ -336,22 +178,17 @@ class GameView(
 
 
     }
-
-
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
         bounds = Rect(0, 0, width, height)
     }
-
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         stop()
         //Releases the instance of soundpool when game ends
         soundManager?.release()
     }
-
     fun levelComplete(): Boolean {
         return brickList.isEmpty()
     }
-
     override fun run() {
         while (running) {
             update()
@@ -449,8 +286,6 @@ class GameView(
         }
 
     }
-
-
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         // Handles when the user is touching the screen
         if (event?.action == MotionEvent.ACTION_DOWN) {
@@ -470,7 +305,6 @@ class GameView(
 
         return true
     }
-
     private fun startCountdown() {
         // Start a countdown timer
         gameStartCountDownTimer = object : CountDownTimer(3000, 1000) {
@@ -505,13 +339,10 @@ class GameView(
         gameStartCountDownTimer?.start()
 
     }
-
-
     fun gameOver() {
         ball.speedX = 0f
         ball.speedY = 0f
     }
-
     fun onBallCollisionBrick(ball: Ball, brick: Brick) {
 
         if (ball.posX < brick.posX && ball.posY < brick.posY) {
@@ -532,21 +363,14 @@ class GameView(
         }
 
         if (powerupManager.shouldHavePowerup() && !powerupManager.powerupActive) {
-            activatePowerup()
+            powerupManager.activatePowerup(paddle, this.context, balls, ball)
+            powerupActivationTime = powerupDurationMillis
         }
     }
-
-    fun activateSlowMotionPowerup() {
-        slowmotionActive = true
-        slowMotionStartTime = System.currentTimeMillis()
-        ball.alterSpeed(0.20f)
-    }
-
     fun resetBallSpeed() {
         slowmotionActive = false
         ball.alterSpeed(5f)
     }
-
     fun onBallCollision(ball: Ball, paddle: Paddle) {
         if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
             ball.speedX *= -1
@@ -564,8 +388,75 @@ class GameView(
         //Plays the sound every time ball and paddle collides
         soundManager?.playSoundPaddle()
     }
+    private fun resetPaddleSize() {
+        // Reset paddle to normal size
+        paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle)
+    }
 
-    private fun activatePowerup() {
+    fun shapesIntersect(ball: Ball, paddle: Paddle) {
+        // Calculate the center of the circle
+//        val circleCenterX = ball.posX
+//        val circleCenterY = ball.posY
+        // Find the closest point on the square to the center of the circle
+        val closestX =
+            Math.max(this.paddle.posX, Math.min(ball.posX, this.paddle.posX + this.paddle.width))
+        val closestY =
+            Math.max(this.paddle.posY, Math.min(ball.posY, this.paddle.posY + this.paddle.height))
+
+        // Calculate the distance between the circle center and the closest point on the square
+        val distanceX = ball.posX - closestX
+        var distanceY = ball.posY - closestY
+
+        // Get info about device #responsive design
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val displayMetrics = DisplayMetrics()
+        //TODO: hitta not deprecated lösning för windowmanagern
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        // Set values depending on screen size
+        if (displayMetrics.heightPixels == 2154 && displayMetrics.widthPixels == 1080) {
+            // Pixel 3a
+            distanceY = ball.posY - closestY - 41
+        } else if (displayMetrics.heightPixels == 2960 && displayMetrics.widthPixels == 1440) {
+            // set values för bills telefon
+            //Höj -45 till -52 istället
+            distanceY = ball.posY - closestY - 52
+        }
+        // closestY Pixel2API 33, Pixel 3a behöver - 35
+
+        // Check if the distance is less than or equal to the circle's radius
+        val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
+        val radiusSquared = ball.size * ball.size
+        if (distanceSquared <= radiusSquared && !ball.ballIsTouchingPaddle) {
+            ball.ballIsTouchingPaddle = true
+            // Collision detected, handle it accordingly (e.g., call a collision handling function)
+            onBallCollision(ball, paddle)
+        }
+        // if ball is not touching paddle set ballIsTouchingPaddle = false
+        if (distanceSquared >= radiusSquared) {
+            ball.ballIsTouchingPaddle = false
+        }
+    }
+}
+/*
+fun drawMore() {
+        val currentHolder = mHolder ?: return
+        canvas = currentHolder.lockCanvas() ?: return
+
+        try {
+
+            for (ball in balls) {
+                ball.draw(canvas)
+            }
+        } finally {
+            currentHolder.unlockCanvasAndPost(canvas)
+        }
+    }
+fun activateSlowMotionPowerup() {
+        slowmotionActive = true
+        slowMotionStartTime = System.currentTimeMillis()
+        ball.alterSpeed(0.20f)
+    }
+* private fun activatePowerup() {
 
         powerupManager.powerupActive = true
         // Determine the type of power-up
@@ -625,55 +516,4 @@ class GameView(
 
         powerupActivationTime = System.currentTimeMillis()
     }
-
-    private fun resetPaddleSize() {
-        // Reset paddle to normal size
-        paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle)
-    }
-
-    fun shapesIntersect(ball: Ball, paddle: Paddle) {
-        // Calculate the center of the circle
-//        val circleCenterX = ball.posX
-//        val circleCenterY = ball.posY
-        // Find the closest point on the square to the center of the circle
-        val closestX =
-            Math.max(this.paddle.posX, Math.min(ball.posX, this.paddle.posX + this.paddle.width))
-        val closestY =
-            Math.max(this.paddle.posY, Math.min(ball.posY, this.paddle.posY + this.paddle.height))
-
-        // Calculate the distance between the circle center and the closest point on the square
-        val distanceX = ball.posX - closestX
-        var distanceY = ball.posY - closestY
-
-        // Get info about device #responsive design
-        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val displayMetrics = DisplayMetrics()
-        //TODO: hitta not deprecated lösning för windowmanagern
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-        // Set values depending on screen size
-        if (displayMetrics.heightPixels == 2154 && displayMetrics.widthPixels == 1080) {
-            // Pixel 3a
-            distanceY = ball.posY - closestY - 41
-        } else if (displayMetrics.heightPixels == 2960 && displayMetrics.widthPixels == 1440) {
-            // set values för bills telefon
-            //Höj -45 till -52 istället
-            distanceY = ball.posY - closestY - 52
-        }
-        // closestY Pixel2API 33, Pixel 3a behöver - 35
-
-        // Check if the distance is less than or equal to the circle's radius
-        val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
-        val radiusSquared = ball.size * ball.size
-        if (distanceSquared <= radiusSquared && !ball.ballIsTouchingPaddle) {
-            ball.ballIsTouchingPaddle = true
-            // Collision detected, handle it accordingly (e.g., call a collision handling function)
-            onBallCollision(ball, paddle)
-        }
-        // if ball is not touching paddle set ballIsTouchingPaddle = false
-        if (distanceSquared >= radiusSquared) {
-            ball.ballIsTouchingPaddle = false
-        }
-    }
-}
-
-
+* */
