@@ -15,6 +15,20 @@ class CollisionManager( player: Player, gameView: GameView) {
     fun checkBoundsMainBall(ball : Ball, bounds: Rect)
     {
         ball.checkBounds(bounds)
+        //Handle outofbounds for Main Ball
+        if (ball.isOutOfBounds && player.gameMode == "classic" && !ball.isExtraBall) {
+            player.reduceLife()
+            ball.isOutOfBounds = false
+            if (player.showLives() <= 0) {
+               gameView.gameOver()
+                // at this point endgame dialog should show (See classic activity)
+            }
+        }
+        if (ball.isOutOfBounds && player.gameMode == "timed" && !ball.isExtraBall) {
+           player.reduceTime(10)
+            ball.isOutOfBounds = false
+            // Check for gameover
+        }
     }
     fun checkBoundsExtraBalls(balls: MutableList<Ball>, bounds :Rect)
     {
