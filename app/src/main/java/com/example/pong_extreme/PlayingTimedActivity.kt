@@ -128,9 +128,9 @@ class PlayingTimedActivity : AppCompatActivity() {
                 binding.tvScore.text = "Score: " + player.getScore().toString()
                 //time loss when the ball falls out of bounds : 10 seconds
                 // Check if the ball touches the bottom
-                if (player.showLives() != livesBegin) {
-                    livesBegin = player.showLives()
-                    timer(duration - 10 * 1000)
+                if (player.timePenalty > 0) {
+                    timer(duration - player.timePenalty * 1000)
+                    player.timePenalty = 0
                 }
                 // make function run every frame, maybe there is a better solution to update lives text?
                 handler.postDelayed(

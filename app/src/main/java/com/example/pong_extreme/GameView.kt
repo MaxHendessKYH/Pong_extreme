@@ -95,7 +95,6 @@ class GameView(
             ball.update(paddle, ball.ballIsTouchingPaddle)
         }
         //#region Brick collision
-        // Check if ball is colliding with bricks
          collisionManager.checkForCollisionBrick(brickList, ball)
         for (ball in balls.toList())
         {
@@ -105,21 +104,6 @@ class GameView(
         //#region Out of bounds
         collisionManager.checkBoundsExtraBalls(balls, bounds)
         collisionManager.checkBoundsMainBall(ball, bounds)
-        //Handle outofbounds for Main Ball
-        if (ball.isOutOfBounds && player.gameMode == "classic" && !ball.isExtraBall) {
-            player.reduceLife()
-            ball.isOutOfBounds = false
-            if (player.showLives() <= 0) {
-                gameOver()
-                // at this point endgame dialog should show (See classic activity)
-            }
-        }
-        if (ball.isOutOfBounds && player.gameMode == "timed" && !ball.isExtraBall) {
-            // Timer goes down by 10 when life is lost
-//            player.reduceLife()
-            ball.isOutOfBounds = false
-            // Check for gameover
-        }
         //#endregion
         //#region Paddle Collision
         collisionManager.checkForCollisionPaddle(ball, paddle ,context)
