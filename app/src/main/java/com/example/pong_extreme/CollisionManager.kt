@@ -1,12 +1,9 @@
 package com.example.pong_extreme
-
 import android.content.Context
 import android.graphics.Rect
 import android.util.DisplayMetrics
 import android.view.WindowManager
-
 class CollisionManager( player: Player, gameView: GameView) {
-
     var maxIncreaseCount: Int = 0
     var brokenBrickCount: Int = 0
     var player : Player
@@ -28,12 +25,12 @@ class CollisionManager( player: Player, gameView: GameView) {
             }
         }
     }
-    fun checkforCollisionBrick(brickList: MutableList<Brick> , ball : Ball) :Boolean{
+    fun checkForCollisionBrick(brickList: MutableList<Brick> , ball : Ball) :Boolean{
         for (brick in brickList) {
             if (brick.isCollision(ball)) {
                 brickList.remove(brick)
                 gameView.ballHitBrick(ball)
-                onBallCollisionBrick(ball, brick)
+                onCollisionBrick(ball, brick)
                 if (player.gameMode == "timed") {
                     brokenBrickCount++
                     if (brokenBrickCount == 10 && maxIncreaseCount < 4) {
@@ -49,7 +46,7 @@ class CollisionManager( player: Player, gameView: GameView) {
         }
         return false
     }
-    fun onBallCollisionBrick(ball: Ball, brick: Brick)  {
+    fun onCollisionBrick(ball: Ball, brick: Brick)  {
         if (ball.posX < brick.posX && ball.posY < brick.posY) {
             ball.speedX = Math.abs(ball.speedX) * -1
             ball.speedY = Math.abs(ball.speedY) * -1
@@ -67,23 +64,7 @@ class CollisionManager( player: Player, gameView: GameView) {
             ball.speedY = Math.abs(ball.speedY)
         }
     }
-    fun onBallCollision(ball: Ball, paddle: Paddle) {
-        if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
-            ball.speedX *= -1
-            ball.speedY *= -1
-        }
-        if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
-            ball.speedX *= -1
-        }
-        if (ball.posX > paddle.posX && ball.posY < paddle.posY) {
-            ball.speedY *= -1
-        }
-        if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
-            ball.speedY *= -1
-        }
-        gameView.ballHitPaddle()
-    }
-    fun shapesIntersect(ball: Ball, paddle: Paddle, context : Context) {
+    fun checkForCollisionPaddle(ball: Ball, paddle: Paddle, context : Context) {
         // Find the closest point on the square to the center of the circle
         val closestX =
             Math.max(paddle.posX, Math.min(ball.posX, paddle.posX + paddle.width))
@@ -113,11 +94,27 @@ class CollisionManager( player: Player, gameView: GameView) {
         if (distanceSquared <= radiusSquared && !ball.ballIsTouchingPaddle) {
             ball.ballIsTouchingPaddle = true
             // Collision detected, handle it accordingly (e.g., call a collision handling function)
-            onBallCollision(ball, paddle)
+            onCollisionPaddle(ball, paddle)
         }
         // if ball is not touching paddle set ballIsTouchingPaddle = false
         if (distanceSquared >= radiusSquared) {
             ball.ballIsTouchingPaddle = false
         }
+    }
+    fun onCollisionPaddle(ball: Ball, paddle: Paddle) {
+        if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
+            ball.speedX *= -1
+            ball.speedY *= -1
+        }
+        if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
+            ball.speedX *= -1
+        }
+        if (ball.posX > paddle.posX && ball.posY < paddle.posY) {
+            ball.speedY *= -1
+        }
+        if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
+            ball.speedY *= -1
+        }
+        gameView.ballHitPaddle()
     }
 }

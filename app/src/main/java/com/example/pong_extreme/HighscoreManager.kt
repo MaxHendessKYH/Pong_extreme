@@ -26,7 +26,6 @@ object HighscoreManager {
                 }
                 return classicHighScores
             }
-
             "timed" -> {
                timedHighScores.clear()
 //                setDummyData(timedHighScores, "timed")

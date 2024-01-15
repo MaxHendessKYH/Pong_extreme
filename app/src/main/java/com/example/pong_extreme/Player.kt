@@ -12,31 +12,24 @@ class Player(var gameMode: String) {
     fun reduceLife() {
         lives -= 1
     }
-
     fun showLives(): Int {
         return lives
     }
-
     fun setLevelComplete(setBool: Boolean) {
         levelComplete = setBool
     }
-
     fun getLevelComplete(): Boolean {
         return levelComplete
     }
-
     fun getScore(): Int {
         return score
     }
-
     fun getBall(): Int {
         return ball
     }
-
     fun removeBall() {
         ball -= 1
     }
-
     fun increaseScore(points: Int) {
         score += points
     }

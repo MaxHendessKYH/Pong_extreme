@@ -29,11 +29,9 @@ class Paddle(
             -> BitmapFactory.decodeResource(context.resources,R.drawable.paddle)
         }
     }
-
     enum class PaddleType {
         BIG_PADDLE, SMALL_PADDLE, NORMAL_PADDLE
     }
-
     fun update(surfaceWidth: Float) {
         if (posX + bitmap.width < surfaceWidth) {
             posX += speedX
@@ -41,10 +39,7 @@ class Paddle(
             posX = surfaceWidth - bitmap.width.toFloat()
         }
     }
-
-
     fun draw(canvas: Canvas) {
-        val centerX = posX
         val centerY = canvas.height.toFloat() - 80f
         canvas?.drawBitmap(bitmap, posX, centerY, null)
     }

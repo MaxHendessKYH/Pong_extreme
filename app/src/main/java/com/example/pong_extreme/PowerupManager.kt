@@ -4,10 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import kotlin.random.Random
-
-
     class PowerupManager (context: Context, type: PowerUpType) {
-
         var bitmap: Bitmap
         var powerupType = PowerupManager.PowerUpType.values().random()
         var activePower = "None"
@@ -51,18 +48,15 @@ import kotlin.random.Random
                     paddle.bitmap =
                         BitmapFactory.decodeResource(context.resources, R.drawable.paddle_big)
                 }
-
                 PowerUpType.SMALLPADDLE -> {
                     activePower = "SMALLPADDLE"
                     paddle.bitmap =
                         BitmapFactory.decodeResource(context.resources, R.drawable.paddle_small)
                 }
-
                 PowerUpType.SLOWMOTION -> {
                     activePower = "SLOWMOTION"
                   activateSlowMotionPowerup(ball)
                 }
-
                 PowerUpType.STICKY -> {
                     setSticky(paddle)
                     activePower = "Sticky"
@@ -71,7 +65,6 @@ import kotlin.random.Random
                    if (balls.size < 3) {
                         balls.add(
                             Ball(
-                                context,
                                 Color.RED,
                                 200f,
                                 800f,
@@ -83,7 +76,6 @@ import kotlin.random.Random
                         )
                         balls.add(
                             Ball(
-                                context,
                                 Color.BLUE,
                                 600f,
                                 800f,
@@ -97,10 +89,6 @@ import kotlin.random.Random
                 }
             }
         }
-        fun resetBallSpeed(ball: Ball) {
-            slowmotionActive = false
-            ball.alterSpeed(5f)
-        }
         fun resetPowerup(paddle : Paddle, ball : Ball) {
             // Reset power-up effects
             powerupActive = false
@@ -113,15 +101,11 @@ import kotlin.random.Random
             }
             activePower = "None"
         }
-        private fun resetSlowMotionPowerup(ball : Ball) {
-            // Reset slow motion power-up effects
-            slowmotionActive = false
-            ball.alterSpeed(5f)
-        }
         private fun resetPaddleSize(paddle: Paddle) {
             // Reset paddle to normal size
            paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle)
         }
+        //#region sticky
     fun setSticky(paddle: Paddle)
     {
         if(!paddle.isSticky)
@@ -149,9 +133,21 @@ import kotlin.random.Random
                 stickyTimer = 30
             }
     }
+        //#endregion
+        //#region slowmotion
         fun activateSlowMotionPowerup(ball :Ball) {
              slowmotionActive = true
             var slowMotionStartTime = System.currentTimeMillis()
             ball.alterSpeed(0.20f)
         }
+        private fun resetSlowMotionPowerup(ball : Ball) {
+            // Reset slow motion power-up effects
+            slowmotionActive = false
+            ball.alterSpeed(5f)
+        }
+        fun resetBallSpeed(ball: Ball) {
+            slowmotionActive = false
+            ball.alterSpeed(5f)
+        }
+        //#endregion
 }

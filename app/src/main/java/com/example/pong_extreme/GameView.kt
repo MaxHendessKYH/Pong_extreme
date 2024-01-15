@@ -19,8 +19,6 @@ class GameView(
     lateinit var canvas: Canvas
     lateinit var paddle: Paddle
     lateinit var ball: Ball
-    var maxIncreaseCount: Int = 0
-    var brokenBrickCount: Int = 0
     var player: Player
     var brickList: MutableList<Brick> = mutableListOf()
     var bounds = Rect()
@@ -46,19 +44,18 @@ class GameView(
         }
     }
     private fun setup(currentLevel: Int) {
-        // Set paddle
+        // Set paddle and ball start positions
         paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
-            levelManager = LevelManager(paddle, bounds, brickList, this.context, width, height)
-        // Set bricks based on the currentLevel
+        ball = Ball( Color.WHITE, paddle.posX + paddle.width / 2, paddle.posY, 25f, 20f, -20f, false)
+        ball.ballIsTouchingPaddle = true
+        //Setup current level
+        levelManager = LevelManager(paddle, bounds, brickList, this.context, width, height)
         when (currentLevel) {
             1 -> levelManager.levelOneBrickLayout()
             2 -> levelManager.levelTwoBrickLayout()
             3 -> levelManager.levelThreeBrickLayout()
             else -> levelManager.levelOneBrickLayout()
         }
-        ball = Ball( Color.WHITE, paddle.posX + paddle.width / 2, paddle.posY, 25f, 20f, -20f, false)
-        ball.ballIsTouchingPaddle = true
-
         //If the player is in classic game mode, increase the speed in all levels
         if (player.gameMode == "classic") {
             increaseBallSpeedForLevel(currentLevel)
@@ -99,10 +96,10 @@ class GameView(
         }
         //#region Brick collision
         // Check if ball is colliding with bricks
-         collisionManager.checkforCollisionBrick(brickList, ball)
+         collisionManager.checkForCollisionBrick(brickList, ball)
         for (ball in balls.toList())
         {
-            collisionManager.checkforCollisionBrick(brickList, ball)
+            collisionManager.checkForCollisionBrick(brickList, ball)
         }
         //#endregion
         //#region Out of bounds
@@ -125,11 +122,10 @@ class GameView(
         }
         //#endregion
         //#region Paddle Collision
-        collisionManager.shapesIntersect(ball, paddle ,context)
-//        ballHitPaddle(ball, paddle)
+        collisionManager.checkForCollisionPaddle(ball, paddle ,context)
         for (ball in balls.toList())
         {
-            collisionManager.shapesIntersect(ball, paddle, context)
+            collisionManager.checkForCollisionPaddle(ball, paddle, context)
         }
         //#endregion
         //#region Level finished
@@ -137,9 +133,9 @@ class GameView(
             currentLevel++
             player.increaseScore(100)
             if (player.gameMode == "timed") {
-                player.setLevelComplete(true)
+                player.setLevelComplete(true) // Enables TimedActivity to add more time
             }
-            //start over when player has finished all levels
+            //load level 1 when player has finished all levels
             if (currentLevel > 3) {
                 currentLevel = 1
             }
@@ -162,7 +158,6 @@ class GameView(
     fun draw() {
         val currentHolder = mHolder ?: return
         canvas = currentHolder.lockCanvas() ?: return
-
         try {
             canvas.drawColor(Color.BLACK)
             paddle.draw(canvas)
@@ -173,7 +168,6 @@ class GameView(
             for (ball in balls) {
                 ball.draw(canvas)
             }
-
         } finally {
             currentHolder.unlockCanvasAndPost(canvas)
         }
@@ -207,6 +201,7 @@ class GameView(
         if (running) {
             paddle.posX = event?.x ?: paddle.posX
             if (paddle.isSticky && ball.ballIsTouchingPaddle) {
+                // TODO:this ball pos is abit wonky fix if we have time
                 ball.posX = event?.x ?: (ball.posX + paddle.width / 2)
             }
         }

@@ -14,7 +14,6 @@ class Ball( var color: Int, var posX: Float, var posY: Float, var size: Float, v
         paint.color = color
         canvas?.drawCircle(posX, posY, size, paint)
     }
-
     fun update(paddle: Paddle, isTouchingPaddle: Boolean)
     {
         // prevent ball from moving when paddle is sticky and ball is touching paddle
@@ -54,18 +53,6 @@ class Ball( var color: Int, var posX: Float, var posY: Float, var size: Float, v
             posY = 1200f
             speedY *= -1
         }
-    }
-    fun checkCollisionBottom(bounds: Rect): Boolean
-    {
-        if(posY+size > bounds.bottom)
-        {
-            // reset ball position and make it go up
-            posX= 400f
-            posY= 1200f
-            speedY *=-1
-            return true
-        }
-        return false
     }
     fun getBoundingBox(): RectF {
         return RectF(posX - size, posY - size, posX + size, posY + size)

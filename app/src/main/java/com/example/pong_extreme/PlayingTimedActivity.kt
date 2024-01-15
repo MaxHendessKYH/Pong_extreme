@@ -28,22 +28,16 @@ class PlayingTimedActivity : AppCompatActivity() {
         player = Player("timed")
         livesBegin = player.showLives()
         duration = 3 * 60 * 1000
-
         binding.btnEndGame.setOnClickListener {
             showGameOverDialog()
             gameView.gameOver()
         }
-
         gameView = GameView(this, player, this)
         val container = binding.frameLayout
         container.addView(gameView)
-
 //        timer(duration)
         startUpdateLoop()
-
     }
-
-
     private fun showGameOverDialog() {
         val prefs = getSharedPreferences("com.example.com.example.pong_extreme.prefs", MODE_PRIVATE)
         val builder = AlertDialog.Builder(this)
@@ -68,7 +62,6 @@ class PlayingTimedActivity : AppCompatActivity() {
             restartGame()
             finish()
         }
-
         // make button color not white on white
         val alert: AlertDialog = builder.create()
         alert.setOnShowListener {
@@ -81,14 +74,10 @@ class PlayingTimedActivity : AppCompatActivity() {
         }
         alert.show()
     }
-
-
     private fun timer(durationMillis: Long) {
-
         //Creates a countdowntime
         if (countDownTimer != null)
             countDownTimer!!.cancel()
-
         // Create a new CountDownTimer with the updated duration
         countDownTimer = object : CountDownTimer(durationMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -105,7 +94,6 @@ class PlayingTimedActivity : AppCompatActivity() {
                     player.setLevelComplete(false)
                 }
             }
-
             override fun onFinish() {
 //                soundManager.playSoundGameOver()
                 //Sets timer to 00:00 when gameover
@@ -114,7 +102,6 @@ class PlayingTimedActivity : AppCompatActivity() {
                 gameView.gameOver()
                 stopUpdateLoop()
                 showGameOverDialog()
-
             }
         }
         // Start the new timer
@@ -124,17 +111,13 @@ class PlayingTimedActivity : AppCompatActivity() {
     fun startTimer() {
         timer(duration)
         countDownTimer?.start()
-
     }
-
-
     fun addTime(time: Long) {
         countDownTimer?.cancel()
         remainingMillis += time
         //start new countdown with added time
         timer(remainingMillis)
     }
-
     private fun startUpdateLoop() {
         handler.post(object : Runnable {
             override fun run() {
@@ -143,41 +126,33 @@ class PlayingTimedActivity : AppCompatActivity() {
                 }
                 // update score text dynamicly
                 binding.tvScore.text = "Score: " + player.getScore().toString()
-
                 //time loss when the ball falls out of bounds : 10 seconds
                 // Check if the ball touches the bottom
                 if (player.showLives() != livesBegin) {
                     livesBegin = player.showLives()
                     timer(duration - 10 * 1000)
                 }
-
                 // make function run every frame, maybe there is a better solution to update lives text?
                 handler.postDelayed(
                     this,
                     16
                 )
-
             }
         })
     }
-
     private fun stopUpdateLoop() {
         isUpdateLoopRunning = false
     }
-
     override fun onDestroy() {
         handler.removeCallbacksAndMessages(null)
         // End timer when activity is destroyed
         if (countDownTimer != null)
-
             countDownTimer!!.cancel()
         super.onDestroy()
     }
-
     private fun restartGame() {
         val intent = Intent(this, PlayingTimedActivity::class.java)
         startActivity(intent)
         finish()
     }
-
 }
