@@ -19,6 +19,7 @@ class GameView(
     private val activity: PlayingTimedActivity? = null
 ) : SurfaceView(context), SurfaceHolder.Callback,
     Runnable {
+
     var thread: Thread? = null
     var running = false
     lateinit var canvas: Canvas
@@ -61,7 +62,10 @@ class GameView(
             3 -> levelManager.levelThreeBrickLayout()
             else -> levelManager.levelOneBrickLayout()
         }
-        ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f, false)
+
+        ball = Ball(this.context, Color.WHITE, paddle.posX + paddle.width / 2, paddle.posY, 25f, 20f, -20f, false)
+        ball.ballIsTouchingPaddle = true
+
         //If the player is in classic game mode, increase the speed in all levels
         if (player.gameMode == "classic") {
             increaseBallSpeedForLevel(currentLevel)
@@ -286,6 +290,12 @@ class GameView(
     fun gameOver() {
         ball.speedX = 0f
         ball.speedY = 0f
+        if (player.gameMode == "classic" && player.showLives() == 0) {
+            soundManager?.playSoundGameOver()
+        }
+        if (player.gameMode == "timed" && player.timedFinished) {
+            soundManager?.playSoundGameOver()
+        }
     }
     fun ballHitBrick(ball: Ball , brick:Brick)
     {
