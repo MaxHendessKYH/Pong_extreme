@@ -4,10 +4,35 @@ import android.content.Context
 import android.util.DisplayMetrics
 import android.view.WindowManager
 
-class CollisionManager(powerupManager: PowerupManager) {
-    var powerupManager: PowerupManager
+class CollisionManager( player: Player, gameView: GameView) {
+
+    var maxIncreaseCount: Int = 0
+    var brokenBrickCount: Int = 0
+    var player : Player
+    var gameView : GameView
     init {
-        this.powerupManager = powerupManager
+        this.player = player
+        this.gameView = gameView
+    }
+    fun checkforCollisionBrick(brickList: MutableList<Brick> , ball : Ball) :Boolean{
+        for (brick in brickList) {
+            if (brick.isCollision(ball)) {
+                brickList.remove(brick)
+                gameView.ballHitBrick(ball, brick)
+                if (player.gameMode == "timed") {
+                    brokenBrickCount++
+                    if (brokenBrickCount == 10 && maxIncreaseCount < 4) {
+                        ball.alterSpeed(1.1f)
+                        maxIncreaseCount++
+                        brokenBrickCount = 0
+                        maxIncreaseCount = 0
+                    }
+                }
+                player.increaseScore(brick.score)
+                return true
+            }
+        }
+        return false
     }
     fun onBallCollisionBrick(ball: Ball, brick: Brick)  {
         if (ball.posX < brick.posX && ball.posY < brick.posY) {
@@ -41,7 +66,6 @@ class CollisionManager(powerupManager: PowerupManager) {
         if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
             ball.speedY *= -1
         }
-
     }
     fun shapesIntersect(ball: Ball, paddle: Paddle, context : Context): Boolean {
         // Find the closest point on the square to the center of the circle

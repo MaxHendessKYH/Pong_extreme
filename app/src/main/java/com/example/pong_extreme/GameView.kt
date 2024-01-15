@@ -1,25 +1,19 @@
 package com.example.pong_extreme
 import android.app.AlertDialog
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
 import android.os.CountDownTimer
-import android.util.DisplayMetrics
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.view.WindowManager
-import java.lang.Math.abs
-import java.util.logging.Level
 class GameView(
     context: Context?,
     player: Player,
     private val activity: PlayingTimedActivity? = null
 ) : SurfaceView(context), SurfaceHolder.Callback,
     Runnable {
-
     var thread: Thread? = null
     var running = false
     lateinit var canvas: Canvas
@@ -35,7 +29,7 @@ class GameView(
     var powerupType = PowerupManager.PowerUpType.values().random()
     var powerupManager = PowerupManager(this.context, powerupType)
     lateinit var levelManager : LevelManager
-    var collisionManager = CollisionManager(powerupManager)
+    var collisionManager = CollisionManager( player, this )
     val soundManager = context?.let { SoundManager(it) }
     var slowmotionActive = false
     var slowMotionStartTime: Long = 0
@@ -62,7 +56,6 @@ class GameView(
             3 -> levelManager.levelThreeBrickLayout()
             else -> levelManager.levelOneBrickLayout()
         }
-
         ball = Ball(this.context, Color.WHITE, paddle.posX + paddle.width / 2, paddle.posY, 25f, 20f, -20f, false)
         ball.ballIsTouchingPaddle = true
 
@@ -90,78 +83,6 @@ class GameView(
     fun stop() {
         running = false
         thread?.join()
-    }
-    fun update() {
-        paddle.update(width.toFloat())
-        ball.update(paddle, ball.ballIsTouchingPaddle)
-        for (ball in balls) {
-            ball.update(paddle, ball.ballIsTouchingPaddle)
-        }
-        for (brick in brickList) {
-            if (brick.isCollision(ball)) {
-                soundManager?.playSoundBrick()
-                brickList.remove(brick)
-                // Handle any other actions you want to take when a collision occurs
-              ballHitBrick(ball, brick)
-                if (player.gameMode == "timed") {
-                    brokenBrickCount++
-                    if (brokenBrickCount == 10 && maxIncreaseCount < 4) {
-                        ball.alterSpeed(1.1f)
-                        maxIncreaseCount++
-                        brokenBrickCount = 0
-                        maxIncreaseCount = 0
-                    }
-                }
-                player.increaseScore(brick.score)
-                break // If you want to remove only one brick per frame, otherwise, remove the break statement
-            }
-        }
-        // Reset powerup section
-        if (System.currentTimeMillis() - powerupActivationTime >= powerupDurationMillis) {
-            powerupManager.resetPowerup(paddle , ball)
-        }
-        powerupManager.checkIfPaddleIsSticky(paddle, ball)
-        if (slowmotionActive) {
-            val elapsedTime = System.currentTimeMillis() - slowMotionStartTime
-            if (elapsedTime >= slowMotionDuration) {
-                powerupManager.resetBallSpeed(ball) // Återställ bollens hastighet när slow motion-tiden har gått ut
-            }
-        }
-    }
-    fun draw() {
-        val currentHolder = mHolder ?: return
-        canvas = currentHolder.lockCanvas() ?: return
-
-        try {
-            canvas.drawColor(Color.BLACK)
-            paddle.draw(canvas)
-            ball.draw(canvas)
-            for (brick in brickList) {
-                brick.draw(canvas)
-            }
-            for (ball in balls) {
-                ball.draw(canvas)
-            }
-
-        } finally {
-            currentHolder.unlockCanvasAndPost(canvas)
-        }
-    }
-    override fun surfaceCreated(holder: SurfaceHolder) {
-        if (mHolder != null) {
-            mHolder?.addCallback(this)
-        }
-        currentLevel = 1
-        setup(currentLevel)
-        draw()
-    }
-    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        bounds = Rect(0, 0, width, height)
-    }
-    override fun surfaceDestroyed(holder: SurfaceHolder) {
-        stop()
-        //Releases the instance of soundpool when game ends
-        soundManager?.release()
     }
     override fun run() {
         while (running) {
@@ -237,8 +158,66 @@ class GameView(
                 }
                 setup(currentLevel)
             }
-           ballHitPaddle(ball, paddle)
+            ballHitPaddle(ball, paddle)
         }
+    }
+    fun update() {
+        paddle.update(width.toFloat())
+        ball.update(paddle, ball.ballIsTouchingPaddle)
+        for (ball in balls) {
+            ball.update(paddle, ball.ballIsTouchingPaddle)
+        }
+        // Check if ball is colliding with bricks
+        if( collisionManager.checkforCollisionBrick(brickList, ball))
+        {
+            soundManager?.playSoundBrick()
+        }
+        // Reset powerup section
+        if (System.currentTimeMillis() - powerupActivationTime >= powerupDurationMillis) {
+            powerupManager.resetPowerup(paddle , ball)
+        }
+        powerupManager.checkIfPaddleIsSticky(paddle, ball)
+        if (slowmotionActive) {
+            // if time is up reset ballspeed
+            if (System.currentTimeMillis() - slowMotionStartTime >= slowMotionDuration) {
+                powerupManager.resetBallSpeed(ball)
+            }
+        }
+    }
+    fun draw() {
+        val currentHolder = mHolder ?: return
+        canvas = currentHolder.lockCanvas() ?: return
+
+        try {
+            canvas.drawColor(Color.BLACK)
+            paddle.draw(canvas)
+            ball.draw(canvas)
+            for (brick in brickList) {
+                brick.draw(canvas)
+            }
+            for (ball in balls) {
+                ball.draw(canvas)
+            }
+
+        } finally {
+            currentHolder.unlockCanvasAndPost(canvas)
+        }
+    }
+    override fun surfaceCreated(holder: SurfaceHolder) {
+        if (mHolder != null) {
+            mHolder?.addCallback(this)
+        }
+        currentLevel = 1
+        setup(currentLevel)
+        draw()
+    }
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+        bounds = Rect(0, 0, width, height)
+    }
+    override fun surfaceDestroyed(holder: SurfaceHolder) {
+        stop()
+        //Releases the instance of soundpool when game ends
+        soundManager?.release()
     }
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         // Handles when the user is touching the screen
