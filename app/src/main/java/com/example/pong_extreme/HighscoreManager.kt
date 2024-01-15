@@ -54,18 +54,4 @@ object HighscoreManager {
         // apply changes
         editor.apply()
     }
- fun setDummyData(list: MutableList<Highscore>, gameMode: String): MutableList<Highscore>
- {
-     list.add(Highscore("Max" , 500, gameMode))
-     list.add(Highscore("Mehdi" , 600, gameMode))
-     list.add(Highscore("Dennis" , 400, gameMode))
-     list.add(Highscore("Juhee" , 800, gameMode))
-     return list
- }
-    fun deleteAllHighScores(prefs: SharedPreferences)
-    {
-        val prefsEditor = prefs.edit()
-        prefsEditor.clear()
-        prefsEditor.commit()
-    }
 }

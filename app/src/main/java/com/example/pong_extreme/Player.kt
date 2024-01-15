@@ -6,7 +6,6 @@ class Player(var gameMode: String) {
 
     private var lives: Int = 2
     private var score: Int = 0
-    private var ball: Int = 3
     var timePenalty = 0
     private var levelComplete: Boolean = false
     var timedFinished: Boolean = false
