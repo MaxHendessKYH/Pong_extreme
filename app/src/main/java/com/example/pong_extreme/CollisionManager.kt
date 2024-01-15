@@ -1,6 +1,7 @@
 package com.example.pong_extreme
 
 import android.content.Context
+import android.graphics.Rect
 import android.util.DisplayMetrics
 import android.view.WindowManager
 
@@ -14,11 +15,25 @@ class CollisionManager( player: Player, gameView: GameView) {
         this.player = player
         this.gameView = gameView
     }
+    fun checkBoundsMainBall(ball : Ball, bounds: Rect)
+    {
+        ball.checkBounds(bounds)
+    }
+    fun checkBoundsExtraBalls(balls: MutableList<Ball>, bounds :Rect)
+    {
+        for (ball in balls.toList()) {
+            ball.checkBounds(bounds)
+            if (ball.isOutOfBounds && ball.isExtraBall) {
+                balls.remove(ball)
+            }
+        }
+    }
     fun checkforCollisionBrick(brickList: MutableList<Brick> , ball : Ball) :Boolean{
         for (brick in brickList) {
             if (brick.isCollision(ball)) {
                 brickList.remove(brick)
-                gameView.ballHitBrick(ball, brick)
+                gameView.ballHitBrick(ball)
+                onBallCollisionBrick(ball, brick)
                 if (player.gameMode == "timed") {
                     brokenBrickCount++
                     if (brokenBrickCount == 10 && maxIncreaseCount < 4) {
@@ -66,8 +81,9 @@ class CollisionManager( player: Player, gameView: GameView) {
         if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
             ball.speedY *= -1
         }
+        gameView.ballHitPaddle()
     }
-    fun shapesIntersect(ball: Ball, paddle: Paddle, context : Context): Boolean {
+    fun shapesIntersect(ball: Ball, paddle: Paddle, context : Context) {
         // Find the closest point on the square to the center of the circle
         val closestX =
             Math.max(paddle.posX, Math.min(ball.posX, paddle.posX + paddle.width))
@@ -98,12 +114,10 @@ class CollisionManager( player: Player, gameView: GameView) {
             ball.ballIsTouchingPaddle = true
             // Collision detected, handle it accordingly (e.g., call a collision handling function)
             onBallCollision(ball, paddle)
-            return true
         }
         // if ball is not touching paddle set ballIsTouchingPaddle = false
         if (distanceSquared >= radiusSquared) {
             ball.ballIsTouchingPaddle = false
         }
-        return false
     }
 }

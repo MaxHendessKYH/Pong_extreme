@@ -56,7 +56,7 @@ class GameView(
             3 -> levelManager.levelThreeBrickLayout()
             else -> levelManager.levelOneBrickLayout()
         }
-        ball = Ball(this.context, Color.WHITE, paddle.posX + paddle.width / 2, paddle.posY, 25f, 20f, -20f, false)
+        ball = Ball( Color.WHITE, paddle.posX + paddle.width / 2, paddle.posY, 25f, 20f, -20f, false)
         ball.ballIsTouchingPaddle = true
 
         //If the player is in classic game mode, increase the speed in all levels
@@ -88,91 +88,65 @@ class GameView(
         while (running) {
             update()
             draw()
-            // Iterate through all balls
-            for (ball in balls.toList()) {
-                ball.checkBounds(bounds)
-                // check for collision with bottom of screen
-                val hitBottom = ball.checkCollisionBottom(bounds)
-                if (hitBottom && player.gameMode == "classic" && !ball.isExtraBall) {
-                    player.reduceLife()
-                    // Check for gameover
-                    if (player.showLives() <= 0) {
-                        gameOver()
-                        // at this point endgame dialog should show (See classic activity)
-                    }
-                }
-                if (hitBottom && player.gameMode == "timed" && !ball.isExtraBall) {
-                    // Timer goes down by 10 when life is lost
-                    player.reduceLife()
-                    // Check for gameover
-                }
-                if (hitBottom && ball.isExtraBall) {
-                    balls.remove(ball)
-                }
-                ballHitPaddle(ball, paddle)
-            }
-            // Check if any ball collides with bricks
-            for (ball in balls) {
-                for (brick in brickList.toList()) {
-                    if (brick.isCollision(ball)) {
-                        soundManager?.playSoundBrick()
-                        brickList.remove(brick)
-                        ballHitBrick(ball, brick)
-                        if (player.gameMode == "timed") {
-                            brokenBrickCount++
-                            if (brokenBrickCount == 10 && maxIncreaseCount < 4) {
-                                ball.alterSpeed(1.1f)
-                                maxIncreaseCount++
-                                brokenBrickCount = 0
-                            }
-                        }
-                        player.increaseScore(brick.score)
-                    }
-                }
-            }
-            ball.checkBounds(bounds)
-            // check for collison with bottom of screen
-            val hitBottom = ball.checkCollisionBottom(bounds)
-            if (hitBottom && player.gameMode == "classic" && !ball.isExtraBall) {
-                player.reduceLife()
-                // Check for gameover
-                if (player.showLives() <= 0) {
-                    gameOver()
-                    // at this point endgame dialog should show (See classic activity)
-                }
-            }
-            if (hitBottom && player.gameMode == "timed" && !ball.isExtraBall) {
-                // Timer goes down by 10 when life is lost
-                player.reduceLife()
-                // Check for gameover
-            }
-            // Rewards for finishing a level
-            if (levelManager.levelComplete()) {
-                currentLevel++
-                player.increaseScore(100)
-                if (player.gameMode == "timed") {
-                    player.setLevelComplete(true)
-                }
-                if (currentLevel > 3) {
-                    currentLevel = 1
-                }
-                setup(currentLevel)
-            }
-            ballHitPaddle(ball, paddle)
         }
     }
     fun update() {
+        // Run update methods
         paddle.update(width.toFloat())
         ball.update(paddle, ball.ballIsTouchingPaddle)
         for (ball in balls) {
             ball.update(paddle, ball.ballIsTouchingPaddle)
         }
+        //#region Brick collision
         // Check if ball is colliding with bricks
-        if( collisionManager.checkforCollisionBrick(brickList, ball))
+         collisionManager.checkforCollisionBrick(brickList, ball)
+        for (ball in balls.toList())
         {
-            soundManager?.playSoundBrick()
+            collisionManager.checkforCollisionBrick(brickList, ball)
         }
-        // Reset powerup section
+        //#endregion
+        //#region Out of bounds
+        collisionManager.checkBoundsExtraBalls(balls, bounds)
+        collisionManager.checkBoundsMainBall(ball, bounds)
+        //Handle outofbounds for Main Ball
+        if (ball.isOutOfBounds && player.gameMode == "classic" && !ball.isExtraBall) {
+            player.reduceLife()
+            ball.isOutOfBounds = false
+            if (player.showLives() <= 0) {
+                gameOver()
+                // at this point endgame dialog should show (See classic activity)
+            }
+        }
+        if (ball.isOutOfBounds && player.gameMode == "timed" && !ball.isExtraBall) {
+            // Timer goes down by 10 when life is lost
+//            player.reduceLife()
+            ball.isOutOfBounds = false
+            // Check for gameover
+        }
+        //#endregion
+        //#region Paddle Collision
+        collisionManager.shapesIntersect(ball, paddle ,context)
+//        ballHitPaddle(ball, paddle)
+        for (ball in balls.toList())
+        {
+            collisionManager.shapesIntersect(ball, paddle, context)
+        }
+        //#endregion
+        //#region Level finished
+        if (levelManager.levelComplete()) {
+            currentLevel++
+            player.increaseScore(100)
+            if (player.gameMode == "timed") {
+                player.setLevelComplete(true)
+            }
+            //start over when player has finished all levels
+            if (currentLevel > 3) {
+                currentLevel = 1
+            }
+            setup(currentLevel)
+        }
+        //#endregion
+        //#region Powerup Resets
         if (System.currentTimeMillis() - powerupActivationTime >= powerupDurationMillis) {
             powerupManager.resetPowerup(paddle , ball)
         }
@@ -183,6 +157,7 @@ class GameView(
                 powerupManager.resetBallSpeed(ball)
             }
         }
+        //#endregion
     }
     fun draw() {
         val currentHolder = mHolder ?: return
@@ -269,6 +244,11 @@ class GameView(
     fun gameOver() {
         ball.speedX = 0f
         ball.speedY = 0f
+        for (ball in balls.toList())
+        {
+            ball.speedY = 0f
+            ball.speedX = 0f
+        }
         if (player.gameMode == "classic" && player.showLives() == 0) {
             soundManager?.playSoundGameOver()
         }
@@ -276,22 +256,17 @@ class GameView(
             soundManager?.playSoundGameOver()
         }
     }
-    fun ballHitBrick(ball: Ball , brick:Brick)
+    fun ballHitBrick(ball: Ball)
     {
-        collisionManager.onBallCollisionBrick(ball, brick)
+        soundManager?.playSoundBrick()
         //roll for powerup
         if ( powerupManager.shouldHavePowerup() && !powerupManager.powerupActive) {
             powerupManager.activatePowerup(paddle, this.context, balls, ball)
             powerupActivationTime = System.currentTimeMillis()
         }
     }
-    fun ballHitPaddle(ball: Ball , paddle: Paddle)
+    fun ballHitPaddle()
     {
-        val collision = collisionManager.shapesIntersect(ball, paddle, context)
-        if(collision)
-        {
-            //Plays the sound every time ball and paddle collides
             soundManager?.playSoundPaddle()
-        }
     }
 }
