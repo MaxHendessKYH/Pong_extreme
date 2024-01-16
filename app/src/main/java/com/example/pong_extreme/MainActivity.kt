@@ -22,28 +22,23 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         //Creates a mediaplayer that can loop through the music
         mediaPlayer = MediaPlayer.create(this, R.raw.music)
         mediaPlayer.isLooping = true
         mediaPlayer.start()
-
         //When any of the buttons are clicked the music stops and mediaplayer is released
         binding.btnClassic.setOnClickListener {
             mediaPlayer.stop()
             val intent = Intent(this, PlayingClassicActivity::class.java)
             startActivity(intent)
         }
-
         binding.btnTimed.setOnClickListener {
             mediaPlayer.stop()
             val intent = Intent(this, PlayingTimedActivity::class.java)
             startActivity(intent)
         }
-
         setAdapter()
     }
-
     override fun onResume() {
         super.onResume()
         mediaPlayer.reset()
@@ -52,10 +47,8 @@ class MainActivity : AppCompatActivity() {
         mediaPlayer.start()
         setAdapter()
     }
-
     private fun setAdapter() {
         prefs = getSharedPreferences("com.example.com.example.pong_extreme.prefs", MODE_PRIVATE)
-
         var classicHighScores = HighscoreManager.getHighScores("classic", prefs)
         if(!classicHighScores.isEmpty()) {
             classicHighScores =
@@ -74,5 +67,4 @@ class MainActivity : AppCompatActivity() {
         val timedAdapter = HighscoreAdapter(this, timedHighScores)
         lvTimed.adapter = timedAdapter
     }
-
 }

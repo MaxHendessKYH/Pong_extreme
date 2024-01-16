@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import com.example.pong_extreme.databinding.ActivityPlayingClassicBinding
-
 class PlayingClassicActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayingClassicBinding
     lateinit var player: Player
@@ -30,13 +29,11 @@ class PlayingClassicActivity : AppCompatActivity() {
         }
         startUpdateLoop()
     }
-
     override fun onDestroy() {
         stopUpdateLoop()
         handler.removeCallbacksAndMessages(null)
         super.onDestroy()
     }
-
     private fun startUpdateLoop() {
         handler.post(object : Runnable {
             override fun run() {
@@ -51,7 +48,6 @@ class PlayingClassicActivity : AppCompatActivity() {
                 if (player.showLives() <= 0) {
                     stopUpdateLoop()
                     showGameOverDialog()
-
                 }
                 // make function run every frame, maybe there is a better solution to update lives text?
                 handler.postDelayed(
@@ -61,7 +57,6 @@ class PlayingClassicActivity : AppCompatActivity() {
             }
         })
     }
-
     private fun stopUpdateLoop() {
         isUpdateLoopRunning = false
     }
@@ -77,16 +72,13 @@ class PlayingClassicActivity : AppCompatActivity() {
                   HighscoreManager.addHighScores(Highscore(input.text.toString(), player.getScore(), "classic"), prefs)
              finish()
         }
-
         builder.setNeutralButton("Start Menu") { dialog, which ->
             finish()
         }
-
         builder.setNegativeButton("Try again") { dialog, which ->
             restartGame()
             finish()
         }
-
             // make button color not white on white
             val alert: AlertDialog = builder.create()
             alert.setOnShowListener {
@@ -96,12 +88,9 @@ class PlayingClassicActivity : AppCompatActivity() {
                     .setTextColor(ContextCompat.getColor(this, R.color.black))
                 alert.getButton(AlertDialog.BUTTON_NEGATIVE)
                     .setTextColor(ContextCompat.getColor(this, R.color.black))
-
             }
             alert.show()
         }
-
-
     private fun restartGame() {
         val intent = Intent(this, PlayingClassicActivity::class.java)
         startActivity(intent)

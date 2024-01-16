@@ -6,37 +6,28 @@ class Player(var gameMode: String) {
 
     private var lives: Int = 2
     private var score: Int = 0
-    private var ball: Int = 3
+    var timePenalty = 0
     private var levelComplete: Boolean = false
     var timedFinished: Boolean = false
     fun reduceLife() {
         lives -= 1
     }
-
+    fun reduceTime(amount: Int)
+    {
+        timePenalty = amount
+    }
     fun showLives(): Int {
         return lives
     }
-
     fun setLevelComplete(setBool: Boolean) {
         levelComplete = setBool
     }
-
     fun getLevelComplete(): Boolean {
         return levelComplete
     }
-
     fun getScore(): Int {
         return score
     }
-
-    fun getBall(): Int {
-        return ball
-    }
-
-    fun removeBall() {
-        ball -= 1
-    }
-
     fun increaseScore(points: Int) {
         score += points
     }
