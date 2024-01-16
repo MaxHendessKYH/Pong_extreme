@@ -286,8 +286,6 @@ class GameView(
                 type = PowerupManager.Companion.PowerUpType.values().random()
             )
             powerupList.add(powerUp)
-//            powerupManager.activatePowerup(paddle, this.context, balls, ball)
-//            powerupActivationTime = System.currentTimeMillis()
         }
     }
 
