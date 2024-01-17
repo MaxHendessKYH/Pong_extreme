@@ -162,6 +162,7 @@ class GameView(
                 // Handle power-up collision with paddle
                 powerupManager.activatePowerup(paddle, this.context, balls, ball , powerUp)
                 powerupActivationTime = System.currentTimeMillis()
+                soundManager?.playSoundPowerup()
                 powerupList.remove(powerUp)
                 powerUp.recycle() // Clean up resources when power-up is collected
             }
