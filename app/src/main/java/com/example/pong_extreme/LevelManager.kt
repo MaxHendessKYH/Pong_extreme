@@ -21,7 +21,7 @@ class LevelManager(paddle: Paddle, bounds: Rect, brickList: MutableList<Brick>, 
     }
      fun levelOneBrickLayout() {
         // Set up paddle
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
+        paddle = Paddle(this.context, 400f, 1250f, 235f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
 
         // Initial position for the bricks
         var posX: Float = 10f
@@ -57,7 +57,7 @@ class LevelManager(paddle: Paddle, bounds: Rect, brickList: MutableList<Brick>, 
     }
      fun levelTwoBrickLayout() {
         // Set up paddle (same as levelOneBrickLayout)
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
+        paddle = Paddle(this.context, 400f, 1250f, 235f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
 
         // Initial position for the bricks
         var posX: Float = 10f
@@ -92,7 +92,7 @@ class LevelManager(paddle: Paddle, bounds: Rect, brickList: MutableList<Brick>, 
     }
      fun levelThreeBrickLayout() {
         // Set up paddle (same as levelOneBrickLayout)
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
+        paddle = Paddle(this.context, 400f, 1250f, 235f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
 
         // Initial position for the bricks
         var posX: Float = 10f
