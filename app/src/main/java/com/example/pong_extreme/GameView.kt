@@ -49,7 +49,7 @@ class GameView(
 
     private fun setup(currentLevel: Int) {
         // Set paddle and ball start positions
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
+        paddle = Paddle(this.context, 400f, 1250f, 235f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
         ball = Ball(Color.WHITE, paddle.posX + paddle.width / 2, paddle.posY, 25f, 20f, -20f, false)
         ball.ballIsTouchingPaddle = true
         //Setup current level

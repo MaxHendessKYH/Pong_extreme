@@ -40,7 +40,7 @@ class PowerupManager(context: Context, type: PowerUpType) {
                 BitmapFactory.decodeResource(context.resources, R.drawable.slowmotion)
 
             else ->
-                BitmapFactory.decodeResource(context.resources, R.drawable.smallpaddle)
+                BitmapFactory.decodeResource(context.resources, R.drawable.multiballs)
         }
     }
 
@@ -120,6 +120,7 @@ class PowerupManager(context: Context, type: PowerUpType) {
     private fun resetPaddleSize(paddle: Paddle) {
         // Reset paddle to normal size
         paddle.bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle)
+        paddle.width = 235f
     }
 
     //#region sticky
