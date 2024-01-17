@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.RectF
 
 class Paddle(
     private val context: Context,
@@ -42,5 +43,9 @@ class Paddle(
     fun draw(canvas: Canvas) {
         val centerY = canvas.height.toFloat() - 80f
         canvas?.drawBitmap(bitmap, posX, centerY, null)
+    }
+
+    fun getBoundingBox(): RectF {
+        return RectF(posX, posY, posX + width, posY + height)
     }
 }
