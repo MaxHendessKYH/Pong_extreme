@@ -157,7 +157,8 @@ class GameView(
                 powerUp.recycle() // Clean up resources when power-up is out of screen
             }
 
-            if (powerUp.isCollision(paddle)) {
+            if (powerUp.isCollision(paddle) ) {
+                powerupManager.resetPowerup(paddle, ball )
                 // Handle power-up collision with paddle
                 powerupManager.activatePowerup(paddle, this.context, balls, ball , powerUp)
                 powerupActivationTime = System.currentTimeMillis()
