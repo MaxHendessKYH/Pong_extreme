@@ -1,38 +1,43 @@
 package com.example.pong_extreme
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.pong_extreme.databinding.ActivityPlayingTimedBinding
 
 class PlayingTimedActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlayingTimedBinding
-    lateinit var countDownTimer: CountDownTimer
+    var countDownTimer: CountDownTimer? = null
+    var initialMillis: Long = 1000L
+    var remainingMillis: Long = initialMillis
     lateinit var player: Player
     private val handler = Handler()
     private var isUpdateLoopRunning = true
+    var livesBegin = 0
+    var duration: Long = 0
+    lateinit var gameView: GameView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityPlayingTimedBinding.inflate(layoutInflater)
         setContentView(binding.root)
         player = Player("timed")
-        //Start the counter when activity is started, this time i set the timer on 3 minutes
-        Timer(3 * 60 * 1000)
+        livesBegin = player.showLives()
+        duration = 3 * 60 * 1000
         binding.btnEndGame.setOnClickListener {
             showGameOverDialog()
+            gameView.gameOver()
         }
-        val gameView = GameView(this, player)
+        gameView = GameView(this, player, this)
         val container = binding.frameLayout
         container.addView(gameView)
+//        timer(duration)
         startUpdateLoop()
     }
-
     private fun showGameOverDialog() {
         val prefs = getSharedPreferences("com.example.com.example.pong_extreme.prefs", MODE_PRIVATE)
         val builder = AlertDialog.Builder(this)
@@ -41,18 +46,22 @@ class PlayingTimedActivity : AppCompatActivity() {
         builder.setTitle("Game Over!")
         builder.setMessage("Enter Name:")
         builder.setPositiveButton("Submit Score") { dialog, id ->
-            HighscoreManager.addHighScores(Highscore(input.text.toString(), player.getScore().toString(), "timed"), prefs)
+            HighscoreManager.addHighScores(
+                Highscore(
+                    input.text.toString(),
+                    player.getScore(),
+                    "timed"
+                ), prefs
+            )
             finish()
         }
         builder.setNeutralButton("Start Menu") { dialog, which ->
-            navigateToMainActivity()
             finish()
         }
         builder.setNegativeButton("Try again") { dialog, which ->
             restartGame()
             finish()
         }
-
         // make button color not white on white
         val alert: AlertDialog = builder.create()
         alert.setOnShowListener {
@@ -65,26 +74,51 @@ class PlayingTimedActivity : AppCompatActivity() {
         }
         alert.show()
     }
-
-    private fun Timer(durationMillis: Long) {
+    private fun timer(durationMillis: Long) {
         //Creates a countdowntime
+        if (countDownTimer != null)
+            countDownTimer!!.cancel()
+        // Create a new CountDownTimer with the updated duration
         countDownTimer = object : CountDownTimer(durationMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                // Update the textview with whats left of the time
+                remainingMillis = millisUntilFinished
+                // Update the textview with what's left of the time
+                duration = millisUntilFinished
                 val minutes = millisUntilFinished / 1000 / 60
                 val seconds = (millisUntilFinished / 1000) % 60
-                binding.tvTime.text = String.format("%02d:%02d", minutes, seconds)
-            }
 
+                //Formats the string so it shows in for example 03:00
+                binding.tvTime.text = String.format("%02d:%02d", minutes, seconds)
+                if (player.getLevelComplete()) {
+                    addTime(30000L) // add 30 sec
+                    player.setLevelComplete(false)
+                }
+            }
             override fun onFinish() {
+//                soundManager.playSoundGameOver()
+                //Sets timer to 00:00 when gameover
+                player.timedFinished = true
                 binding.tvTime.text = "00:00"
+                gameView.gameOver()
+                stopUpdateLoop()
                 showGameOverDialog()
             }
         }
-        countDownTimer.start()
+        // Start the new timer
+        if (countDownTimer != null)
+            countDownTimer?.start()
     }
-    private fun startUpdateLoop()
-    {
+    fun startTimer() {
+        timer(duration)
+        countDownTimer?.start()
+    }
+    fun addTime(time: Long) {
+        countDownTimer?.cancel()
+        remainingMillis += time
+        //start new countdown with added time
+        timer(remainingMillis)
+    }
+    private fun startUpdateLoop() {
         handler.post(object : Runnable {
             override fun run() {
                 if (!isUpdateLoopRunning) {
@@ -92,17 +126,17 @@ class PlayingTimedActivity : AppCompatActivity() {
                 }
                 // update score text dynamicly
                 binding.tvScore.text = "Score: " + player.getScore().toString()
-                //Game over - end Game
-                if (player.showLives() <= 0) {
-                    stopUpdateLoop()
-                    showGameOverDialog()
+                //time loss when the ball falls out of bounds : 10 seconds
+                // Check if the ball touches the bottom
+                if (player.timePenalty > 0) {
+                    timer(duration - player.timePenalty * 1000)
+                    player.timePenalty = 0
                 }
                 // make function run every frame, maybe there is a better solution to update lives text?
                 handler.postDelayed(
                     this,
                     16
                 )
-
             }
         })
     }
@@ -110,24 +144,15 @@ class PlayingTimedActivity : AppCompatActivity() {
         isUpdateLoopRunning = false
     }
     override fun onDestroy() {
-        stopUpdateLoop()
         handler.removeCallbacksAndMessages(null)
         // End timer when activity is destroyed
-        countDownTimer.cancel()
+        if (countDownTimer != null)
+            countDownTimer!!.cancel()
         super.onDestroy()
     }
-
-    private fun navigateToMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
-
     private fun restartGame() {
         val intent = Intent(this, PlayingTimedActivity::class.java)
         startActivity(intent)
         finish()
     }
 }
-
-

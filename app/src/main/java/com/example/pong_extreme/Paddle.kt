@@ -4,19 +4,34 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
-import android.graphics.RectF
 
-class Paddle (context: Context, var posX: Float,var posY:Float,val width: Float = 80f, val height: Float = 28f, var speedX: Float) {
+class Paddle(
+    private val context: Context,
+    var posX: Float = 100f,
+    var posY: Float = 200f,
+    var width: Float = 92f,
+    val height: Float = 16f,
+    var speedX: Float = 0f,
+   var type: PaddleType
+) {
 
-    var bitmap:Bitmap
-
+    var bitmap: Bitmap
+    var isSticky: Boolean = false
     init {
-        bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.paddle)
+        bitmap = when (type) {
+            PaddleType.SMALL_PADDLE
+            -> BitmapFactory.decodeResource(context.resources, R.drawable.paddle_small)
+
+            PaddleType.BIG_PADDLE
+            -> BitmapFactory.decodeResource(context.resources, R.drawable.paddle_big)
+
+            PaddleType.NORMAL_PADDLE
+            -> BitmapFactory.decodeResource(context.resources,R.drawable.paddle)
+        }
     }
-
-
+    enum class PaddleType {
+        BIG_PADDLE, SMALL_PADDLE, NORMAL_PADDLE
+    }
     fun update(surfaceWidth: Float) {
         if (posX + bitmap.width < surfaceWidth) {
             posX += speedX
@@ -24,11 +39,8 @@ class Paddle (context: Context, var posX: Float,var posY:Float,val width: Float 
             posX = surfaceWidth - bitmap.width.toFloat()
         }
     }
-
-    fun draw(canvas: Canvas){
-        val centerX = posX
+    fun draw(canvas: Canvas) {
         val centerY = canvas.height.toFloat() - 80f
-        canvas?.drawBitmap(bitmap, centerX, centerY, null)
+        canvas?.drawBitmap(bitmap, posX, centerY, null)
     }
-
 }

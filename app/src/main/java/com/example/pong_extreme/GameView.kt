@@ -1,311 +1,251 @@
 package com.example.pong_extreme
-
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
+import android.os.CountDownTimer
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import java.lang.Math.abs
-import kotlin.random.Random
-
-class GameView(context: Context?, player: Player) : SurfaceView(context), SurfaceHolder.Callback,
+class GameView(
+    context: Context?,
+    player: Player,
+    private val activity: PlayingTimedActivity? = null
+) : SurfaceView(context), SurfaceHolder.Callback,
     Runnable {
-
     var thread: Thread? = null
     var running = false
     lateinit var canvas: Canvas
     lateinit var paddle: Paddle
     lateinit var ball: Ball
-    var maxIncreaseCount: Int = 0
-    var brokenBrickCount: Int = 0
     var player: Player
     var brickList: MutableList<Brick> = mutableListOf()
     var bounds = Rect()
     var mHolder: SurfaceHolder? = holder
     var currentLevel = 0
+    var powerupType = PowerupManager.PowerUpType.values().random()
+    var powerupManager = PowerupManager(this.context, powerupType)
+    lateinit var levelManager : LevelManager
+    var collisionManager = CollisionManager( player, this )
     val soundManager = context?.let { SoundManager(it) }
-
+    var slowmotionActive = false
+    var slowMotionStartTime: Long = 0
+    val slowMotionDuration = 15000L
+    var powerupActivationTime: Long = 0
+    val powerupDurationMillis: Long = 15000 // 15 seconds in milliseconds
+    var gameStartCountDownTimer: CountDownTimer? = null
+    var alertDialog: AlertDialog? = null
+    private var balls: MutableList<Ball> = mutableListOf()
     init {
         this.player = player
         if (mHolder != null) {
             mHolder?.addCallback(this)
         }
     }
-    
     private fun setup(currentLevel: Int) {
-        // Set paddle
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
-
-        // Set bricks based on the currentLevel
+        // Set paddle and ball start positions
+        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f, Paddle.PaddleType.NORMAL_PADDLE)
+        ball = Ball( Color.WHITE, paddle.posX + paddle.width / 2, paddle.posY, 25f, 20f, -20f, false)
+        ball.ballIsTouchingPaddle = true
+        //Setup current level
+        levelManager = LevelManager(paddle, bounds, brickList, this.context, width, height)
         when (currentLevel) {
-            1 -> levelOneBrickLayout()
-            2 -> levelTwoBrickLayout()
-            3 -> levelThreeBrickLayout()
-            else -> levelOneBrickLayout()
+            1 -> levelManager.levelOneBrickLayout()
+            2 -> levelManager.levelTwoBrickLayout()
+            3 -> levelManager.levelThreeBrickLayout()
+            else -> levelManager.levelOneBrickLayout()
         }
-
-        // Set ball
-        ball = Ball(this.context, Color.WHITE, 400f, 1200f, 25f, 20f, -20f)
-    }
-
-    private fun levelOneBrickLayout() {
-        var posX: Float = 10f
-        // set paddle
-//        paddle = Paddle(this.context, 400f, 1200f,50f, 40f, 30f) gammla
-        paddle = Paddle(this.context, 400f, 1250f, 250f, 28f, 0f)
-//        var posX: Float = 35f
-        var posY: Float = 40f
-        val brickWidth = 150f
-        val spacing = 3f
-        bounds = Rect(0, 0, width, height)
-        val numRows = 8
-        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
-
-        // set bricks
-        var color: Int = 1
-        for (row in 0 until numRows) {
-            var brickType = if (row % 2 == 0) Brick.BrickType.RED else Brick.BrickType.BLUE
-            for (col in 0 until numCols) {
-                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
-                brickList.add(brick)
-                posX += brickWidth + spacing
-                brickType = if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED // alternate between red and blue
-            }
-            // Reset posX for the next row and reset posY to the starting position
-            posX = 10f
-            posY += 85f
+        //If the player is in classic game mode, increase the speed in all levels
+        if (player.gameMode == "classic") {
+            increaseBallSpeedForLevel(currentLevel)
         }
     }
-
-    private fun levelTwoBrickLayout() {
-        var posX: Float = 10f
-        var posY: Float = 40f
-        val brickWidth = 150f
-        val spacing = 3f
-        bounds = Rect(0, 0, width, height)
-
-        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
-        val numRows = numCols
-
-        for (row in 0 until numRows) {
-            var brickType = if (row % 2 == 0) Brick.BrickType.RED else Brick.BrickType.BLUE
-            for (col in 0 until minOf(row + 1, numCols)) {
-                val brick = Brick(this.context, 0f + posX, 0f + posY, 28f, type = brickType)
-                brickList.add(brick)
-                posX += brickWidth + spacing
-                brickType = if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED
-            }
-            posX = 10f
-            posY += 85f
+    private fun increaseBallSpeedForLevel(currentLevel: Int) {
+        val speedFactor = when (currentLevel) {
+            1 -> 1.0f // Default
+            2 -> 1.2f // Increase by 20%
+            3 -> 1.4f // Increase by 20%
+            else -> 1.0f // Default
         }
+        ball.alterSpeed(speedFactor)
     }
-
-    private fun levelThreeBrickLayout() {
-        var posX: Float = 10f
-        var posY: Float = 40f
-        val brickWidth = 150f
-        val spacing = 3f
-        bounds = Rect(0, 0, width, height)
-
-        val numCols = (bounds.width() / (brickWidth + spacing)).toInt()
-        val numRows = numCols
-
-        for (row in 0 until numRows) {
-            var brickType = if (row % 2 == 0) Brick.BrickType.RED else Brick.BrickType.BLUE
-            val xCenter = ((numRows - row - 1) / 2f) * (brickWidth + spacing)
-
-            for (col in 0 until minOf(row + 1, numCols)) {
-                val brick = Brick(this.context, posX + xCenter, posY, 28f, type = brickType)
-                brickList.add(brick)
-                posX += brickWidth + spacing
-                brickType = if (brickType == Brick.BrickType.RED) Brick.BrickType.BLUE else Brick.BrickType.RED // alternate between red and blue
-            }
-
-            posX = 10f
-            posY += (brickWidth + spacing) / 2f
-        }
-    }
-
-    fun start() {
+    fun startGame() {
         running = true
         thread = Thread(this)
         thread?.start()
+        //Starts timer in timedmode
+        activity?.startTimer()
     }
-
     fun stop() {
         running = false
         thread?.join()
     }
-
-    fun update() {
-
-        paddle.update(width.toFloat())
-        ball.update()
-
-        for (brick in brickList) {
-            if (brick.isCollision(ball)) {
-                soundManager?.playSoundBrick()
-                brickList.remove(brick)
-                // Handle any other actions you want to take when a collision occurs
-                onBallCollisionBrick(ball, brick)
-                if(player.gameMode == "timed") {
-                    brokenBrickCount++
-                    if(brokenBrickCount == 10 && maxIncreaseCount < 4) {
-                        ball.increaseSpeed(1.1f)
-                        maxIncreaseCount++
-                        brokenBrickCount = 0
-                        maxIncreaseCount = 0
-                    }
-                }
-                player.increaseScore(brick.score)
-                break // If you want to remove only one brick per frame, otherwise, remove the break statement
-            }
+    override fun run() {
+        while (running) {
+            update()
+            draw()
         }
     }
-
+    fun update() {
+        // Run update methods
+        paddle.update(width.toFloat())
+        ball.update(paddle, ball.ballIsTouchingPaddle)
+        for (ball in balls) {
+            ball.update(paddle, ball.ballIsTouchingPaddle)
+        }
+        //#region Brick collision
+         collisionManager.checkForCollisionBrick(brickList, ball)
+        for (ball in balls.toList())
+        {
+            collisionManager.checkForCollisionBrick(brickList, ball)
+        }
+        //#endregion
+        //#region Out of bounds
+        collisionManager.checkBoundsExtraBalls(balls, bounds)
+        collisionManager.checkBoundsMainBall(ball, bounds)
+        //#endregion
+        //#region Paddle Collision
+        collisionManager.checkForCollisionPaddle(ball, paddle ,context)
+        for (ball in balls.toList())
+        {
+            collisionManager.checkForCollisionPaddle(ball, paddle, context)
+        }
+        //#endregion
+        //#region Level finished
+        if (levelManager.levelComplete()) {
+            currentLevel++
+            player.increaseScore(100)
+            if (player.gameMode == "timed") {
+                player.setLevelComplete(true) // Enables TimedActivity to add more time
+            }
+            //load level 1 when player has finished all levels
+            if (currentLevel > 3) {
+                currentLevel = 1
+            }
+            setup(currentLevel)
+        }
+        //#endregion
+        //#region Powerup Resets
+        if (System.currentTimeMillis() - powerupActivationTime >= powerupDurationMillis) {
+            powerupManager.resetPowerup(paddle , ball)
+        }
+        powerupManager.checkIfPaddleIsSticky(paddle, ball)
+        if (slowmotionActive) {
+            // if time is up reset ballspeed
+            if (System.currentTimeMillis() - slowMotionStartTime >= slowMotionDuration) {
+                powerupManager.resetBallSpeed(ball)
+            }
+        }
+        //#endregion
+    }
     fun draw() {
         val currentHolder = mHolder ?: return
         canvas = currentHolder.lockCanvas() ?: return
-
         try {
             canvas.drawColor(Color.BLACK)
             paddle.draw(canvas)
-                ball.draw(canvas)
+            ball.draw(canvas)
             for (brick in brickList) {
                 brick.draw(canvas)
+            }
+            for (ball in balls) {
+                ball.draw(canvas)
             }
         } finally {
             currentHolder.unlockCanvasAndPost(canvas)
         }
     }
-
     override fun surfaceCreated(holder: SurfaceHolder) {
         if (mHolder != null) {
             mHolder?.addCallback(this)
         }
         currentLevel = 1
         setup(currentLevel)
-        start()
+        draw()
     }
-
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
         bounds = Rect(0, 0, width, height)
     }
-
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         stop()
         //Releases the instance of soundpool when game ends
         soundManager?.release()
     }
-    fun levelComplete(): Boolean {
-        return brickList.isEmpty()
-    }
-
-    override fun run() {
-        while (running) {
-            update()
-            draw()
-            ball.checkBounds(bounds)
-            // check for collison with bottom of screen
-            val hitBottom = ball.checkCollisionBottom(bounds)
-            if (hitBottom && player.gameMode == "classic") {
-                player.reduceLife()
-                // Check for gameover
-                if (player.showLives() <= 0) {
-                    ball.speedX = 0f
-                    ball.speedY = 0f
-                    // at this point endgame dialog should show (See classic activity)
-                }
-            }
-            if (levelComplete()) {
-                currentLevel++
-                if(currentLevel > 3)
-                {
-                    currentLevel = 1
-                }
-                setup(currentLevel)
-            }
-            // Put code for hitBottom in timedActivity here
-            shapesIntersect(ball, paddle)
-        }
-    }
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        paddle.posX = event!!.x
+        // Handles when the user is touching the screen
+        if (event?.action == MotionEvent.ACTION_DOWN) {
+            //If the game is not running, delay the start with startCountdown
+            if (!running) {
+                startCountdown()
+                return true
+            }
+        }
+        //If the game is running
+        if (running) {
+            paddle.posX = event?.x ?: paddle.posX
+            if (paddle.isSticky && ball.ballIsTouchingPaddle) {
+                // TODO:this ball pos is abit wonky fix if we have time
+                ball.posX = event?.x ?: (ball.posX + paddle.width / 2)
+            }
+        }
         return true
     }
-
-    fun onBallCollisionBrick(ball: Ball, brick: Brick) {
-
-        if (ball.posX < brick.posX && ball.posY < brick.posY) {
-            ball.speedX = abs(ball.speedX) * -1
-            ball.speedY = abs(ball.speedY) * -1
+    private fun startCountdown() {
+        // Start a countdown timer
+        gameStartCountDownTimer = object : CountDownTimer(3000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val secondsRemaining = (millisUntilFinished + 999) / 1000
+                val message = "Starting in $secondsRemaining seconds"
+                // If the dialog is not yet created, create it
+                if (alertDialog == null) {
+                    alertDialog = AlertDialog.Builder(context)
+                        .setCancelable(false)
+                        .create()
+                }
+                // Update the message in the time left
+                alertDialog?.setMessage(message)
+                // Show the dialog
+                alertDialog?.show()
+            }
+            override fun onFinish() {
+                // Dismiss the dialog when the countdown is finished
+                alertDialog?.dismiss()
+                // Cancel the countdown timer to prevent further counting
+                gameStartCountDownTimer?.cancel()
+                // Starts the game or perform any relevant action
+                startGame()
+            }
         }
-        if (ball.posX < brick.posX && ball.posY > brick.posY) {
-            ball.speedX = abs(ball.speedX) * -1
-            ball.speedY = abs(ball.speedY)
+        // Start the countdown timer
+        gameStartCountDownTimer?.start()
+    }
+    fun gameOver() {
+        ball.speedX = 0f
+        ball.speedY = 0f
+        for (ball in balls.toList())
+        {
+            ball.speedY = 0f
+            ball.speedX = 0f
         }
-        if (ball.posX > brick.posX && ball.posY < brick.posY) {
-            ball.speedX = abs(ball.speedX)
-            ball.speedY = abs(ball.speedY) * -1
+        if (player.gameMode == "classic" && player.showLives() == 0) {
+            soundManager?.playSoundGameOver()
         }
-        if (ball.posX > brick.posX && ball.posY > brick.posY) {
-            ball.speedX = abs(ball.speedX)
-            ball.speedY = abs(ball.speedY)
+        if (player.gameMode == "timed" && player.timedFinished) {
+            soundManager?.playSoundGameOver()
         }
     }
-
-    fun onBallCollision(ball: Ball, paddle: Paddle) {
-        if (ball.posX < paddle.posX && ball.posY < paddle.posY) {
-//            ball.speedX = abs(ball.speedX) * -1
-//            ball.speedY = abs(ball.speedY) * -1
-            ball.speedX *= -1
-            ball.speedY *= -1
-
+    fun ballHitBrick(ball: Ball)
+    {
+        soundManager?.playSoundBrick()
+        //roll for powerup
+        if ( powerupManager.shouldHavePowerup() && !powerupManager.powerupActive) {
+            powerupManager.activatePowerup(paddle, this.context, balls, ball)
+            powerupActivationTime = System.currentTimeMillis()
         }
-        if (ball.posX < paddle.posX && ball.posY > paddle.posY) {
-//            ball.speedX = abs(ball.speedX) * -1
-//            ball.speedY = abs(ball.speedY)
-            ball.speedX *= -1
-        }
-        if (ball.posX > paddle.posX && ball.posY < paddle.posY) {
-//            ball.speedX = abs(ball.speedX)
-//            ball.speedY = abs(ball.speedY) * -1
-            ball.speedY *= -1
-
-        }
-        if (ball.posX > paddle.posX && ball.posY > paddle.posY) {
-//            ball.speedX = abs(ball.speedX)
-//            ball.speedY = abs(ball.speedY)
-        }
-        //Plays the sound every time ball and paddle collides
-        soundManager?.playSoundPaddle()
     }
-
-    fun shapesIntersect(ball: Ball, paddle: Paddle) {
-        // Calculate the center of the circle
-//        val circleCenterX = ball.posX
-//        val circleCenterY = ball.posY
-        // Find the closest point on the square to the center of the circle
-        val closestX =
-            Math.max(this.paddle.posX, Math.min(ball.posX, this.paddle.posX + this.paddle.width))
-        val closestY =
-            Math.max(this.paddle.posY, Math.min(ball.posY, this.paddle.posY + this.paddle.height))
-
-        // Calculate the distance between the circle center and the closest point on the square
-        val distanceX = ball.posX - closestX
-        val distanceY = ball.posY - closestY
-
-        // Check if the distance is less than or equal to the circle's radius
-        val distanceSquared = (distanceX * distanceX) + (distanceY * distanceY)
-        val radiusSquared = ball.size * ball.size
-//        println("Distance" +distanceSquared)
-
-//        println("Radius" +radiusSquared)
-        if (distanceSquared <= radiusSquared) {
-            // Collision detected, handle it accordingly (e.g., call a collision handling function)
-            onBallCollision(ball, paddle)
-        }
+    fun ballHitPaddle()
+    {
+            soundManager?.playSoundPaddle()
     }
 }

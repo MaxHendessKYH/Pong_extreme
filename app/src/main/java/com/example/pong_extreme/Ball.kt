@@ -6,48 +6,59 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
 
-class Ball(context: Context, var color: Int, var posX: Float, var posY: Float, var size: Float, var speedX: Float, var speedY: Float) {
+class Ball( var color: Int, var posX: Float, var posY: Float, var size: Float, var speedX: Float, var speedY: Float,var isExtraBall: Boolean = false) {
     var paint = Paint()
-
+    var ballIsTouchingPaddle = false
+    var isOutOfBounds: Boolean = false
     fun draw(canvas: Canvas?) {
         paint.color = color
         canvas?.drawCircle(posX, posY, size, paint)
     }
-
-    fun update()
+    fun update(paddle: Paddle, isTouchingPaddle: Boolean)
     {
-       posX += speedX
-       posY += speedY
-    }
+        // prevent ball from moving when paddle is sticky and ball is touching paddle
+        if (paddle.isSticky && isTouchingPaddle) {
 
+        }
+        else
+        {
+            posX += speedX
+            posY += speedY
+        }
+    }
     fun checkBounds(bounds: Rect){
-        if(posX-size < bounds.left || posX+size > bounds.right){
+        // Left Wall
+        if(posX-size < bounds.left ){
             speedX *= -1
+           posX += 15f
             posX += speedX*1.2f
         }
+        // right Wall
+        if(posX+size > bounds.right)
+        {
+            speedX *= -1
+            posX -= 15f
+            posX += speedX*1.2f
+        }
+        //Top Wall
         if(posY-size < bounds.top ){
             speedY *= -1
             posY += speedY*1.2f
         }
-    }
-
-    fun checkCollisionBottom(bounds: Rect): Boolean
-    {
-        if(posY+size > bounds.bottom)
-        {
+        //Bottom Wall
+        if(posY+size > bounds.bottom) {
             // reset ball position and make it go up
-            posX= 400f
-            posY= 1200f
-            speedY *=-1
-            return true
+            isOutOfBounds = true
+            posX = 400f
+            posY = 1200f
+            speedY *= -1
         }
-        return false
     }
     fun getBoundingBox(): RectF {
         return RectF(posX - size, posY - size, posX + size, posY + size)
     }
 
-    fun increaseSpeed(factor: Float) {
+    fun alterSpeed(factor: Float) {
         speedX *= factor
         speedY *= factor
     }

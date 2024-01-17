@@ -4,10 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.RectF
-import androidx.core.graphics.blue
 
 
 
@@ -20,22 +17,18 @@ class Brick(context: Context, var posX: Float, var posY: Float, val width: Float
         } else {
             BitmapFactory.decodeResource(context.resources, R.drawable.brick_blue)
         }
-
         score = if(type == BrickType.RED) {
             10
         } else {
             15
         }
-
     }
     enum class BrickType{
         RED, BLUE
     }
-
     fun draw(canvas: Canvas?) {
        canvas?.drawBitmap(bitmap, posX, posY, null)
     }
-
     fun isCollision(ball: Ball): Boolean {
         val brickRect = RectF(posX, posY, posX + 170f, posY + 90f)
         val ballRect = ball.getBoundingBox()

@@ -12,8 +12,8 @@ import com.example.pong_extreme.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mediaPlayer: MediaPlayer
- lateinit var binding: ActivityMainBinding
-  lateinit  var prefs: SharedPreferences
+    lateinit var binding: ActivityMainBinding
+    lateinit var prefs: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // It makes transparent status bar and navigation bar
@@ -22,12 +22,10 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         //Creates a mediaplayer that can loop through the music
         mediaPlayer = MediaPlayer.create(this, R.raw.music)
         mediaPlayer.isLooping = true
         mediaPlayer.start()
-
         //When any of the buttons are clicked the music stops and mediaplayer is released
         binding.btnClassic.setOnClickListener {
             mediaPlayer.stop()
@@ -39,7 +37,6 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, PlayingTimedActivity::class.java)
             startActivity(intent)
         }
-
         setAdapter()
     }
     override fun onResume() {
@@ -50,19 +47,24 @@ class MainActivity : AppCompatActivity() {
         mediaPlayer.start()
         setAdapter()
     }
-
-    private fun setAdapter()
-    {
+    private fun setAdapter() {
         prefs = getSharedPreferences("com.example.com.example.pong_extreme.prefs", MODE_PRIVATE)
         var classicHighScores = HighscoreManager.getHighScores("classic", prefs)
+        if(!classicHighScores.isEmpty()) {
+            classicHighScores =
+                classicHighScores.sortedByDescending { it.score } as MutableList<Highscore>
+        }
         val lvClassic = findViewById<ListView>(R.id.lv_highscore_classic)
         val classicAdapter = HighscoreAdapter(this, classicHighScores)
         lvClassic.adapter = classicAdapter
 
-       var timedHighScores = HighscoreManager.getHighScores("timed", prefs)
+        var timedHighScores = HighscoreManager.getHighScores("timed", prefs)
+        if(!timedHighScores.isEmpty()) {
+            timedHighScores =
+                timedHighScores.sortedByDescending { it.score } as MutableList<Highscore>
+        }
         val lvTimed = findViewById<ListView>(R.id.lv_highscore_timed)
         val timedAdapter = HighscoreAdapter(this, timedHighScores)
         lvTimed.adapter = timedAdapter
     }
-
 }
