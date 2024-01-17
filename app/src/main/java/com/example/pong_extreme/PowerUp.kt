@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Rect
 import android.graphics.RectF
 
 class PowerUp(
@@ -20,8 +21,13 @@ class PowerUp(
         bitmap = getPowerUpBitmap(context, type)
     }
 
-    fun update() {
+    fun update(bounds: Rect) {
         posY += speedY
+        // make sure powerup is no outside bounds
+        if(posX + width> bounds.right)
+        {
+            posX -= 100f
+        }
     }
     private fun getPowerUpBitmap(context: Context, type: PowerupManager.Companion.PowerUpType): Bitmap {
         val resourceId = when (type) {

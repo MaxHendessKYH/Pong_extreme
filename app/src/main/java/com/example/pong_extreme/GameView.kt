@@ -149,7 +149,7 @@ class GameView(
 
         // Update power-ups
         for (powerUp in powerupList.toList()) {
-            powerUp.update()
+            powerUp.update(bounds)
 
             // Remove power-ups that go beyond the bottom of the screen
             if (powerUp.posY > height) {
