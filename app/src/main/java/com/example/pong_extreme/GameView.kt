@@ -114,10 +114,10 @@ class GameView(
         collisionManager.checkBoundsMainBall(ball, bounds)
         //#endregion
         //#region Paddle Collision
-        collisionManager.checkForCollisionPaddle(ball, paddle ,context, powerupType)
+        collisionManager.checkForCollisionPaddle(ball, paddle ,context)
         for (ball in balls.toList())
         {
-            collisionManager.checkForCollisionPaddle(ball, paddle, context, powerupType)
+            collisionManager.checkForCollisionPaddle(ball, paddle, context)
         }
         //#endregion
         //#region Level finished
@@ -159,7 +159,7 @@ class GameView(
 
             if (powerUp.isCollision(paddle)) {
                 // Handle power-up collision with paddle
-                powerupManager.activatePowerup(paddle, this.context, balls, ball,powerUp.type)
+                powerupManager.activatePowerup(paddle, this.context, balls, ball , powerUp)
                 powerupActivationTime = System.currentTimeMillis()
                 powerupList.remove(powerUp)
                 powerUp.recycle() // Clean up resources when power-up is collected
