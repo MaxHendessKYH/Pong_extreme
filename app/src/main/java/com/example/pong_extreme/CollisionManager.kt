@@ -78,7 +78,7 @@ class CollisionManager( player: Player, gameView: GameView) {
             ball.speedY = Math.abs(ball.speedY)
         }
     }
-    fun checkForCollisionPaddle(ball: Ball, paddle: Paddle, context : Context, powerupType: PowerupManager.PowerUpType) {
+    fun checkForCollisionPaddle(ball: Ball, paddle: Paddle, context : Context) {
         // Find the closest point on the square to the center of the circle
         val closestX =
             Math.max(paddle.posX, Math.min(ball.posX, paddle.posX + paddle.width))

@@ -49,10 +49,10 @@ class PowerupManager(context: Context, type: PowerUpType) {
         return randomize <= 20
     }
 
-        fun activatePowerup(paddle: Paddle , context: Context, balls: MutableList<Ball>, ball: Ball) {
+        fun activatePowerup(paddle: Paddle , context: Context, balls: MutableList<Ball>, ball: Ball, powerup: PowerUp) {
             powerupActive = true
             // Determine the type of power-up
-            powerupType = PowerupManager.PowerUpType.values().random()
+            powerupType = powerup.type
             when (powerupType) {
                 PowerUpType.BIGPADDLE -> {
                     activePower = "BIGPADDLE"
@@ -88,7 +88,6 @@ class PowerupManager(context: Context, type: PowerUpType) {
                                 isExtraBall = true
                             )
                         )
-                    )
                     balls.add(
                         Ball(
                             Color.BLUE,
