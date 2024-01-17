@@ -4,7 +4,7 @@ import android.graphics.BitmapFactory
 
 class Player(var gameMode: String) {
 
-    private var lives: Int = 2
+    private var lives: Int = 10
     private var score: Int = 0
     var timePenalty = 0
     private var levelComplete: Boolean = false

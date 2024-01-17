@@ -114,9 +114,10 @@ class GameView(
         collisionManager.checkBoundsMainBall(ball, bounds)
         //#endregion
         //#region Paddle Collision
-        collisionManager.checkForCollisionPaddle(ball, paddle, context)
-        for (ball in balls.toList()) {
-            collisionManager.checkForCollisionPaddle(ball, paddle, context)
+        collisionManager.checkForCollisionPaddle(ball, paddle ,context, powerupType)
+        for (ball in balls.toList())
+        {
+            collisionManager.checkForCollisionPaddle(ball, paddle, context, powerupType)
         }
         //#endregion
         //#region Level finished

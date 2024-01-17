@@ -49,50 +49,44 @@ class PowerupManager(context: Context, type: PowerUpType) {
         return randomize <= 20
     }
 
-    fun activatePowerup(
-        paddle: Paddle,
-        context: Context,
-        balls: MutableList<Ball>,
-        ball: Ball,
-        type: PowerUpType
-    ) {
-        powerupActive = true
-        // Determine the type of power-up
-        powerupType = type//PowerUpType.values().random()
-        when (powerupType) {
-            PowerUpType.BIGPADDLE -> {
-                activePower = "BIGPADDLE"
-                paddle.bitmap =
-                    BitmapFactory.decodeResource(context.resources, R.drawable.paddle_big)
-            }
+        fun activatePowerup(paddle: Paddle , context: Context, balls: MutableList<Ball>, ball: Ball) {
+            powerupActive = true
+            // Determine the type of power-up
+            powerupType = PowerupManager.PowerUpType.values().random()
+            when (powerupType) {
+                PowerUpType.BIGPADDLE -> {
+                    activePower = "BIGPADDLE"
+                    paddle.bitmap =
+                        BitmapFactory.decodeResource(context.resources, R.drawable.paddle_big)
+                    paddle.width = 375f
+                }
+                PowerUpType.SMALLPADDLE -> {
+                    activePower = "SMALLPADDLE"
+                    paddle.bitmap =
+                        BitmapFactory.decodeResource(context.resources, R.drawable.paddle_small)
+                    paddle.width = 92f
 
-            PowerUpType.SMALLPADDLE -> {
-                activePower = "SMALLPADDLE"
-                paddle.bitmap =
-                    BitmapFactory.decodeResource(context.resources, R.drawable.paddle_small)
-            }
-
-            PowerUpType.SLOWMOTION -> {
-                activePower = "SLOWMOTION"
-                activateSlowMotionPowerup(ball)
-            }
-
-            PowerUpType.STICKY -> {
-                setSticky(paddle)
-                activePower = "Sticky"
-            }
-
-            PowerUpType.MULTIBALLS -> {
-                if (balls.size < 3) {
-                    balls.add(
-                        Ball(
-                            Color.RED,
-                            200f,
-                            800f,
-                            25f,
-                            ball.speedX,
-                            ball.speedY,
-                            isExtraBall = true
+                }
+                PowerUpType.SLOWMOTION -> {
+                    activePower = "SLOWMOTION"
+                  activateSlowMotionPowerup(ball)
+                }
+                PowerUpType.STICKY -> {
+                    setSticky(paddle)
+                    activePower = "Sticky"
+                }
+                PowerUpType.MULTIBALLS -> {
+                   if (balls.size < 3) {
+                        balls.add(
+                            Ball(
+                                Color.RED,
+                                200f,
+                                800f,
+                                25f,
+                                ball.speedX,
+                                ball.speedY,
+                                isExtraBall = true
+                            )
                         )
                     )
                     balls.add(
