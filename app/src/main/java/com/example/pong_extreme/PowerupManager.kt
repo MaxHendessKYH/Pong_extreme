@@ -47,11 +47,14 @@ import kotlin.random.Random
                     activePower = "BIGPADDLE"
                     paddle.bitmap =
                         BitmapFactory.decodeResource(context.resources, R.drawable.paddle_big)
+                    paddle.width = 375f
                 }
                 PowerUpType.SMALLPADDLE -> {
                     activePower = "SMALLPADDLE"
                     paddle.bitmap =
                         BitmapFactory.decodeResource(context.resources, R.drawable.paddle_small)
+                    paddle.width = 92f
+
                 }
                 PowerUpType.SLOWMOTION -> {
                     activePower = "SLOWMOTION"
