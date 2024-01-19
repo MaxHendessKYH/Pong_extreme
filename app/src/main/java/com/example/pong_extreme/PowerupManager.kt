@@ -46,7 +46,7 @@ class PowerupManager(context: Context, type: PowerUpType) {
 
     fun shouldHavePowerup(): Boolean {
         val randomize = Random.nextInt(1, 101)
-        return randomize <= 20
+        return randomize <= 100
     }
 
         fun activatePowerup(paddle: Paddle , context: Context, balls: MutableList<Ball>, ball: Ball, powerup: PowerUp) {
@@ -109,7 +109,7 @@ class PowerupManager(context: Context, type: PowerUpType) {
         powerupActive = false
         paddle.isSticky = false
         when (activePower) {
-            "SLOWMOTION" -> resetSlowMotionPowerup(ball)
+            "SLOWMOTION" -> resetBallSpeed(ball)
             "BIGPADDLE" -> resetPaddleSize(paddle)
             "SMALLPADDLE" -> resetPaddleSize(paddle)
             // Add cases for other power-ups if needed
@@ -158,13 +158,6 @@ class PowerupManager(context: Context, type: PowerUpType) {
         var slowMotionStartTime = System.currentTimeMillis()
         ball.alterSpeed(0.20f)
     }
-
-    private fun resetSlowMotionPowerup(ball: Ball) {
-        // Reset slow motion power-up effects
-        slowmotionActive = false
-        ball.alterSpeed(5f)
-    }
-
     fun resetBallSpeed(ball: Ball) {
         slowmotionActive = false
         ball.alterSpeed(5f)
