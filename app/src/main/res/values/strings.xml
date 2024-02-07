@@ -4,6 +4,7 @@
     <string name="btn_classic">Classic</string>
     <string name="end_game">End Game</string>
     <string name="score">Score</string>
+    <string name="ball">Ball</string>
     <string name="time">Time</string>
     <string name="lives">Lives</string>
     <string name="name">name</string>
